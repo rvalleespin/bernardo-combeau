@@ -303,6 +303,16 @@ diseño.
    server** — este entorno no tiene Node.js instalado; falta correr `npm install && npm run
    dev` y revisar visualmente antes de dar esto por bueno.
 
+**Checkpoint 7 (13 jul 2026, más tarde):** Ramón notó una franja blanca molesta en las 12 fotos
+y pidió recortarla. Las 12 tenían un borde (~10-20px, blanco/gris claro y a veces un filete
+negro de 2-4px antes del blanco) en uno o más lados — resto del recorte/estilo de Instagram
+del Checkpoint 4, no un problema del sitio. Se midió pixel a pixel el grosor real de cada
+lado por foto (no un valor fijo para las 12: cada una traía un borde distinto) y se recortó
+justo ese margen + 3px de seguridad, directo sobre `src/assets/fotos/*.png`. Verificado
+visualmente que las 12 quedaron a sangre completa, sin franja ni filete, sin comerse nada del
+encuadre real. Copia de las 12 fotos originales (pre-recorte) respaldada en el scratchpad de
+la sesión por si hace falta volver atrás — no vive en este repo.
+
 ### Pendiente de Bernardo (Fase 1, bloqueando Fase 2 completa)
 
 - Fotografías reales (series + encargos), hasta 60 por galería.
