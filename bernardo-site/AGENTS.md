@@ -110,13 +110,17 @@ que ya no son fotos de Unsplash. Redesplegado con el flujo ya establecido (`verc
 12 cargan bien, sin íconos de Instagram visibles, y las secciones aún pendientes siguen
 marcadas como tal.
 
-Documentos fuente en el repo padre (`../COTIZACIONES/`, `../ventas/`):
+Documentos fuente en el repo `spindlelab` (repo hermano, no un subdirectorio de este —
+`../../SPINDLELAB/COTIZACIONES/`, `../../SPINDLELAB/ventas/` si ambos repos están en la
+misma carpeta de iCloud). Este proyecto (`PORTAFOLIO/`) vivía antes dentro de `spindlelab/`
+como `bernardo-site` y `bernardo-vista-previa`; se movió a su propio repo el 13 jul 2026 para
+que no se mezclara con la rama de marketing de SpindleLab (ver commit inicial de este repo):
 - `SPL-INT-2026-014_referentes_interno.html` — análisis de referentes (Magnum, SHOWstudio,
   NOOR, Agence VU', Nadav Kander, premiados Awwwards) y la arquitectura/reglas de abajo.
 - `SPL-COT-2026-014_sitio_web_fotografo.pdf` (+ `_generador.py`) — alcance, 5 fases, 60
   fotos/galería tope, plan contratado (confirmar cuál de los 3: Esencial/Pro/Vanguardia).
-- `../ventas/proceso-desarrollo-web-cliente.md` — proceso y errores ya pagados en
-  spindlelab.cl, para no repetirlos aquí (ver "Lecciones técnicas" abajo).
+- `ventas/proceso-desarrollo-web-cliente.md` (en `spindlelab`) — proceso y errores ya pagados
+  en spindlelab.cl, para no repetirlos aquí (ver "Lecciones técnicas" abajo).
 
 ### Referente principal y arquitectura
 
@@ -270,6 +274,34 @@ diseño.
 - Cualquier proveedor externo que reciba datos de clientes reales (formulario de contacto,
   de reserva de sesión) necesita confirmación explícita y nombrada por Ramón antes de
   implementarlo — no elegir uno por cuenta propia.
+
+**Checkpoint 6 (13 jul 2026, más tarde):** dos cosas en paralelo.
+
+1. **Incidente de git resuelto.** GitHub Desktop intentó commitear `bernardo-site/node_modules`
+   (8752 archivos, muchos como stubs `dataless` de iCloud) hacia la rama de marketing de
+   `spindlelab` y quedó colgado 30+ min, dejando un `index.lock`. Al recuperarlo se descubrió
+   que el índice de git tenía una versión de `AGENTS.md`/`bernardo-vista-previa/index.html`
+   más nueva que la stasheada (con las 12 fotos reales ya integradas) — se conservó esa
+   versión. Se agregó `node_modules/`, `dist/`, `.astro/` al `.gitignore` del proyecto para
+   que no vuelva a pasar.
+2. **Repo propio.** Este proyecto vivía dentro de `spindlelab/bernardo-site` y
+   `spindlelab/bernardo-vista-previa`. A pedido de Ramón ("no quiero perder trabajo
+   avanzado"), se separó a su propio repositorio (`PORTAFOLIO/`, sin remoto en GitHub
+   todavía) para que un cambio de rama en `spindlelab` (main ↔ la rama de marketing) no
+   vuelva a stashear/enredar este proyecto de cliente con el trabajo de marketing de
+   SpindleLab. El commit de `spindlelab` que lo agregó (`eb3d49c`) ya estaba pusheado a
+   `origin/main` — queda en el historial de ese repo, solo se removió del árbol actual.
+3. **Sitio Astro real construido.** Se armó el sitio real (`src/layouts`, `src/components`,
+   páginas Home/Series/Encargos/Servicios/Sobre mí/Contacto) usando exactamente el copy y
+   mapeo de fotos ya aprobados en la maqueta (ver Checkpoint 5) — nada inventado de nuevo.
+   Las 12 fotos se movieron a `src/assets/fotos/` para que Astro las optimice (`<Image>`,
+   antes estaban sueltas sin procesar). A pedido de Ramón se cambió `object-fit:contain` por
+   `object-fit:cover` en el stage de Galería — dejaba ver el fondo `--stage` como una franja
+   cuando la foto no calzaba con el aspect-ratio del cuadro; ahora prioriza "solo foto" sobre
+   respetar el encuadre original (contradice la nota de Kander del Checkpoint original, pero
+   es instrucción explícita y más reciente de Ramón). **No verificado corriendo el dev
+   server** — este entorno no tiene Node.js instalado; falta correr `npm install && npm run
+   dev` y revisar visualmente antes de dar esto por bueno.
 
 ### Pendiente de Bernardo (Fase 1, bloqueando Fase 2 completa)
 
