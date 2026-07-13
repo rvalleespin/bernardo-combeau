@@ -1,0 +1,31 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="Contacto — Bernardo Combeau">
+	<Nav active="/contacto" />
+	<div class="page-head"><h2>Contacto</h2></div>
+	<div class="contact-body">
+		<p>¿Conversamos sobre tu proyecto? Escríbeme y coordinamos día, hora y detalles.</p>
+	</div>
+	<div class="contact-links">
+		<a class="primary" href="#">
+			<span class="ic">●</span>
+			<span class="lbl">WhatsApp</span>
+			<span class="pending">Falta el número</span>
+		</a>
+		<a href="#">
+			<span class="ic">✉</span>
+			<span class="lbl">Email</span>
+			<span class="pending">Falta la dirección</span>
+		</a>
+		<a href="#">
+			<span class="ic">◎</span>
+			<span class="lbl">Instagram</span>
+			<span class="pending">Falta el @usuario</span>
+		</a>
+	</div>
+	<Footer />
+</Layout>

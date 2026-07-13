@@ -1,0 +1,19 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Photo from '../components/Photo.astro';
+---
+
+<Layout title="Sobre mí — Bernardo Combeau">
+	<Nav active="/sobre-mi" />
+	<div class="page-head"><h2>Sobre mí</h2></div>
+	<div class="bio-grid">
+		<Photo pendingText="[ foto de Bernardo — la está gestionando junto con las de estudio ]" />
+		<div class="bio">
+			<p>Llevo 4 años detrás de la cámara y buena parte de mi vida frente a ella. Como modelo aprendí algo que pocos fotógrafos entienden: lo incómodo que es que te fotografíen, y cuánto depende de quien dirige la sesión que esa incomodidad se transforme en una buena imagen. Mi trabajo, entonces, es tanto dirección como luz y encuadre. Sé cómo hacer que una persona pase de sentirse observada a sentirse retratada. Ese cambio es el que separa una foto correcta de un retrato que realmente te representa.</p>
+			<p style="margin-top:1.1rem;">Trabajo desde mi estudio en El Golf, a pasos del metro, equipado para lograr desde un retrato clásico en blanco y negro hasta una sesión de personal branding lista para tu LinkedIn. Si buscas una imagen que hable de ti con seguridad, para tu carrera, tu marca o simplemente para ti, conversemos.</p>
+		</div>
+	</div>
+	<Footer />
+</Layout>

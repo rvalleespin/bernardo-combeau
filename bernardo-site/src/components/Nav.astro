@@ -1,0 +1,24 @@
+---
+interface Props {
+  active?: string;
+}
+
+const { active = '' } = Astro.props;
+
+const links = [
+  { href: '/series', label: 'Series' },
+  { href: '/encargos', label: 'Encargos' },
+  { href: '/servicios', label: 'Servicios' },
+  { href: '/sobre-mi', label: 'Sobre mí' },
+  { href: '/contacto', label: 'Contacto' },
+];
+---
+
+<nav class="site-nav">
+	<a class="word" href="/">Bernardo Combeau</a>
+	<span class="links">
+		{links.map((link) => (
+			<a href={link.href} class:list={{ on: active === link.href }}>{link.label}</a>
+		))}
+	</span>
+</nav>
