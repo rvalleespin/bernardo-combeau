@@ -313,6 +313,20 @@ visualmente que las 12 quedaron a sangre completa, sin franja ni filete, sin com
 encuadre real. Copia de las 12 fotos originales (pre-recorte) respaldada en el scratchpad de
 la sesión por si hace falta volver atrás — no vive en este repo.
 
+**Checkpoint 8 (13 jul 2026, más tarde):** el sitio real (Astro) se desplegó a Vercel por
+primera vez — Ramón lo corrió desde su Mac (este entorno no tiene Node/npm/vercel CLI, no se
+pudo hacer desde acá como con la maqueta anterior). Requirió instalar Node.js en su Mac y
+aprobar el script de instalación de `esbuild` (`npm approve-scripts esbuild`, bloqueado por
+default en npm 11+). Proyecto nuevo en Vercel (no reutilizar el de `bernardo-vista-previa` —
+eso pasó por error una vez en el camino, se deshizo con `rm -rf .vercel` antes del deploy
+real): **`manuvalleespin-8100s-projects/bernardo-combeau`**, URL de producción ya alias:
+**https://bernardo-combeau.vercel.app** — esta es la que se le manda a Bernardo de ahora en
+adelante (reemplaza a `bernardo-vista-previa.vercel.app` como referencia principal, aunque esa
+sigue viva). Verificado en el navegador tras el deploy: Home, feed y Series cargan bien, fotos
+sin franja, sin errores de consola. Para actualizaciones futuras: `npm install` (si cambiaron
+dependencias) + `npx vercel deploy` desde `bernardo-site/`, mismo comando, sin pasos extra —
+Vercel mantiene el alias apuntando al último deploy de producción automáticamente.
+
 ### Pendiente de Bernardo (Fase 1, bloqueando Fase 2 completa)
 
 - Fotografías reales (series + encargos), hasta 60 por galería.
