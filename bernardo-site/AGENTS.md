@@ -391,8 +391,20 @@ en el camino (quedan documentados porque van a repetirse si no se sabe qué busc
 
 Con ambos fixes, Ramón entró a `/admin`, hizo login con GitHub (como dueño del repo) y vio las
 7 colecciones cargadas correctamente (Home, Sobre mí, Estudio, Servicios, Contacto, Series,
-Encargos). Login + lectura confirmados funcionando. **Falta confirmar que también escribe**
-(guardar un cambio de prueba) antes de invitar a Bernardo como colaborador — próximo paso.
+Encargos). **Escritura confirmada**: guardó una edición de prueba en Servicios/Contacto/Estudio,
+Decap commiteó directo a GitHub (3 commits), Ramón los trajo con `git pull` en GitHub Desktop
+sin conflictos (mergeó limpio con los 2 commits locales de los fixes de arriba). Panel 100%
+funcional de punta a punta. Falta invitar a Bernardo como colaborador del repo para que use su
+propia cuenta.
+
+**Aclaración importante sobre alcance (14 jul 2026):** las 12 fotos actuales en Home/Series/
+Encargos son **representativas del diseño, no el material final** — Ramón confirmó
+explícitamente que NO hay que migrarlas a las colecciones Series/Encargos del panel todavía.
+Esa migración (y recién ahí decidir nombres/agrupación reales, con o sin el borrador de
+curaduría ya mostrado) se hace cuando Bernardo entregue las fotos definitivas en Fase 4. Hasta
+entonces, el panel le sirve a Bernardo para todo lo demás (Servicios, Contacto, Sobre mí,
+Estudio, frase del hero) pero **no** para tocar esas 12 fotos de diseño — eso sigue siendo
+trabajo de código, no del panel.
 
 ### Pendiente de Bernardo (Fase 1, bloqueando Fase 2 completa)
 
