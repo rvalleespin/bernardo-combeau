@@ -1,31 +1,57 @@
 ---
+export const prerender = true;
+
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import contacto from '../data/contacto.json';
+
+const whatsappDigits = contacto.whatsapp.replace(/\D/g, '');
 ---
 
 <Layout title="Contacto — Bernardo Combeau">
 	<Nav active="/contacto" />
 	<div class="page-head"><h2>Contacto</h2></div>
 	<div class="contact-body">
-		<p>¿Conversamos sobre tu proyecto? Escríbeme y coordinamos día, hora y detalles.</p>
+		<p>{contacto.intro}</p>
 	</div>
 	<div class="contact-links">
-		<a class="primary" href="#">
-			<span class="ic">●</span>
-			<span class="lbl">WhatsApp</span>
-			<span class="pending">Falta el número</span>
-		</a>
-		<a href="#">
-			<span class="ic">✉</span>
-			<span class="lbl">Email</span>
-			<span class="pending">Falta la dirección</span>
-		</a>
-		<a href="#">
-			<span class="ic">◎</span>
-			<span class="lbl">Instagram</span>
-			<span class="pending">Falta el @usuario</span>
-		</a>
+		{whatsappDigits ? (
+			<a class="primary" href={`https://wa.me/${whatsappDigits}`} target="_blank" rel="noopener">
+				<span class="ic">●</span>
+				<span class="lbl">WhatsApp</span>
+			</a>
+		) : (
+			<a class="primary" href="#">
+				<span class="ic">●</span>
+				<span class="lbl">WhatsApp</span>
+				<span class="pending">Falta el número</span>
+			</a>
+		)}
+		{contacto.email ? (
+			<a href={`mailto:${contacto.email}`}>
+				<span class="ic">✉</span>
+				<span class="lbl">Email</span>
+			</a>
+		) : (
+			<a href="#">
+				<span class="ic">✉</span>
+				<span class="lbl">Email</span>
+				<span class="pending">Falta la dirección</span>
+			</a>
+		)}
+		{contacto.instagram ? (
+			<a href={`https://instagram.com/${contacto.instagram.replace(/^@/, '')}`} target="_blank" rel="noopener">
+				<span class="ic">◎</span>
+				<span class="lbl">Instagram</span>
+			</a>
+		) : (
+			<a href="#">
+				<span class="ic">◎</span>
+				<span class="lbl">Instagram</span>
+				<span class="pending">Falta el @usuario</span>
+			</a>
+		)}
 	</div>
 	<Footer />
 </Layout>

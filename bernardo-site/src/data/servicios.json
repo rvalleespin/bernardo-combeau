@@ -1,0 +1,28 @@
+{
+  "servicios": [
+    {
+      "titulo": "Personal Branding",
+      "descripcion": "Sesión de 2 horas en estudio · 10 fotos editadas y entregadas. Ideal para LinkedIn, redes sociales y WhatsApp Business.",
+      "precio": "$200.000",
+      "esCta": false
+    },
+    {
+      "titulo": "Equipos Corporativos — en estudio",
+      "descripcion": "Sesión de 2 horas · 10 fotos entregadas.",
+      "precio": "$200.000",
+      "esCta": false
+    },
+    {
+      "titulo": "Equipos Corporativos — en tu oficina",
+      "descripcion": "Sesión de 2 horas · 10 fotos entregadas · Región Metropolitana.",
+      "precio": "$300.000",
+      "esCta": false
+    },
+    {
+      "titulo": "Otros proyectos",
+      "descripcion": "Cuéntame qué necesitas y te envío una cotización a la brevedad.",
+      "precio": "Conversemos →",
+      "esCta": true
+    }
+  ]
+}

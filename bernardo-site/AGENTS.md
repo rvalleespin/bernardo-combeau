@@ -327,6 +327,46 @@ sin franja, sin errores de consola. Para actualizaciones futuras: `npm install` 
 dependencias) + `npx vercel deploy` desde `bernardo-site/`, mismo comando, sin pasos extra —
 Vercel mantiene el alias apuntando al último deploy de producción automáticamente.
 
+**Checkpoint 9 (13 jul 2026, más tarde):** Bernardo preguntó si puede administrar el sitio
+solo. Ramón eligió agregar un panel real (Decap CMS) en vez de que las actualizaciones sigan
+pasando por SpindleLab. Se construyó:
+
+- `/admin` (Decap CMS) — `public/admin/index.html` + `public/admin/config.yml`. Colecciones:
+  Home (frase del hero + crédito), Sobre mí (foto + bio), Servicios (lista de precios),
+  Contacto (WhatsApp/email/IG), **Estudio** (dirección + hasta 4 fotos — esto era uno de los
+  pendientes de Bernardo, ahora él mismo lo puede completar), y Series/Encargos (ya
+  compatibles 1:1 con el schema de `content.config.ts`, sin cambios ahí).
+- Contenido que antes estaba hardcodeado en cada página se movió a `src/data/*.json`
+  (`home.json`, `sobremi.json`, `servicios.json`, `contacto.json`, `estudio.json`) — las
+  páginas ahora leen de ahí. Los datos actuales son exactamente los mismos que ya estaban
+  (nada cambió visualmente), solo se hicieron editables.
+- Login del panel: como el sitio vive en Vercel (no Netlify), no existe "Git Gateway" fácil;
+  se armó un backend GitHub propio con 2 endpoints (`src/pages/api/auth.ts`,
+  `src/pages/api/callback.ts`) que hacen el intercambio OAuth. Esto obligó a pasar el proyecto
+  de `output` estático a `output: 'server'` con adaptador `@astrojs/vercel` — se le agregó
+  `export const prerender = true` a las 6 páginas existentes para que sigan siendo estáticas
+  (rápidas) igual que antes; solo las 2 rutas de auth corren como función serverless.
+- Fotos que suba Bernardo desde el panel van a `public/uploads/` como archivos sueltos
+  (`<img>` normal, sin el pipeline de optimización de `astro:assets` que sí usan las 12 fotos
+  ya integradas a mano) — simplicidad sobre performance para contenido que él mismo sube; si
+  en algún momento importa más el rendimiento de esas fotos, revisar esto.
+
+**Bloqueadores reales para que el panel funcione (fuera del alcance de este entorno, sin
+Node/npm/gh — ver [[reference-spindlelab-repo]]), pendientes de que Ramón los haga:**
+1. `npm install @astrojs/vercel` en `bernardo-site/`.
+2. Crear el repo de `PORTAFOLIO` en GitHub (hoy solo existe local) y pushear vía GitHub
+   Desktop. Si el nombre del repo no queda como `rvalleespin/bernardo-combeau`, hay que
+   corregir el campo `repo:` en `public/admin/config.yml`.
+3. Conectar ese repo a Vercel (Project Settings → Git) para que cada commit del panel
+   redespliegue solo — hoy el deploy es manual (`npx vercel deploy`).
+4. Crear una OAuth App en GitHub (github.com/settings/developers) con callback URL
+   `https://bernardo-combeau.vercel.app/api/callback`.
+5. Agregar `GITHUB_OAUTH_CLIENT_ID` y `GITHUB_OAUTH_CLIENT_SECRET` en Vercel → Environment
+   Variables (ver `.env.example` para referencia local).
+6. Agregar a Bernardo como colaborador del repo de GitHub — así inicia sesión en `/admin`.
+
+No verificado end-to-end (no hay forma de probar el login OAuth real sin esas credenciales).
+
 ### Pendiente de Bernardo (Fase 1, bloqueando Fase 2 completa)
 
 - Fotografías reales (series + encargos), hasta 60 por galería.

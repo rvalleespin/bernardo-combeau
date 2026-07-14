@@ -1,44 +1,23 @@
 ---
+export const prerender = true;
+
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
-
-const services = [
-  {
-    t: 'Personal Branding',
-    d: 'Sesión de 2 horas en estudio · 10 fotos editadas y entregadas. Ideal para LinkedIn, redes sociales y WhatsApp Business.',
-    amount: '$200.000',
-  },
-  {
-    t: 'Equipos Corporativos — en estudio',
-    d: 'Sesión de 2 horas · 10 fotos entregadas.',
-    amount: '$200.000',
-  },
-  {
-    t: 'Equipos Corporativos — en tu oficina',
-    d: 'Sesión de 2 horas · 10 fotos entregadas · Región Metropolitana.',
-    amount: '$300.000',
-  },
-  {
-    t: 'Otros proyectos',
-    d: 'Cuéntame qué necesitas y te envío una cotización a la brevedad.',
-    amount: 'Conversemos →',
-    cta: true,
-  },
-];
+import services from '../data/servicios.json';
 ---
 
 <Layout title="Servicios — Bernardo Combeau">
 	<Nav active="/servicios" />
 	<div class="page-head"><h2>Servicios</h2></div>
 	<div class="price-list">
-		{services.map((s) => (
+		{services.servicios.map((s) => (
 			<div class="price-row">
 				<div class="info">
-					<div class="t">{s.t}</div>
-					<div class="d">{s.d}</div>
+					<div class="t">{s.titulo}</div>
+					<div class="d">{s.descripcion}</div>
 				</div>
-				<div class:list={["amount", { cta: s.cta }]}>{s.amount}</div>
+				<div class:list={["amount", { cta: s.esCta }]}>{s.precio}</div>
 			</div>
 		))}
 	</div>

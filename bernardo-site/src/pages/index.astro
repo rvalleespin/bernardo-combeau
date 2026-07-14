@@ -1,4 +1,6 @@
 ---
+export const prerender = true;
+
 import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
 import Photo from '../components/Photo.astro';
@@ -10,6 +12,9 @@ import behindScenes from '../assets/fotos/bernardo-portafolio-05-bus-capucha.png
 import cardA from '../assets/fotos/bernardo-portafolio-01-campo-flores.png';
 import cardB from '../assets/fotos/bernardo-portafolio-09-grafiti-urbano.png';
 import cardC from '../assets/fotos/bernardo-portafolio-07-orejas-conejo.png';
+import home from '../data/home.json';
+
+const heroLines = home.fraseHero.split('\n');
 
 const navLinks = [
   { href: '/series', label: 'Series' },
@@ -31,10 +36,10 @@ const navLinks = [
 		</nav>
 		<Photo src={hero} alt="Retrato — Bernardo Combeau" widths={[640, 1024, 1600, 2000]} sizes="100vw" />
 		<div class="overlay">
-			<h1>Un buen retrato no se toma. Se construye,<br>dirigiendo a la persona hasta su mejor versión.</h1>
+			<h1>{heroLines.map((line, i) => <>{i > 0 && <br />}{line}</>)}</h1>
 			<a class="cta-pill" href="/series">Ver serie →</a>
 		</div>
-		<div class="credit">Santiago, 2026</div>
+		<div class="credit">{home.creditoHero}</div>
 	</div>
 
 	<div class="feed">
