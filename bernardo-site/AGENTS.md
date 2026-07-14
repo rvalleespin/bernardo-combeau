@@ -367,6 +367,33 @@ Node/npm/gh — ver [[reference-spindlelab-repo]]), pendientes de que Ramón los
 
 No verificado end-to-end (no hay forma de probar el login OAuth real sin esas credenciales).
 
+**Checkpoint 10 (14 jul 2026):** Bernardo mandó sus datos de contacto reales (WhatsApp, email,
+Instagram) y la dirección del estudio (Napoleón 3450, Las Condes) — ya están cargados en
+`src/data/contacto.json` y `estudio.json`, sin placeholders "pendiente".
+
+Se terminó de verificar el panel de punta a punta, con dos problemas reales de infraestructura
+en el camino (quedan documentados porque van a repetirse si no se sabe qué buscar):
+
+1. **Los builds disparados desde GitHub dejaron de instalar dependencias.** Vercel corría
+   `vercel build` y fallaba con `sh: line 1: astro: command not found` / exit 127 — sin ningún
+   paso de `npm install` visible en el log, con o sin caché. No se identificó la causa raíz
+   exacta (probable resabio de configuración de cuando el proyecto se creó por `vercel deploy`
+   manual antes de conectar GitHub). **Fix que funcionó:** desplegar directo con
+   `npx vercel deploy --prod` desde local en vez de confiar en el auto-deploy de GitHub. Por
+   ahora, **toda actualización futura debe desplegarse así** — un simple `git push` no va a
+   actualizar el sitio en vivo.
+2. **`public/admin/config.yml` no lo servía Vercel en modo servidor** (404, mientras
+   `index.html` en la misma carpeta sí cargaba bien) — algo en el manejo de assets estáticos
+   del adaptador no reconoce `.yml`. **Fix:** se eliminó `config.yml` y la configuración del
+   CMS quedó incrustada directo como objeto JS dentro de `public/admin/index.html`
+   (`CMS.init({config: {...}})` con `window.CMS_MANUAL_INIT = true`), evitando el fetch del
+   archivo separado por completo.
+
+Con ambos fixes, Ramón entró a `/admin`, hizo login con GitHub (como dueño del repo) y vio las
+7 colecciones cargadas correctamente (Home, Sobre mí, Estudio, Servicios, Contacto, Series,
+Encargos). Login + lectura confirmados funcionando. **Falta confirmar que también escribe**
+(guardar un cambio de prueba) antes de invitar a Bernardo como colaborador — próximo paso.
+
 ### Pendiente de Bernardo (Fase 1, bloqueando Fase 2 completa)
 
 - Fotografías reales (series + encargos), hasta 60 por galería.
