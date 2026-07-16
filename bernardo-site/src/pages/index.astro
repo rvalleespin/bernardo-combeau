@@ -4,9 +4,7 @@ export const prerender = true;
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
-import Photo from '../components/Photo.astro';
 
-import hero from '../assets/fotos/bernardo-portafolio-08-panuelo-atardecer.png';
 import home from '../data/home.json';
 
 const heroLines = home.fraseHero.split('\n');
@@ -37,7 +35,7 @@ const feedItems = [...seriesEntries, ...encargosEntries].slice(0, 6);
 				{navLinks.map((link) => <a href={link.href}>{link.label}</a>)}
 			</span>
 		</nav>
-		<Photo src={hero} alt="Retrato — Bernardo Combeau" widths={[640, 1024, 1600, 2000]} sizes="100vw" />
+		<div class="photo"><img src={home.fotoHero} alt="Retrato — Bernardo Combeau" /></div>
 		<div class="overlay">
 			<h1>{heroLines.map((line, i) => <>{i > 0 && <br />}{line}</>)}</h1>
 			<a class="cta-pill" href="/series">Ver serie →</a>
