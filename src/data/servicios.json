@@ -2,9 +2,9 @@
   "servicios": [
     {
       "esCta": false,
-      "titulo": "pdf",
-      "descripcion": "dsfdr",
-      "precio": "eg"
+      "titulo": "esto es un nuevo servicio",
+      "descripcion": "me gusta",
+      "precio": "20000"
     }
   ]
 }
