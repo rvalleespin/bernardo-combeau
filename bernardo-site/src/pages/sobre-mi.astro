@@ -5,14 +5,15 @@ import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import sobremi from '../data/sobremi.json';
+import perfil from '../data/perfil.json';
 ---
 
 <Layout title="Sobre mí — Bernardo Combeau">
 	<Nav active="/sobre-mi" />
 	<div class="page-head"><h2>Sobre mí</h2></div>
 	<div class="bio-grid">
-		{sobremi.foto ? (
-			<div class="photo"><img src={sobremi.foto} alt="Bernardo Combeau" /></div>
+		{perfil.foto ? (
+			<div class="photo"><img src={perfil.foto} alt="Bernardo Combeau" /></div>
 		) : (
 			<div class="photo placeholder"><span>[ foto de Bernardo — la está gestionando junto con las de estudio ]</span></div>
 		)}

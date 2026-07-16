@@ -40,15 +40,28 @@
               ],
             },
             {
+              name: "perfil",
+              label: "📷 Foto de perfil",
+              files: [
+                {
+                  file: "src/data/perfil.json",
+                  label: "Foto de perfil",
+                  name: "perfil",
+                  fields: [
+                    { label: "Tu foto (cámbiala cuando quieras)", name: "foto", widget: "image", required: false },
+                  ],
+                },
+              ],
+            },
+            {
               name: "sobremi",
-              label: "Sobre mí",
+              label: "Sobre mí (texto)",
               files: [
                 {
                   file: "src/data/sobremi.json",
                   label: "Sobre mí",
                   name: "sobremi",
                   fields: [
-                    { label: "Foto (dejar vacío si aún no la tienes)", name: "foto", widget: "image", required: false },
                     { label: "Párrafo 1", name: "parrafo1", widget: "text" },
                     { label: "Párrafo 2", name: "parrafo2", widget: "text" },
                   ],
