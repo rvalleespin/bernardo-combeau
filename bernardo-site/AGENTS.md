@@ -406,6 +406,30 @@ entonces, el panel le sirve a Bernardo para todo lo demás (Servicios, Contacto,
 Estudio, frase del hero) pero **no** para tocar esas 12 fotos de diseño — eso sigue siendo
 trabajo de código, no del panel.
 
+**Checkpoint 11 (16 jul 2026): la decisión de arriba quedó revertida.** Bernardo pidió
+explícitamente poder subir/gestionar sus propias fotos sin depender de Ramón ni de una
+suscripción nueva (evaluó Strapi, se descartó por costo/infraestructura). Se migró Series y
+Encargos de páginas estáticas a rutas reales (`/series`, `/series/[slug]`, `/encargos`,
+`/encargos/[slug]`) que leen de las colecciones — creadas/editables 100% desde `/admin` ahora.
+
+Las 12 fotos de diseño se re-subieron por el mismo camino que usaría Bernardo (convertidas a
+JPEG, puestas en `public/uploads/`, referenciadas por path plano — no como imports optimizados
+de `astro:assets`) y quedaron como 5 entradas de Series + 3 de Encargos, con el mismo texto
+genérico placeholder que ya estaba en vivo ("Nombre de la serie", años tal cual) — no se
+inventó ninguna categorización nueva, es una re-plataformización 1:1 de lo mismo que ya se veía.
+El feed "Lo último" de Home ahora se arma dinámicamente (últimas entradas de ambas colecciones),
+ya no son 6 tarjetas fijas.
+
+A pedido de Bernardo: **Series ahora tope 10 fotos por entrada** (antes 60 — cambiado en
+`content.config.ts` y en el límite del campo del panel), con un hint de mínimo/máximo y
+resolución sugerida. Encargos se dejó en 60 (no se pidió cambiarlo ahí). Crear nuevas
+entradas ("secciones") ya estaba soportado (`create: true`) en ambas colecciones desde el
+principio.
+
+Verificado en el sitio en vivo: Home, `/series`, `/series/[slug]` (visor de fotos funcionando,
+navegación anterior/siguiente entre series), `/encargos`, `/encargos/[slug]` — sin errores de
+consola.
+
 ### Pendiente de Bernardo (Fase 1, bloqueando Fase 2 completa)
 
 - Fotografías reales (series + encargos), hasta 60 por galería.
