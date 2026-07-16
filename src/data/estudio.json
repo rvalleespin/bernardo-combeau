@@ -1,3 +1,7 @@
 {
-  "direccion": "Dirección: Napoleon 3450, Las Condes"
+  "direccion": "Dirección: Napoleon 3450, Las Condes",
+  "fotos": [
+    "/uploads/images.jpeg",
+    "/uploads/gemini_generated_image_5a7qpa5a7qpa5a7q.png"
+  ]
 }
