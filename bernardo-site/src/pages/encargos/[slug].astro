@@ -1,0 +1,57 @@
+---
+export const prerender = true;
+
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('encargos');
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { title, year, excerpt, images, client, publication } = entry.data;
+
+const allEntries = (await getCollection('encargos')).sort((a, b) => a.data.order - b.data.order);
+const currentIndex = allEntries.findIndex((e) => e.id === entry.id);
+const prevEntry = allEntries[currentIndex - 1];
+const nextEntry = allEntries[currentIndex + 1];
+---
+
+<Layout title={`${title} — Bernardo Combeau`}>
+	<Nav active="/encargos" />
+
+	<p class="crumb"><a href="/encargos">Encargos /</a></p>
+	<div class="serie-head">
+		<h2>{title}</h2>
+		<p class="y">{[year, client].filter(Boolean).join(' · ')}</p>
+		<p>{excerpt}</p>
+	</div>
+
+	<div class="grid">
+		{images.map((img) => (
+			<div class="card">
+				<div class="photo"><img src={img.src} alt={img.alt} /></div>
+				{(img.place || img.year || img.credit) && (
+					<div class="cap">
+						<span>{img.place}</span>
+						<span>{[img.year, img.credit].filter(Boolean).join(' · ')}</span>
+					</div>
+				)}
+			</div>
+		))}
+	</div>
+
+	{publication && (
+		<div class="ext"><a href={publication.url} target="_blank" rel="noopener">Publicado en — {publication.name} →</a></div>
+	)}
+
+	<div class="serie-nav">
+		{prevEntry ? <a href={`/encargos/${prevEntry.id}`}>← {prevEntry.data.title}</a> : <a href="/">← Volver a Home</a>}
+		{nextEntry ? <a href={`/encargos/${nextEntry.id}`}>{nextEntry.data.title} →</a> : <a href="/encargos">Volver a Encargos →</a>}
+	</div>
+
+	<Footer />
+</Layout>

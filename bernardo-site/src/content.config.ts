@@ -19,7 +19,7 @@ const series = defineCollection({
     excerpt: z.string(),
     order: z.number(),
     cover: image(),
-    images: z.array(image()).max(60),
+    images: z.array(image()).min(1).max(10),
   }),
 });
 

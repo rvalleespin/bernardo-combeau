@@ -1,0 +1,24 @@
+---
+export const prerender = true;
+
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+
+const entries = (await getCollection('encargos')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Layout title="Encargos — Bernardo Combeau">
+	<Nav active="/encargos" />
+	<div class="page-head"><h2>Encargos</h2></div>
+	<div class="grid">
+		{entries.map((entry) => (
+			<a class="card" href={`/encargos/${entry.id}`}>
+				<div class="photo"><img src={entry.data.cover.src} alt={entry.data.cover.alt} /></div>
+				<div class="cap2"><span class="t">{entry.data.title}</span><span class="y">{entry.data.year}</span></div>
+			</a>
+		))}
+	</div>
+	<Footer />
+</Layout>

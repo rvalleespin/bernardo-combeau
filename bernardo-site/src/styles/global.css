@@ -95,7 +95,7 @@ h1,h2,h3{text-wrap:balance; margin:0; font-weight:300;}
 
 .grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(1.4rem,3vw,2rem); padding:0 clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); }
 @media (min-width:820px){ .grid{grid-template-columns:repeat(3,1fr);} }
-.card{ position:relative; }
+.card{ position:relative; display:block; text-decoration:none; color:inherit; }
 .card .photo{aspect-ratio:4/5; transition:transform .5s cubic-bezier(.2,.7,.3,1);}
 .card:hover .photo img{transform:scale(1.035);}
 .card .photo img{transition:transform .5s cubic-bezier(.2,.7,.3,1);}

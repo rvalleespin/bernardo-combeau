@@ -1,0 +1,99 @@
+---
+export const prerender = true;
+
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('series');
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { title, year, excerpt, images } = entry.data;
+const slides = images.map((img, i) => ({ ...img, id: `s${i}` }));
+
+const allEntries = (await getCollection('series')).sort((a, b) => a.data.order - b.data.order);
+const currentIndex = allEntries.findIndex((e) => e.id === entry.id);
+const prevEntry = allEntries[currentIndex - 1];
+const nextEntry = allEntries[currentIndex + 1];
+---
+
+<Layout title={`${title} — Bernardo Combeau`}>
+	<Nav active="/series" />
+
+	<p class="crumb"><a href="/series">Series /</a></p>
+	<div class="serie-head">
+		<h2>{title}</h2>
+		<p class="y">{year}</p>
+		<p>{excerpt}</p>
+	</div>
+
+	{slides.map((s, i) => <input type="radio" name="slide" id={s.id} class="slide-input" checked={i === 0} />)}
+
+	<div class="stagewrap">
+		<div class="stage">
+			{slides.map((s) => (
+				<img class="simg" data-s={s.id} src={s.src} alt={s.alt} />
+			))}
+		</div>
+
+		{slides.map((s) => (
+			<div class={`scap on-${s.id}`}>
+				<span>{s.place}</span>
+				<span>{[s.year, s.credit].filter(Boolean).join(' · ')}</span>
+			</div>
+		))}
+
+		{slides.length > 1 && (
+			<div class="sctrl">
+				{slides.map((s, i) => <label for={s.id}>{String(i + 1).padStart(2, '0')}</label>)}
+			</div>
+		)}
+	</div>
+
+	<div class="serie-nav">
+		{prevEntry ? <a href={`/series/${prevEntry.id}`}>← {prevEntry.data.title}</a> : <a href="/">← Volver a Home</a>}
+		{nextEntry ? <a href={`/series/${nextEntry.id}`}>{nextEntry.data.title} →</a> : <a href="/series">Volver a Series →</a>}
+	</div>
+
+	<Footer />
+</Layout>
+
+<style>
+	/* Estático para hasta 10 slides (s0-s9) — el máximo que permite el panel para Series. */
+	#s0:checked ~ .stagewrap .stage :global(.simg[data-s="s0"]),
+	#s1:checked ~ .stagewrap .stage :global(.simg[data-s="s1"]),
+	#s2:checked ~ .stagewrap .stage :global(.simg[data-s="s2"]),
+	#s3:checked ~ .stagewrap .stage :global(.simg[data-s="s3"]),
+	#s4:checked ~ .stagewrap .stage :global(.simg[data-s="s4"]),
+	#s5:checked ~ .stagewrap .stage :global(.simg[data-s="s5"]),
+	#s6:checked ~ .stagewrap .stage :global(.simg[data-s="s6"]),
+	#s7:checked ~ .stagewrap .stage :global(.simg[data-s="s7"]),
+	#s8:checked ~ .stagewrap .stage :global(.simg[data-s="s8"]),
+	#s9:checked ~ .stagewrap .stage :global(.simg[data-s="s9"]) { opacity: 1; }
+
+	#s0:checked ~ .stagewrap .scap.on-s0,
+	#s1:checked ~ .stagewrap .scap.on-s1,
+	#s2:checked ~ .stagewrap .scap.on-s2,
+	#s3:checked ~ .stagewrap .scap.on-s3,
+	#s4:checked ~ .stagewrap .scap.on-s4,
+	#s5:checked ~ .stagewrap .scap.on-s5,
+	#s6:checked ~ .stagewrap .scap.on-s6,
+	#s7:checked ~ .stagewrap .scap.on-s7,
+	#s8:checked ~ .stagewrap .scap.on-s8,
+	#s9:checked ~ .stagewrap .scap.on-s9 { display: flex; }
+
+	#s0:checked ~ .stagewrap .sctrl label[for="s0"],
+	#s1:checked ~ .stagewrap .sctrl label[for="s1"],
+	#s2:checked ~ .stagewrap .sctrl label[for="s2"],
+	#s3:checked ~ .stagewrap .sctrl label[for="s3"],
+	#s4:checked ~ .stagewrap .sctrl label[for="s4"],
+	#s5:checked ~ .stagewrap .sctrl label[for="s5"],
+	#s6:checked ~ .stagewrap .sctrl label[for="s6"],
+	#s7:checked ~ .stagewrap .sctrl label[for="s7"],
+	#s8:checked ~ .stagewrap .sctrl label[for="s8"],
+	#s9:checked ~ .stagewrap .sctrl label[for="s9"] { color: var(--ink); border-bottom-color: var(--ink); }
+</style>

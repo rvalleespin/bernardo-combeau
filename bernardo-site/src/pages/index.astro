@@ -1,17 +1,12 @@
 ---
 export const prerender = true;
 
+import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
 import Photo from '../components/Photo.astro';
 
 import hero from '../assets/fotos/bernardo-portafolio-08-panuelo-atardecer.png';
-import feed1 from '../assets/fotos/bernardo-portafolio-06-luz-lateral-rosa.png';
-import feed2 from '../assets/fotos/bernardo-portafolio-10-auto-binoculares.png';
-import behindScenes from '../assets/fotos/bernardo-portafolio-05-bus-capucha.png';
-import cardA from '../assets/fotos/bernardo-portafolio-01-campo-flores.png';
-import cardB from '../assets/fotos/bernardo-portafolio-09-grafiti-urbano.png';
-import cardC from '../assets/fotos/bernardo-portafolio-07-orejas-conejo.png';
 import home from '../data/home.json';
 
 const heroLines = home.fraseHero.split('\n');
@@ -24,6 +19,13 @@ const navLinks = [
   { href: '/sobre-mi', label: 'Sobre mí' },
   { href: '/contacto', label: 'Contacto' },
 ];
+
+const seriesEntries = (await getCollection('series')).sort((a, b) => a.data.order - b.data.order)
+  .map((e) => ({ href: `/series/${e.id}`, title: e.data.title, year: e.data.year, cover: e.data.cover }));
+const encargosEntries = (await getCollection('encargos')).sort((a, b) => a.data.order - b.data.order)
+  .map((e) => ({ href: `/encargos/${e.id}`, title: e.data.title, year: e.data.year, cover: e.data.cover }));
+
+const feedItems = [...seriesEntries, ...encargosEntries].slice(0, 6);
 ---
 
 <Layout title="Bernardo Combeau — Fotografía">
@@ -46,31 +48,12 @@ const navLinks = [
 	<div class="feed">
 		<div class="feed-title"><h2>Lo último</h2></div>
 		<div class="grid">
-			<div class="card">
-				<Photo src={feed1} alt="Serie — luz lateral" widths={[400, 640, 900]} sizes="(min-width: 820px) 33vw, 50vw" />
-				<div class="cap2"><span class="t">Nombre de la serie</span><span class="y">2024–2025</span></div>
-			</div>
-			<div class="card">
-				<Photo src={feed2} alt="Encargo — auto y binoculares" widths={[400, 640, 900]} sizes="(min-width: 820px) 33vw, 50vw" />
-				<div class="cap2"><span class="t">Nombre del encargo</span><span class="y">2026</span><br><a class="pub" href="#">Publicado en — nombre del medio →</a></div>
-			</div>
-			<div class="card">
-				<Photo src={behindScenes} alt="Detrás de escena" widths={[400, 640, 900]} sizes="(min-width: 820px) 33vw, 50vw" />
-				<div class="play">▶</div>
-				<div class="cap2"><span class="t">Detrás de escena</span><span class="y">Última sesión</span></div>
-			</div>
-			<div class="card">
-				<Photo src={cardA} alt="Serie — campo de flores" widths={[400, 640, 900]} sizes="(min-width: 820px) 33vw, 50vw" />
-				<div class="cap2"><span class="t">Nombre de la serie</span><span class="y">2024–2025</span></div>
-			</div>
-			<div class="card">
-				<Photo src={cardB} alt="Serie — grafiti urbano" widths={[400, 640, 900]} sizes="(min-width: 820px) 33vw, 50vw" />
-				<div class="cap2"><span class="t">Nombre de la serie</span><span class="y">2023</span></div>
-			</div>
-			<div class="card">
-				<Photo src={cardC} alt="Serie — orejas de conejo" widths={[400, 640, 900]} sizes="(min-width: 820px) 33vw, 50vw" />
-				<div class="cap2"><span class="t">Nombre de la serie</span><span class="y">2022</span></div>
-			</div>
+			{feedItems.map((item) => (
+				<a class="card" href={item.href}>
+					<div class="photo"><img src={item.cover.src} alt={item.cover.alt} /></div>
+					<div class="cap2"><span class="t">{item.title}</span><span class="y">{item.year}</span></div>
+				</a>
+			))}
 		</div>
 	</div>
 

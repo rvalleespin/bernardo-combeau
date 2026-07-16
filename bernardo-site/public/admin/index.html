@@ -154,10 +154,12 @@
                   ],
                 },
                 {
-                  label: "Fotos de la serie (hasta 60)",
+                  label: "Fotos de la serie",
                   name: "images",
                   widget: "list",
-                  max: 60,
+                  min: 1,
+                  max: 10,
+                  hint: "Mínimo 1, máximo 10 fotos por serie. Sube fotos verticales u horizontales de buena resolución (mínimo ~1500px de ancho) — evita capturas de pantalla o fotos muy comprimidas.",
                   fields: [
                     { label: "Imagen", name: "src", widget: "image" },
                     { label: "Descripción para lectores de pantalla", name: "alt", widget: "string" },
