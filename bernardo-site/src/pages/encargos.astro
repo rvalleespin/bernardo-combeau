@@ -9,9 +9,6 @@ import Photo from '../components/Photo.astro';
 import encargo1 from '../assets/fotos/bernardo-portafolio-10-auto-binoculares.png';
 import encargo2 from '../assets/fotos/bernardo-portafolio-03-piscina-corbata.png';
 import encargo3 from '../assets/fotos/bernardo-portafolio-11-estudio-taburete.png';
-import estudio from '../data/estudio.json';
-
-const estudioSlots = Array.from({ length: 4 }, (_, i) => estudio.fotos[i] ?? null);
 ---
 
 <Layout title="Encargos — Bernardo Combeau">
@@ -30,23 +27,6 @@ const estudioSlots = Array.from({ length: 4 }, (_, i) => estudio.fotos[i] ?? nul
 			<Photo src={encargo3} alt="Encargo — taburete de estudio" widths={[400, 640, 900]} sizes="(min-width: 820px) 33vw, 50vw" />
 			<div class="cap2"><span class="t">Nombre del encargo</span><span class="y">2025</span></div>
 		</div>
-	</div>
-
-	<div class="subhead">
-		<h3>Estudio</h3>
-		<p class="note">Fotos del estudio — Bernardo las está gestionando junto con la foto de "Sobre mí".</p>
-	</div>
-	<div class="studio-grid">
-		{estudioSlots.map((src) => (
-			src ? (
-				<div class="photo"><img src={src} alt="Estudio de Bernardo Combeau" /></div>
-			) : (
-				<Photo pendingText="[ foto de estudio — pendiente ]" />
-			)
-		))}
-	</div>
-	<div class="studio-note">
-		<p>Un estudio equipado para dirigir la luz tanto como dirijo a las personas. Trabajo con fondos infinitos en gris y negro, y un set de iluminación que me permite moverme entre resultados distintos: desde un retrato clásico y dramático hasta una imagen limpia y corporativa, según lo que tu proyecto necesite. Ubicado en {estudio.direccion ? estudio.direccion : <span class="gap">[falta el barrio/dirección — quedó en blanco en tu texto]</span>}, a pasos del Metro El Golf.</p>
 	</div>
 
 	<Footer />
