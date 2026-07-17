@@ -430,6 +430,36 @@ Verificado en el sitio en vivo: Home, `/series`, `/series/[slug]` (visor de foto
 navegación anterior/siguiente entre series), `/encargos`, `/encargos/[slug]` — sin errores de
 consola.
 
+**Checkpoint 12 (17 jul 2026): dos bugs de infraestructura reales, ambos resueltos.** Ramón
+probó el panel de verdad (varias ediciones) y ningún cambio se reflejaba en el sitio en vivo.
+Causas, encontradas con acceso directo al CLI/API de Vercel autenticado en la Mac de Ramón
+(no solo por el dashboard):
+
+1. **"Root Directory" del proyecto en Vercel estaba en `.`** (la raíz del repo `PORTAFOLIO`),
+   no en `bernardo-site` — la causa raíz real de "astro: command not found" que se venía
+   arrastrando desde el Checkpoint 9/10 y que se estaba evitando con `vercel deploy --prod`
+   manual. Corregido vía API (`PATCH /v9/projects/:id` con `rootDirectory: "bernardo-site"`).
+   Confirmado con un redeploy del commit que antes fallaba — pasó de Error a Ready en 33s.
+   **Esto significa que el auto-deploy de GitHub debería funcionar solo de ahora en
+   adelante** — dejar de usar `vercel deploy --prod` manual como paso obligatorio y confirmar
+   con el próximo push real si el deploy se dispara solo.
+2. **Bug más grave, introducido por mí: todas las rutas `file:`/`folder:`/`media_folder` en
+   `public/admin/index.html` apuntaban relativas a la raíz del repo, no a `bernardo-site/`.**
+   Decap CMS comitea directo vía API de GitHub usando esa ruta tal cual — sin pasar por
+   Vercel ni por ningún build — así que cada guardado del panel escribía archivos reales pero
+   en `PORTAFOLIO/src/data/...` en vez de `PORTAFOLIO/bernardo-site/src/data/...`, un lugar
+   que el sitio jamás lee. Explica por qué **ningún cambio del panel se vio nunca reflejado
+   en el sitio**, desde el primer test en el Checkpoint 10 (ese primer test pareció funcionar
+   solo porque guardó contenido idéntico al ya existente — nunca se detectó el bug ahí).
+   Corregido agregando el prefijo `bernardo-site/` a las 9 rutas del config. Se encontraron y
+   borraron varios archivos de prueba que habían quedado huérfanos en la raíz del repo
+   (`src/data/*.json`, una entrada de serie "nuevo", dos imágenes de prueba) — todo contenido
+   de prueba sin nada real que rescatar.
+
+**Pendiente de verificar:** que Ramón repita una edición de prueba en el panel y confirme que
+esta vez sí aparece en el sitio (con el fix de rutas) y que el sitio se actualice solo sin
+correr `vercel deploy --prod` a mano (con el fix de Root Directory).
+
 ### Pendiente de Bernardo (Fase 1, bloqueando Fase 2 completa)
 
 - Fotografías reales (series + encargos), hasta 60 por galería.
