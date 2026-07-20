@@ -117,18 +117,28 @@ h1,h2,h3{text-wrap:balance; margin:0; font-weight:300;}
 .serie-head p{max-width:56ch; margin-top:1.1rem; font-size:1rem; color:var(--ink);}
 
 .slide-input{position:absolute; opacity:0; pointer-events:none;}
-/* El stage ya NO usa object-fit:contain (dejaba una franja del fondo --stage visible
-   cuando la proporción de la foto no calzaba con el contenedor). Cover llena siempre
-   el recuadro completo — se prioriza "solo foto" sobre preservar el encuadre original. */
-.stage{ position:relative; overflow:hidden; display:grid; height:min(64vw,640px); min-height:320px; background:var(--stage); margin:0 clamp(1.2rem,4vw,3rem); }
+/* La foto completa siempre se ve entera, sea vertical u horizontal — nunca se recorta.
+   object-fit:contain deja franjas del fondo --stage cuando la proporción de la foto no
+   calza exacto con el recuadro; es el trade-off elegido a propósito (Ramón, 17 jul 2026):
+   prioriza mostrar la composición real del fotógrafo por sobre llenar el recuadro. */
+.stage{ position:relative; overflow:hidden; display:grid; height:min(80vh,900px); min-height:400px; background:var(--stage); margin:0 clamp(1.2rem,4vw,3rem); }
 .stage::after{ content:""; grid-area:1/1; filter:url(#grain); opacity:.3; mix-blend-mode:overlay; pointer-events:none; }
-.simg{ grid-area:1/1; width:100%; height:100%; object-fit:cover; object-position:center; opacity:0; transition:opacity .6s ease; }
+.simg{ grid-area:1/1; width:100%; height:100%; object-fit:contain; object-position:center; opacity:0; transition:opacity .6s ease; }
 @media (prefers-reduced-motion:reduce){ .simg{transition:none;} }
 
 .scap{ display:none; justify-content:space-between; gap:1rem; font-size:.8rem; font-style:italic; color:var(--mute); padding:clamp(1.2rem,4vw,3rem); padding-bottom:0; margin-top:1rem; }
 
 .sctrl{ display:flex; justify-content:center; gap:1.4rem; padding:1.4rem clamp(1.2rem,4vw,3rem) 0; }
 .sctrl label{ cursor:pointer; font-size:.75rem; letter-spacing:.1em; color:var(--mute); border-bottom:1px solid transparent; padding-bottom:.2rem; }
+
+/* Galería del detalle de un encargo: mismo criterio que .stage — cada foto se ve
+   completa, sin recortar, sea vertical u horizontal. Columnas tipo masonry en vez de
+   grilla de altura fija, porque cada foto conserva su propia proporción. */
+.gallery{ columns:2; column-gap:clamp(1rem,2.5vw,1.5rem); padding:0 clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); }
+@media (min-width:820px){ .gallery{ columns:3; } }
+.gallery .card{ display:block; break-inside:avoid; margin-bottom:clamp(1rem,2.5vw,1.5rem); }
+.gallery .photo{ aspect-ratio:auto; }
+.gallery .photo img{ height:auto; object-fit:contain; }
 
 .ext{ padding:1.6rem clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); text-align:right; }
 .ext a{ font-size:.78rem; color:var(--ink); text-decoration:none; border:1px solid var(--line); padding:.35rem .7rem; border-radius:1px; }

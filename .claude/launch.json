@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "bernardo-site",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "bernardo-site", "run", "dev"],
+      "port": 4321
+    }
+  ]
+}
