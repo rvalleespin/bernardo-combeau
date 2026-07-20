@@ -1,13 +1,15 @@
 ---
-title: "Nombre de la serie"
-year: "2023"
-excerpt: "Texto breve de contexto — de qué trata la serie, escrito como ensayo, no como ficha técnica de cámara."
+title: "nueva serie "
+year: "2026"
+excerpt: se pudo
 order: 4
 cover:
-  src: "/uploads/bernardo-portafolio-09-grafiti-urbano.jpg"
-  alt: "Retrato con fondo de grafiti urbano"
+  src: /uploads/doncoombez-pmxft4fort0-unsplash.jpg
+  alt: aves
 images:
-  - src: "/uploads/bernardo-portafolio-09-grafiti-urbano.jpg"
-    alt: "Retrato con fondo de grafiti urbano"
-    credit: "© Bernardo Combeau"
+  - src: /uploads/bernardo-portafolio-09-grafiti-urbano.jpg
+    alt: Retrato con fondo de grafiti urbano
+    credit: © Bernardo Combeau
+  - src: /uploads/kristaps-ungurs-bvy49uejbpw-unsplash.jpg
+    alt: "aerea "
 ---
