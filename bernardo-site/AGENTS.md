@@ -468,6 +468,54 @@ correr `vercel deploy --prod` a mano (con el fix de Root Directory).
   interactividad y la promesa de rendimiento (90+ móvil solo aplica al plan Pro).
 - Proveedor de formulario de contacto, si va a recolectar datos reales.
 
+## Esquema de contenido: Series y Encargos
+
+(Movido aquí desde `src/content/series/README.md` y `src/content/encargos/README.md` — esos
+archivos se eliminaron porque Decap no excluye `README.md` de sus colecciones tipo `folder`, y
+aparecían como una entrada fantasma sin frontmatter válido en el panel `/admin`. Astro sí los
+excluía vía `content.config.ts`, pero Decap no.)
+
+Cada serie/encargo es un archivo `.md` en `src/content/series/` o `src/content/encargos/`:
+
+```yaml
+---
+title: "Nombre de la serie"
+year: "2024–2025"
+excerpt: "Una o dos frases de contexto, no descripción literal de las fotos."
+order: 1
+cover:
+  src: "/uploads/nombre-archivo.jpg"
+  alt: "Descripción de la imagen para lectores de pantalla"
+images:
+  - src: "/uploads/nombre-archivo.jpg"
+    alt: "..."
+    credit: "© Bernardo Combeau"
+    place: "Valparaíso, Chile"
+    year: "2024"
+---
+Texto breve opcional en el cuerpo del markdown, si el excerpt no basta.
+```
+
+Encargos agrega dos campos opcionales:
+
+```yaml
+client: "Nombre del cliente/medio, si es público"
+publication:
+  name: "Nombre de la publicación externa"
+  url: "https://..."
+```
+
+Reglas:
+- Series: entre 1 y 10 imágenes (ajustado 16 jul 2026 a pedido de Bernardo — antes era 60).
+  Encargos: hasta 60.
+- Toda imagen lleva crédito y contexto cuando se conoce: lugar, año, ©.
+- **No inventar datos**: si no hay lugar/año/cliente confirmado, omitir el campo, no rellenar.
+- Patrón Kander (encargos): si el trabajo salió publicado en un medio externo, se enlaza
+  directo a esa publicación en vez de afirmarlo en texto propio ("el sitio no dice que salió
+  en el Guardian, te lleva al Guardian"). Sin publicación real y verificable, omitir el campo.
+- Estas entradas se editan directo desde el panel `/admin` (colecciones "Series"/"Encargos"),
+  no a mano en el repo — el panel ya tiene los mismos límites y widgets configurados.
+
 ## Development
 
 When starting the dev server, use background mode:
