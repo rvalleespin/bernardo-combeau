@@ -117,7 +117,6 @@ img{max-width:100%;}
 .ext{ padding:1.6rem clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); text-align:right; }
 .ext a{ font-size:.78rem; color:var(--ink); text-decoration:none; border:1px solid var(--line); padding:.35rem .7rem; border-radius:1px; }
 
-.rte-body{padding:0 clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); max-width:62ch; line-height:1.7;}
         `;
         CMS.registerPreviewStyle(GLOBAL_CSS, { raw: true });
 
@@ -373,7 +372,6 @@ img{max-width:100%;}
             render: function () {
               var entry = this.props.entry;
               var getAsset = this.props.getAsset;
-              var widgetFor = this.props.widgetFor;
               var title = entry.getIn(["data", "title"]) || "";
               var year = entry.getIn(["data", "year"]) || "";
               var client = entry.getIn(["data", "client"]) || "";
@@ -418,7 +416,6 @@ img{max-width:100%;}
                       h("a", { href: pubUrl, target: "_blank", rel: "noopener" }, "Publicado en — " + pubName + " →")
                     )
                   : null,
-                h("div", { className: "rte-body" }, widgetFor("body")),
                 footer()
               );
             },
@@ -586,7 +583,6 @@ img{max-width:100%;}
                     { label: "Año", name: "year", widget: "string", required: false },
                   ],
                 },
-                { label: "Texto largo (opcional, va debajo del excerpt)", name: "body", widget: "markdown", required: false },
               ],
             },
             {
@@ -637,7 +633,6 @@ img{max-width:100%;}
                     { label: "URL", name: "url", widget: "string" },
                   ],
                 },
-                { label: "Texto largo (opcional, va debajo del excerpt)", name: "body", widget: "markdown", required: false },
               ],
             },
           ],
