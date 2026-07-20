@@ -21,6 +21,7 @@
             auth_endpoint: "api/auth",
           },
           publish_mode: "simple",
+          site_url: "https://bernardo-combeau.vercel.app",
           media_folder: "bernardo-site/public/uploads",
           public_folder: "/uploads",
           collections: [
@@ -33,6 +34,7 @@
                   file: "bernardo-site/src/data/home.json",
                   label: "Portada",
                   name: "home",
+                  preview_path: "",
                   fields: [
                     { label: "Foto de portada (hero)", name: "fotoHero", widget: "image", hint: "Foto horizontal, buena resolución (mínimo ~2000px de ancho)" },
                     { label: "Frase del hero", name: "fraseHero", widget: "text", hint: "Usa una línea en blanco para forzar el salto de línea" },
@@ -50,6 +52,7 @@
                   file: "bernardo-site/src/data/perfil.json",
                   label: "Foto de perfil",
                   name: "perfil",
+                  preview_path: "sobre-mi",
                   fields: [
                     { label: "Tu foto (cámbiala cuando quieras)", name: "foto", widget: "image", required: false },
                   ],
@@ -65,6 +68,7 @@
                   file: "bernardo-site/src/data/sobremi.json",
                   label: "Sobre mí",
                   name: "sobremi",
+                  preview_path: "sobre-mi",
                   fields: [
                     { label: "Párrafo 1", name: "parrafo1", widget: "text" },
                     { label: "Párrafo 2", name: "parrafo2", widget: "text" },
@@ -81,6 +85,7 @@
                   file: "bernardo-site/src/data/estudio.json",
                   label: "Estudio",
                   name: "estudio",
+                  preview_path: "estudio",
                   fields: [
                     { label: "Dirección / barrio exacto", name: "direccion", widget: "string", required: false },
                     {
@@ -103,6 +108,7 @@
                   file: "bernardo-site/src/data/servicios.json",
                   label: "Lista de servicios",
                   name: "servicios",
+                  preview_path: "servicios",
                   fields: [
                     {
                       label: "Servicios",
@@ -128,6 +134,7 @@
                   file: "bernardo-site/src/data/contacto.json",
                   label: "Datos de contacto",
                   name: "contacto",
+                  preview_path: "contacto",
                   fields: [
                     { label: "Texto de introducción", name: "intro", widget: "text" },
                     { label: "WhatsApp (número, ej. 56912345678)", name: "whatsapp", widget: "string", required: false },
@@ -142,6 +149,7 @@
               label: "Series",
               folder: "bernardo-site/src/content/series",
               editor: { preview: false },
+              preview_path: "series/{{slug}}",
               create: true,
               slug: "{{slug}}",
               fields: [
@@ -184,6 +192,7 @@
               label: "Encargos",
               folder: "bernardo-site/src/content/encargos",
               editor: { preview: false },
+              preview_path: "encargos/{{slug}}",
               create: true,
               slug: "{{slug}}",
               fields: [
