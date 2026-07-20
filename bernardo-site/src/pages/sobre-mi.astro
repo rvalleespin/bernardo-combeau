@@ -7,7 +7,11 @@ import Footer from '../components/Footer.astro';
 import sobremi from '../data/sobremi.json';
 ---
 
-<Layout title="Sobre mí — Bernardo Combeau">
+<Layout
+	title="Sobre mí — Bernardo Combeau"
+	description="Fotógrafo en Santiago, Chile — dirección de retrato con base en experiencia como modelo."
+	image={sobremi.foto || undefined}
+>
 	<Nav active="/sobre-mi" />
 	<div class="page-head"><h2>Sobre mí</h2></div>
 	<div class="bio-grid">

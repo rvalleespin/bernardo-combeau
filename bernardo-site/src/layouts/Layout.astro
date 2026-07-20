@@ -1,11 +1,21 @@
 ---
 import '../styles/global.css';
+import home from '../data/home.json';
 
 interface Props {
   title?: string;
+  description?: string;
+  image?: string;
 }
 
-const { title = 'Bernardo Combeau — Fotografía' } = Astro.props;
+const {
+  title = 'Bernardo Combeau — Fotografía',
+  description = 'Bernardo Combeau, fotógrafo en Santiago, Chile. Retratos, personal branding y fotografía por encargo.',
+  image = home.fotoHero,
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImageURL = image ? new URL(image, Astro.site) : null;
 ---
 
 <html lang="es">
@@ -16,6 +26,20 @@ const { title = 'Bernardo Combeau — Fotografía' } = Astro.props;
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonicalURL} />
+
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="Bernardo Combeau" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonicalURL} />
+		{ogImageURL && <meta property="og:image" content={ogImageURL} />}
+
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		{ogImageURL && <meta name="twitter:image" content={ogImageURL} />}
 	</head>
 	<body>
 		<svg width="0" height="0" style="position:absolute">

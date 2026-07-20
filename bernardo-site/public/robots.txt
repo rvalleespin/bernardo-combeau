@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+
+Sitemap: https://bernardo-combeau.vercel.app/sitemap-index.xml

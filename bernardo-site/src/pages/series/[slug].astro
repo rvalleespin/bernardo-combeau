@@ -12,7 +12,7 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { title, year, excerpt, images } = entry.data;
+const { title, year, excerpt, images, cover } = entry.data;
 
 const allEntries = (await getCollection('series')).sort((a, b) => a.data.order - b.data.order);
 const currentIndex = allEntries.findIndex((e) => e.id === entry.id);
@@ -20,7 +20,7 @@ const prevEntry = allEntries[currentIndex - 1];
 const nextEntry = allEntries[currentIndex + 1];
 ---
 
-<Layout title={`${title} — Bernardo Combeau`}>
+<Layout title={`${title} — Bernardo Combeau`} description={excerpt} image={cover.src}>
 	<Nav active="/series" />
 
 	<p class="crumb"><a href="/series">Series /</a></p>

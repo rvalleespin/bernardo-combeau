@@ -9,7 +9,7 @@ import Footer from '../../components/Footer.astro';
 const entries = (await getCollection('encargos')).sort((a, b) => a.data.order - b.data.order);
 ---
 
-<Layout title="Encargos — Bernardo Combeau">
+<Layout title="Encargos — Bernardo Combeau" description="Trabajos por encargo de Bernardo Combeau — retratos, personal branding y fotografía comercial.">
 	<Nav active="/encargos" />
 	<div class="page-head"><h2>Encargos</h2></div>
 	<div class="grid">
