@@ -13,7 +13,6 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { title, year, excerpt, images } = entry.data;
-const slides = images.map((img, i) => ({ ...img, id: `s${i}` }));
 
 const allEntries = (await getCollection('series')).sort((a, b) => a.data.order - b.data.order);
 const currentIndex = allEntries.findIndex((e) => e.id === entry.id);
@@ -31,28 +30,36 @@ const nextEntry = allEntries[currentIndex + 1];
 		<p>{excerpt}</p>
 	</div>
 
-	{slides.map((s, i) => <input type="radio" name="slide" id={s.id} class="slide-input" checked={i === 0} />)}
-
-	<div class="stagewrap">
-		<div class="stage">
-			{slides.map((s) => (
-				<img class="simg" data-s={s.id} src={s.src} alt={s.alt} />
-			))}
-		</div>
-
-		{slides.map((s) => (
-			<div class={`scap on-${s.id}`}>
-				<span>{s.place}</span>
-				<span>{[s.year, s.credit].filter(Boolean).join(' · ')}</span>
-			</div>
+	<div class="gallery">
+		{images.map((img, i) => (
+			<a class="card" href={`#foto-${i}`}>
+				<div class="photo"><img src={img.src} alt={img.alt} /></div>
+				{(img.place || img.year || img.credit) && (
+					<div class="cap">
+						<span>{img.place}</span>
+						<span>{[img.year, img.credit].filter(Boolean).join(' · ')}</span>
+					</div>
+				)}
+			</a>
 		))}
-
-		{slides.length > 1 && (
-			<div class="sctrl">
-				{slides.map((s, i) => <label for={s.id}>{String(i + 1).padStart(2, '0')}</label>)}
-			</div>
-		)}
 	</div>
+
+	{images.map((img, i) => (
+		<div class="lightbox" id={`foto-${i}`}>
+			<a href="#" class="lightbox-close" aria-label="Cerrar">✕</a>
+			{i > 0 && <a href={`#foto-${i - 1}`} class="lightbox-prev" aria-label="Foto anterior">←</a>}
+			<figure class="lightbox-media">
+				<img src={img.src} alt={img.alt} />
+				{(img.place || img.year || img.credit) && (
+					<figcaption class="lightbox-cap">
+						<span>{img.place}</span>
+						<span>{[img.year, img.credit].filter(Boolean).join(' · ')}</span>
+					</figcaption>
+				)}
+			</figure>
+			{i < images.length - 1 && <a href={`#foto-${i + 1}`} class="lightbox-next" aria-label="Foto siguiente">→</a>}
+		</div>
+	))}
 
 	<div class="serie-nav">
 		{prevEntry ? <a href={`/series/${prevEntry.id}`}>← {prevEntry.data.title}</a> : <a href="/">← Volver a Home</a>}
@@ -61,39 +68,3 @@ const nextEntry = allEntries[currentIndex + 1];
 
 	<Footer />
 </Layout>
-
-<style>
-	/* Estático para hasta 10 slides (s0-s9) — el máximo que permite el panel para Series. */
-	#s0:checked ~ .stagewrap .stage :global(.simg[data-s="s0"]),
-	#s1:checked ~ .stagewrap .stage :global(.simg[data-s="s1"]),
-	#s2:checked ~ .stagewrap .stage :global(.simg[data-s="s2"]),
-	#s3:checked ~ .stagewrap .stage :global(.simg[data-s="s3"]),
-	#s4:checked ~ .stagewrap .stage :global(.simg[data-s="s4"]),
-	#s5:checked ~ .stagewrap .stage :global(.simg[data-s="s5"]),
-	#s6:checked ~ .stagewrap .stage :global(.simg[data-s="s6"]),
-	#s7:checked ~ .stagewrap .stage :global(.simg[data-s="s7"]),
-	#s8:checked ~ .stagewrap .stage :global(.simg[data-s="s8"]),
-	#s9:checked ~ .stagewrap .stage :global(.simg[data-s="s9"]) { opacity: 1; }
-
-	#s0:checked ~ .stagewrap .scap.on-s0,
-	#s1:checked ~ .stagewrap .scap.on-s1,
-	#s2:checked ~ .stagewrap .scap.on-s2,
-	#s3:checked ~ .stagewrap .scap.on-s3,
-	#s4:checked ~ .stagewrap .scap.on-s4,
-	#s5:checked ~ .stagewrap .scap.on-s5,
-	#s6:checked ~ .stagewrap .scap.on-s6,
-	#s7:checked ~ .stagewrap .scap.on-s7,
-	#s8:checked ~ .stagewrap .scap.on-s8,
-	#s9:checked ~ .stagewrap .scap.on-s9 { display: flex; }
-
-	#s0:checked ~ .stagewrap .sctrl label[for="s0"],
-	#s1:checked ~ .stagewrap .sctrl label[for="s1"],
-	#s2:checked ~ .stagewrap .sctrl label[for="s2"],
-	#s3:checked ~ .stagewrap .sctrl label[for="s3"],
-	#s4:checked ~ .stagewrap .sctrl label[for="s4"],
-	#s5:checked ~ .stagewrap .sctrl label[for="s5"],
-	#s6:checked ~ .stagewrap .sctrl label[for="s6"],
-	#s7:checked ~ .stagewrap .sctrl label[for="s7"],
-	#s8:checked ~ .stagewrap .sctrl label[for="s8"],
-	#s9:checked ~ .stagewrap .sctrl label[for="s9"] { color: var(--ink); border-bottom-color: var(--ink); }
-</style>

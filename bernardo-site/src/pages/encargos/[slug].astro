@@ -31,8 +31,8 @@ const nextEntry = allEntries[currentIndex + 1];
 	</div>
 
 	<div class="gallery">
-		{images.map((img) => (
-			<div class="card">
+		{images.map((img, i) => (
+			<a class="card" href={`#foto-${i}`}>
 				<div class="photo"><img src={img.src} alt={img.alt} /></div>
 				{(img.place || img.year || img.credit) && (
 					<div class="cap">
@@ -40,9 +40,26 @@ const nextEntry = allEntries[currentIndex + 1];
 						<span>{[img.year, img.credit].filter(Boolean).join(' · ')}</span>
 					</div>
 				)}
-			</div>
+			</a>
 		))}
 	</div>
+
+	{images.map((img, i) => (
+		<div class="lightbox" id={`foto-${i}`}>
+			<a href="#" class="lightbox-close" aria-label="Cerrar">✕</a>
+			{i > 0 && <a href={`#foto-${i - 1}`} class="lightbox-prev" aria-label="Foto anterior">←</a>}
+			<figure class="lightbox-media">
+				<img src={img.src} alt={img.alt} />
+				{(img.place || img.year || img.credit) && (
+					<figcaption class="lightbox-cap">
+						<span>{img.place}</span>
+						<span>{[img.year, img.credit].filter(Boolean).join(' · ')}</span>
+					</figcaption>
+				)}
+			</figure>
+			{i < images.length - 1 && <a href={`#foto-${i + 1}`} class="lightbox-next" aria-label="Foto siguiente">→</a>}
+		</div>
+	))}
 
 	{publication && (
 		<div class="ext"><a href={publication.url} target="_blank" rel="noopener">Publicado en — {publication.name} →</a></div>
