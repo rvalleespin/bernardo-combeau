@@ -90,14 +90,12 @@ img{max-width:100%;}
 .hero-nav .word, .hero-nav .links a{ color:#fff; text-decoration:none; }
 .hero-nav .word{font-size:1.05rem; font-weight:500; letter-spacing:.01em;}
 .hero-nav .links{display:flex; gap:clamp(1rem,3vw,2.2rem); font-size:.82rem; color:rgba(255,255,255,.72);}
-.hero{position:absolute;}
 .hero-nav{ position:absolute; top:0; left:0; right:0; z-index:2; }
 .hero .scrim{ position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.6), rgba(0,0,0,0) 48%); pointer-events:none; }
-.hero .overlay{ position:absolute; left:0; right:0; bottom:12%; display:flex; flex-direction:column; align-items:center; gap:1.2rem; text-align:center; padding:0 1.2rem; }
+.hero .overlay{ position:absolute; left:0; right:0; bottom:12%; display:flex; flex-direction:column; align-items:center; gap:1.2rem; text-align:center; padding:0 1.2rem; z-index:2; }
 .hero .overlay h1{ color:#fff; font-size:clamp(1.3rem,3.6vw,2.3rem); font-weight:400; max-width:50ch; margin:0 auto; line-height:1.3; text-shadow:0 1px 10px rgba(0,0,0,.5); }
 .hero .cta-pill{ border:1px solid rgba(255,255,255,.85); color:#fff; border-radius:999px; padding:.6rem 1.6rem; font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; text-decoration:none; }
-.hero .credit{ position:absolute; right:clamp(1rem,3vw,2rem); bottom:.9rem; font-size:.72rem; color:rgba(255,255,255,.78); text-shadow:0 1px 4px rgba(0,0,0,.4); }
-.hero-wrap{position:relative;}
+.hero .credit{ position:absolute; right:clamp(1rem,3vw,2rem); bottom:.9rem; font-size:.72rem; color:rgba(255,255,255,.78); text-shadow:0 1px 4px rgba(0,0,0,.4); z-index:2; }
 
 .grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(1.4rem,3vw,2rem); padding:0 clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); }
 @media (min-width:820px){ .grid{grid-template-columns:repeat(3,1fr);} }
@@ -204,9 +202,10 @@ img{max-width:100%;}
               {},
               h(
                 "div",
-                { className: "hero-wrap" },
-                h("div", { className: "hero" }, photoBox(getAsset, fotoHero, "Retrato — Bernardo Combeau"), h("div", { className: "scrim" })),
+                { className: "hero" },
+                h("div", { className: "scrim" }),
                 heroNav(),
+                photoBox(getAsset, fotoHero, "Retrato — Bernardo Combeau"),
                 h(
                   "div",
                   { className: "overlay" },
@@ -220,34 +219,15 @@ img{max-width:100%;}
           },
         });
 
-        var PerfilPreview = createClass({
+        // Foto de perfil y Sobre mí (texto) editan el mismo archivo (bernardo-site/src/data/sobremi.json)
+        // desde dos entradas separadas del panel — cada una muestra solo su propio campo para
+        // edición (Bernardo lo pidió así, para tener un lugar claro y dedicado para la foto), pero
+        // ambas comparten esta misma vista previa combinada, que sí muestra la página completa.
+        var SobreMiPreview = createClass({
           render: function () {
             var entry = this.props.entry;
             var getAsset = this.props.getAsset;
             var foto = entry.getIn(["data", "foto"]);
-            return h(
-              "div",
-              {},
-              nav("/sobre-mi"),
-              h("div", { className: "page-head" }, h("h2", {}, "Sobre mí")),
-              h(
-                "div",
-                { className: "bio-grid" },
-                photoBox(getAsset, foto, "Bernardo Combeau"),
-                h(
-                  "div",
-                  { className: "bio" },
-                  h("p", { style: { color: "var(--mute)", fontStyle: "italic" } }, 'El texto de esta página se edita aparte, en "Sobre mí (texto)".')
-                )
-              ),
-              footer()
-            );
-          },
-        });
-
-        var SobremiPreview = createClass({
-          render: function () {
-            var entry = this.props.entry;
             var p1 = entry.getIn(["data", "parrafo1"]) || "";
             var p2 = entry.getIn(["data", "parrafo2"]) || "";
             return h(
@@ -258,7 +238,7 @@ img{max-width:100%;}
               h(
                 "div",
                 { className: "bio-grid" },
-                h("div", { className: "photo placeholder" }, h("span", {}, 'La foto se edita aparte, en "📷 Foto de perfil".')),
+                photoBox(getAsset, foto, "Bernardo Combeau"),
                 h("div", { className: "bio" }, h("p", {}, p1), h("p", { style: { marginTop: "1.1rem" } }, p2))
               ),
               footer()
@@ -450,8 +430,8 @@ img{max-width:100%;}
         }
 
         CMS.registerPreviewTemplate("home", HomePreview);
-        CMS.registerPreviewTemplate("perfil", PerfilPreview);
-        CMS.registerPreviewTemplate("sobremi", SobremiPreview);
+        CMS.registerPreviewTemplate("perfil", SobreMiPreview);
+        CMS.registerPreviewTemplate("sobremi", SobreMiPreview);
         CMS.registerPreviewTemplate("estudio", EstudioPreview);
         CMS.registerPreviewTemplate("servicios", ServiciosPreview);
         CMS.registerPreviewTemplate("contacto", ContactoPreview);
@@ -491,16 +471,23 @@ img{max-width:100%;}
               ],
             },
             {
+              // Foto de perfil y Sobre mí (texto) son dos entradas separadas del panel — Bernardo
+              // pidió un lugar claro y dedicado para la foto, sin mezclarla con el texto — pero
+              // ambas leen/escriben el mismo archivo (sobremi.json). Los campos que cada una no
+              // edita van como "hidden": siguen viajando en el guardado sin mostrarse, así nunca
+              // se pisan entre sí.
               name: "perfil",
               label: "📷 Foto de perfil",
               files: [
                 {
-                  file: "bernardo-site/src/data/perfil.json",
+                  file: "bernardo-site/src/data/sobremi.json",
                   label: "Foto de perfil",
                   name: "perfil",
                   preview_path: "sobre-mi",
                   fields: [
                     { label: "Tu foto (cámbiala cuando quieras)", name: "foto", widget: "image", required: false },
+                    { name: "parrafo1", widget: "hidden" },
+                    { name: "parrafo2", widget: "hidden" },
                   ],
                 },
               ],
@@ -515,6 +502,7 @@ img{max-width:100%;}
                   name: "sobremi",
                   preview_path: "sobre-mi",
                   fields: [
+                    { name: "foto", widget: "hidden" },
                     { label: "Párrafo 1", name: "parrafo1", widget: "text" },
                     { label: "Párrafo 2", name: "parrafo2", widget: "text" },
                   ],
