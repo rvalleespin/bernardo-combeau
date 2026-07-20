@@ -1,5 +1,5 @@
 ---
-title: nueva serie
+title: "serie de ajustes "
 year: "2026"
 excerpt: son las verdes
 order: 2
