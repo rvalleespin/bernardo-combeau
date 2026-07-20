@@ -1,7 +1,7 @@
 ---
-title: nueva serie
+title: "serie de ajustes "
 year: "2026"
-excerpt: son las verdes
+excerpt: ve ven mejor
 order: 2
 cover:
   src: /uploads/doncoombez-pmxft4fort0-unsplash.jpg
