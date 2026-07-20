@@ -219,10 +219,6 @@ img{max-width:100%;}
           },
         });
 
-        // Foto de perfil y Sobre mí (texto) editan el mismo archivo (bernardo-site/src/data/sobremi.json)
-        // desde dos entradas separadas del panel — cada una muestra solo su propio campo para
-        // edición (Bernardo lo pidió así, para tener un lugar claro y dedicado para la foto), pero
-        // ambas comparten esta misma vista previa combinada, que sí muestra la página completa.
         var SobreMiPreview = createClass({
           render: function () {
             var entry = this.props.entry;
@@ -430,7 +426,6 @@ img{max-width:100%;}
         }
 
         CMS.registerPreviewTemplate("home", HomePreview);
-        CMS.registerPreviewTemplate("perfil", SobreMiPreview);
         CMS.registerPreviewTemplate("sobremi", SobreMiPreview);
         CMS.registerPreviewTemplate("estudio", EstudioPreview);
         CMS.registerPreviewTemplate("servicios", ServiciosPreview);
@@ -471,30 +466,8 @@ img{max-width:100%;}
               ],
             },
             {
-              // Foto de perfil y Sobre mí (texto) son dos entradas separadas del panel — Bernardo
-              // pidió un lugar claro y dedicado para la foto, sin mezclarla con el texto — pero
-              // ambas leen/escriben el mismo archivo (sobremi.json). Los campos que cada una no
-              // edita van como "hidden": siguen viajando en el guardado sin mostrarse, así nunca
-              // se pisan entre sí.
-              name: "perfil",
-              label: "📷 Foto de perfil",
-              files: [
-                {
-                  file: "bernardo-site/src/data/sobremi.json",
-                  label: "Foto de perfil",
-                  name: "perfil",
-                  preview_path: "sobre-mi",
-                  fields: [
-                    { label: "Tu foto (cámbiala cuando quieras)", name: "foto", widget: "image", required: false },
-                    { name: "parrafo1", widget: "hidden" },
-                    { name: "parrafo2", widget: "hidden" },
-                  ],
-                },
-              ],
-            },
-            {
               name: "sobremi",
-              label: "Sobre mí (texto)",
+              label: "Sobre mí",
               files: [
                 {
                   file: "bernardo-site/src/data/sobremi.json",
@@ -502,7 +475,7 @@ img{max-width:100%;}
                   name: "sobremi",
                   preview_path: "sobre-mi",
                   fields: [
-                    { name: "foto", widget: "hidden" },
+                    { label: "Tu foto (cámbiala cuando quieras)", name: "foto", widget: "image", required: false },
                     { label: "Párrafo 1", name: "parrafo1", widget: "text" },
                     { label: "Párrafo 2", name: "parrafo2", widget: "text" },
                   ],
