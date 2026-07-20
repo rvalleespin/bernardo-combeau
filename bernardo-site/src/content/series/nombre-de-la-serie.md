@@ -1,26 +1,22 @@
 ---
-title: Chico en el metro
+title: Buenos resultados
 year: 2024–2025
-excerpt: Texto breve de contexto — de qué trata la serie, escrito como ensayo,
-  no como ficha técnica de cámara.
+excerpt: "el breve texto "
 order: 1
 cover:
-  src: /uploads/bernardo-portafolio-02-metro-urbano.jpg
+  src: /uploads/alexander-lunyov-wxyuhsrtnmw-unsplash.jpg
   alt: Metro urbano
 images:
-  - src: /uploads/bernardo-portafolio-02-metro-urbano.jpg
-    alt: Metro urbano
-    credit: © Bernardo Combeau
-    place: Valparaíso, Chile
-    year: "2024"
   - src: /uploads/bernardo-portafolio-04-bicicleta-atardecer.jpg
     alt: Bicicleta al atardecer
     credit: © Bernardo Combeau
     place: Región de Valparaíso, Chile
     year: "2024"
-  - src: /uploads/bernardo-portafolio-12-torso-bn.jpg
-    alt: Torso en blanco y negro
+  - src: /uploads/emily-irene-photo-co-2u39conwd1i-unsplash.jpg
+    alt: foto estudio
+  - src: /uploads/bernardo-portafolio-02-metro-urbano.jpg
+    alt: Metro urbano
     credit: © Bernardo Combeau
-    place: Santiago, Chile
-    year: "2025"
+    place: Valparaíso, Chile
+    year: "2024"
 ---
