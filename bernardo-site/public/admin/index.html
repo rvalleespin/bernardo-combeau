@@ -11,6 +11,454 @@
     <script>window.CMS_MANUAL_INIT = true;</script>
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
     <script>
+      // Vista previa real: reutiliza el CSS y la estructura del sitio (no el genérico
+      // de Decap, que quedaba desajustado) para que la sección "Vista previa" del editor
+      // muestre cómo se verá la página con los cambios sin publicar todavía. El botón
+      // "Check for Preview" (arriba a la derecha) sigue abriendo la versión ya publicada,
+      // así que entre ambos queda el "antes / después": versión actual (Check for Preview)
+      // vs. versión nueva (este panel, actualizándose mientras se escribe).
+      (function () {
+        var h = window.h;
+        var createClass = window.createClass;
+
+        var GLOBAL_CSS = `
+:root{
+  --paper:#fbfaf8; --ink:#111110; --mute:#84817a; --line:#e7e4dd; --stage:#f0efe9;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --paper:#0b0b0a; --ink:#f4f2ec; --mute:#8d8a82; --line:#242320; --stage:#151513; }
+}
+*{box-sizing:border-box;}
+html,body{margin:0;}
+body{ background:var(--paper); color:var(--ink); font-family:"Switzer",-apple-system,BlinkMacSystemFont,sans-serif; font-weight:400; -webkit-font-smoothing:antialiased; }
+a{color:inherit;}
+p{text-wrap:pretty;}
+h1,h2,h3{text-wrap:balance; margin:0; font-weight:300;}
+img{max-width:100%;}
+
+.site-nav,.hero-nav{ display:flex; align-items:baseline; justify-content:space-between; padding:1.6rem clamp(1.2rem,4vw,3rem); flex-wrap:wrap; gap:.6rem; }
+.site-nav{border-bottom:1px solid var(--line);}
+.site-nav .word{font-size:1.05rem; font-weight:500; letter-spacing:.01em; text-decoration:none;}
+.site-nav .links{display:flex; gap:clamp(.8rem,2.4vw,2rem); font-size:.82rem; color:var(--mute); flex-wrap:wrap;}
+.site-nav .links a{text-decoration:none; color:var(--mute);}
+.site-nav .links a.on{color:var(--ink);}
+
+.page-head{padding:2.2rem clamp(1.2rem,4vw,3rem) 1.6rem;}
+.page-head h2{font-size:clamp(1.8rem,4vw,2.6rem);}
+
+.photo.placeholder{ display:flex; align-items:center; justify-content:center; }
+.photo.placeholder span{ font-size:.7rem; color:var(--mute); text-align:center; padding:1rem; line-height:1.4; }
+
+.bio{padding:0 clamp(1.2rem,4vw,3rem) clamp(2rem,5vw,3rem);}
+.bio-grid{display:grid; grid-template-columns:1fr; gap:clamp(1.6rem,4vw,2.5rem); padding:0 clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem);}
+@media (min-width:760px){ .bio-grid{grid-template-columns:minmax(220px,320px) 1fr; align-items:start;} }
+.bio-grid .photo{aspect-ratio:4/5;}
+.bio-grid .bio{padding:0; max-width:62ch;}
+.bio p{font-size:1.02rem; line-height:1.7; color:var(--ink);}
+
+.studio-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(1rem,2.5vw,1.5rem); padding:0 clamp(1.2rem,4vw,3rem) clamp(1.6rem,4vw,2.2rem);}
+.studio-grid .photo{aspect-ratio:4/3;}
+.studio-note{padding:0 clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem);}
+.studio-note p{font-size:1rem; line-height:1.7; max-width:70ch;}
+.gap{background:rgba(200,80,60,.18); border-bottom:1px dashed rgba(200,80,60,.6); padding:0 .15rem;}
+
+.price-list{padding:0 clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem);}
+.price-row{display:flex; justify-content:space-between; align-items:baseline; gap:1.5rem; padding:1.5rem 0; border-bottom:1px solid var(--line); flex-wrap:wrap;}
+.price-row:first-child{border-top:1px solid var(--line);}
+.price-row .info .t{font-size:1.05rem; font-weight:500;}
+.price-row .info .d{font-size:.85rem; color:var(--mute); margin-top:.35rem; max-width:44ch;}
+.price-row .amount{font-size:1.15rem; font-variant-numeric:tabular-nums; white-space:nowrap;}
+.price-row .amount.cta{font-size:.85rem; color:var(--mute);}
+
+.contact-body{padding:0 clamp(1.2rem,4vw,3rem) 2rem; max-width:60ch;}
+.contact-body p{font-size:1.15rem;}
+.contact-links{display:flex; flex-direction:column; gap:1rem; padding:0 clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); max-width:60ch;}
+.contact-links a{display:flex; align-items:center; gap:.9rem; text-decoration:none; color:var(--ink); padding:1.1rem 1.3rem; border:1px solid var(--line);}
+.contact-links a.primary{border-color:var(--ink);}
+.contact-links a .ic{font-size:1.5rem; line-height:1;}
+.contact-links a .lbl{flex:1;}
+.contact-links a .pending{font-size:.68rem; letter-spacing:.05em; text-transform:uppercase; color:var(--mute);}
+
+.photo{ position:relative; overflow:hidden; background:var(--stage); }
+.photo img{ width:100%; height:100%; object-fit:cover; object-position:center; display:block; }
+.cap{ display:flex; justify-content:space-between; gap:1rem; margin-top:.6rem; font-size:.8rem; font-style:italic; color:var(--mute); }
+
+.hero{position:relative; margin:0;}
+.hero .photo{aspect-ratio:4/5;}
+@media (min-width:640px){ .hero .photo{aspect-ratio:16/9;} }
+@media (min-width:760px){ .hero .photo{aspect-ratio:21/9;} }
+.hero-nav .word, .hero-nav .links a{ color:#fff; text-decoration:none; }
+.hero-nav .word{font-size:1.05rem; font-weight:500; letter-spacing:.01em;}
+.hero-nav .links{display:flex; gap:clamp(1rem,3vw,2.2rem); font-size:.82rem; color:rgba(255,255,255,.72);}
+.hero{position:absolute;}
+.hero-nav{ position:absolute; top:0; left:0; right:0; z-index:2; }
+.hero .scrim{ position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.6), rgba(0,0,0,0) 48%); pointer-events:none; }
+.hero .overlay{ position:absolute; left:0; right:0; bottom:12%; display:flex; flex-direction:column; align-items:center; gap:1.2rem; text-align:center; padding:0 1.2rem; }
+.hero .overlay h1{ color:#fff; font-size:clamp(1.3rem,3.6vw,2.3rem); font-weight:400; max-width:50ch; margin:0 auto; line-height:1.3; text-shadow:0 1px 10px rgba(0,0,0,.5); }
+.hero .cta-pill{ border:1px solid rgba(255,255,255,.85); color:#fff; border-radius:999px; padding:.6rem 1.6rem; font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; text-decoration:none; }
+.hero .credit{ position:absolute; right:clamp(1rem,3vw,2rem); bottom:.9rem; font-size:.72rem; color:rgba(255,255,255,.78); text-shadow:0 1px 4px rgba(0,0,0,.4); }
+.hero-wrap{position:relative;}
+
+.grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(1.4rem,3vw,2rem); padding:0 clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); }
+@media (min-width:820px){ .grid{grid-template-columns:repeat(3,1fr);} }
+.card{ position:relative; display:block; text-decoration:none; color:inherit; }
+.card .photo{aspect-ratio:4/5;}
+.card .cap2{margin-top:.65rem; text-align:center;}
+.card .cap2 .t{font-size:.92rem; font-weight:500;}
+.card .cap2 .y{display:block; font-size:.78rem; color:var(--mute); margin-top:.2rem;}
+
+.site-footer{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:.6rem; padding:1.4rem clamp(1.2rem,4vw,3rem); border-top:1px solid var(--line); font-size:.78rem; color:var(--mute); }
+.site-footer a{text-decoration:none; border-bottom:1px solid var(--line); color:inherit;}
+
+.crumb{padding:1.4rem clamp(1.2rem,4vw,3rem) 0; font-size:.78rem; color:var(--mute);}
+.serie-head{padding:.6rem clamp(1.2rem,4vw,3rem) clamp(2.2rem,5vw,3rem);}
+.serie-head h2{font-size:clamp(2rem,5vw,3.4rem); letter-spacing:-.01em;}
+.serie-head .y{font-size:.85rem; color:var(--mute); margin-top:.5rem;}
+.serie-head p{max-width:56ch; margin-top:1.1rem; font-size:1rem; color:var(--ink);}
+
+.ext{ padding:1.6rem clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); text-align:right; }
+.ext a{ font-size:.78rem; color:var(--ink); text-decoration:none; border:1px solid var(--line); padding:.35rem .7rem; border-radius:1px; }
+
+.rte-body{padding:0 clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); max-width:62ch; line-height:1.7;}
+        `;
+        CMS.registerPreviewStyle(GLOBAL_CSS, { raw: true });
+
+        var NAV_LINKS = [
+          { href: "/series", label: "Series" },
+          { href: "/encargos", label: "Encargos" },
+          { href: "/estudio", label: "Estudio" },
+          { href: "/servicios", label: "Servicios" },
+          { href: "/sobre-mi", label: "Sobre mí" },
+          { href: "/contacto", label: "Contacto" },
+        ];
+
+        function nav(active) {
+          return h(
+            "nav",
+            { className: "site-nav" },
+            h("a", { className: "word", href: "/" }, "Bernardo Combeau"),
+            h(
+              "span",
+              { className: "links" },
+              NAV_LINKS.map(function (l) {
+                return h("a", { key: l.href, href: l.href, className: l.href === active ? "on" : "" }, l.label);
+              })
+            )
+          );
+        }
+
+        function heroNav() {
+          return h(
+            "nav",
+            { className: "hero-nav" },
+            h("a", { className: "word", href: "/" }, "Bernardo Combeau"),
+            h(
+              "span",
+              { className: "links" },
+              NAV_LINKS.map(function (l) {
+                return h("a", { key: l.href, href: l.href }, l.label);
+              })
+            )
+          );
+        }
+
+        function footer() {
+          return h(
+            "footer",
+            { className: "site-footer" },
+            h("span", {}, "© Bernardo Combeau"),
+            h("a", { href: "/contacto" }, "Contacto →")
+          );
+        }
+
+        function listField(entry, path) {
+          var v = entry.getIn(path);
+          if (!v) return [];
+          return typeof v.toJS === "function" ? v.toJS() : v;
+        }
+
+        function photoBox(getAsset, path, alt, className) {
+          var cls = "photo" + (className ? " " + className : "");
+          if (!path) {
+            return h("div", { className: cls + " placeholder" }, h("span", {}, "[ sin foto ]"));
+          }
+          var asset = getAsset(path);
+          return h("div", { className: cls }, h("img", { src: asset ? asset.toString() : "", alt: alt || "" }));
+        }
+
+        var HomePreview = createClass({
+          render: function () {
+            var entry = this.props.entry;
+            var getAsset = this.props.getAsset;
+            var fotoHero = entry.getIn(["data", "fotoHero"]);
+            var fraseHero = entry.getIn(["data", "fraseHero"]) || "";
+            var creditoHero = entry.getIn(["data", "creditoHero"]) || "";
+            var lines = fraseHero.split("\n");
+            var titleChildren = [];
+            lines.forEach(function (line, i) {
+              if (i > 0) titleChildren.push(h("br", { key: "br" + i }));
+              titleChildren.push(line);
+            });
+            return h(
+              "div",
+              {},
+              h(
+                "div",
+                { className: "hero-wrap" },
+                h("div", { className: "hero" }, photoBox(getAsset, fotoHero, "Retrato — Bernardo Combeau"), h("div", { className: "scrim" })),
+                heroNav(),
+                h(
+                  "div",
+                  { className: "overlay" },
+                  h("h1", {}, titleChildren),
+                  h("a", { className: "cta-pill", href: "/series" }, "Ver serie →")
+                ),
+                h("div", { className: "credit" }, creditoHero)
+              ),
+              footer()
+            );
+          },
+        });
+
+        var PerfilPreview = createClass({
+          render: function () {
+            var entry = this.props.entry;
+            var getAsset = this.props.getAsset;
+            var foto = entry.getIn(["data", "foto"]);
+            return h(
+              "div",
+              {},
+              nav("/sobre-mi"),
+              h("div", { className: "page-head" }, h("h2", {}, "Sobre mí")),
+              h(
+                "div",
+                { className: "bio-grid" },
+                photoBox(getAsset, foto, "Bernardo Combeau"),
+                h(
+                  "div",
+                  { className: "bio" },
+                  h("p", { style: { color: "var(--mute)", fontStyle: "italic" } }, 'El texto de esta página se edita aparte, en "Sobre mí (texto)".')
+                )
+              ),
+              footer()
+            );
+          },
+        });
+
+        var SobremiPreview = createClass({
+          render: function () {
+            var entry = this.props.entry;
+            var p1 = entry.getIn(["data", "parrafo1"]) || "";
+            var p2 = entry.getIn(["data", "parrafo2"]) || "";
+            return h(
+              "div",
+              {},
+              nav("/sobre-mi"),
+              h("div", { className: "page-head" }, h("h2", {}, "Sobre mí")),
+              h(
+                "div",
+                { className: "bio-grid" },
+                h("div", { className: "photo placeholder" }, h("span", {}, 'La foto se edita aparte, en "📷 Foto de perfil".')),
+                h("div", { className: "bio" }, h("p", {}, p1), h("p", { style: { marginTop: "1.1rem" } }, p2))
+              ),
+              footer()
+            );
+          },
+        });
+
+        var EstudioPreview = createClass({
+          render: function () {
+            var entry = this.props.entry;
+            var getAsset = this.props.getAsset;
+            var direccion = entry.getIn(["data", "direccion"]) || "";
+            var fotos = listField(entry, ["data", "fotos"]);
+            var slots = [0, 1, 2, 3].map(function (i) {
+              return fotos[i] ? fotos[i].src : null;
+            });
+            return h(
+              "div",
+              {},
+              nav("/estudio"),
+              h("div", { className: "page-head" }, h("h2", {}, "Estudio")),
+              h(
+                "div",
+                { className: "studio-grid" },
+                slots.map(function (src, i) {
+                  return h(
+                    "div",
+                    { key: i },
+                    photoBox(getAsset, src, "Estudio de Bernardo Combeau")
+                  );
+                })
+              ),
+              h(
+                "div",
+                { className: "studio-note" },
+                h(
+                  "p",
+                  {},
+                  "Un estudio equipado para dirigir la luz tanto como dirijo a las personas. Trabajo con fondos infinitos en gris y negro, y un set de iluminación que me permite moverme entre resultados distintos: desde un retrato clásico y dramático hasta una imagen limpia y corporativa, según lo que tu proyecto necesite. Ubicado en ",
+                  direccion ? direccion : h("span", { className: "gap" }, "[falta el barrio/dirección — quedó en blanco en tu texto]"),
+                  ", a pasos del Metro El Golf."
+                )
+              ),
+              footer()
+            );
+          },
+        });
+
+        var ServiciosPreview = createClass({
+          render: function () {
+            var entry = this.props.entry;
+            var servicios = listField(entry, ["data", "servicios"]);
+            return h(
+              "div",
+              {},
+              nav("/servicios"),
+              h("div", { className: "page-head" }, h("h2", {}, "Servicios")),
+              h(
+                "div",
+                { className: "price-list" },
+                servicios.map(function (s, i) {
+                  return h(
+                    "div",
+                    { key: i, className: "price-row" },
+                    h("div", { className: "info" }, h("div", { className: "t" }, s.titulo), h("div", { className: "d" }, s.descripcion)),
+                    h("div", { className: "amount" + (s.esCta ? " cta" : "") }, s.precio)
+                  );
+                })
+              ),
+              footer()
+            );
+          },
+        });
+
+        var ContactoPreview = createClass({
+          render: function () {
+            var entry = this.props.entry;
+            var intro = entry.getIn(["data", "intro"]) || "";
+            var whatsapp = (entry.getIn(["data", "whatsapp"]) || "").replace(/\D/g, "");
+            var email = entry.getIn(["data", "email"]) || "";
+            var instagram = entry.getIn(["data", "instagram"]) || "";
+            return h(
+              "div",
+              {},
+              nav("/contacto"),
+              h("div", { className: "page-head" }, h("h2", {}, "Contacto")),
+              h("div", { className: "contact-body" }, h("p", {}, intro)),
+              h(
+                "div",
+                { className: "contact-links" },
+                whatsapp
+                  ? h(
+                      "a",
+                      { className: "primary", href: "https://wa.me/" + whatsapp, target: "_blank", rel: "noopener" },
+                      h("span", { className: "ic" }, "●"),
+                      h("span", { className: "lbl" }, "WhatsApp")
+                    )
+                  : h(
+                      "a",
+                      { className: "primary", href: "#" },
+                      h("span", { className: "ic" }, "●"),
+                      h("span", { className: "lbl" }, "WhatsApp"),
+                      h("span", { className: "pending" }, "Falta el número")
+                    ),
+                email
+                  ? h("a", { href: "mailto:" + email }, h("span", { className: "ic" }, "✉"), h("span", { className: "lbl" }, "Email"))
+                  : h(
+                      "a",
+                      { href: "#" },
+                      h("span", { className: "ic" }, "✉"),
+                      h("span", { className: "lbl" }, "Email"),
+                      h("span", { className: "pending" }, "Falta la dirección")
+                    ),
+                instagram
+                  ? h(
+                      "a",
+                      { href: "https://instagram.com/" + instagram.replace(/^@/, ""), target: "_blank", rel: "noopener" },
+                      h("span", { className: "ic" }, "◎"),
+                      h("span", { className: "lbl" }, "Instagram")
+                    )
+                  : h(
+                      "a",
+                      { href: "#" },
+                      h("span", { className: "ic" }, "◎"),
+                      h("span", { className: "lbl" }, "Instagram"),
+                      h("span", { className: "pending" }, "Falta el @usuario")
+                    )
+              ),
+              footer()
+            );
+          },
+        });
+
+        function galleryPreview(active, crumbLabel) {
+          return createClass({
+            render: function () {
+              var entry = this.props.entry;
+              var getAsset = this.props.getAsset;
+              var widgetFor = this.props.widgetFor;
+              var title = entry.getIn(["data", "title"]) || "";
+              var year = entry.getIn(["data", "year"]) || "";
+              var client = entry.getIn(["data", "client"]) || "";
+              var excerpt = entry.getIn(["data", "excerpt"]) || "";
+              var images = listField(entry, ["data", "images"]);
+              var publication = entry.getIn(["data", "publication"]);
+              var yearLine = [year, client].filter(Boolean).join(" · ");
+              var pubName = publication && (publication.get ? publication.get("name") : publication.name);
+              var pubUrl = publication && (publication.get ? publication.get("url") : publication.url);
+              return h(
+                "div",
+                {},
+                nav(active),
+                h("p", { className: "crumb" }, h("a", { href: active }, crumbLabel + " /")),
+                h(
+                  "div",
+                  { className: "serie-head" },
+                  h("h2", {}, title),
+                  h("p", { className: "y" }, yearLine),
+                  h("p", {}, excerpt)
+                ),
+                h(
+                  "div",
+                  { className: "grid" },
+                  images.map(function (img, i) {
+                    var cap =
+                      img.place || img.year || img.credit
+                        ? h(
+                            "div",
+                            { className: "cap" },
+                            h("span", {}, img.place),
+                            h("span", {}, [img.year, img.credit].filter(Boolean).join(" · "))
+                          )
+                        : null;
+                    return h("div", { key: i, className: "card" }, photoBox(getAsset, img.src, img.alt), cap);
+                  })
+                ),
+                pubName
+                  ? h(
+                      "div",
+                      { className: "ext" },
+                      h("a", { href: pubUrl, target: "_blank", rel: "noopener" }, "Publicado en — " + pubName + " →")
+                    )
+                  : null,
+                h("div", { className: "rte-body" }, widgetFor("body")),
+                footer()
+              );
+            },
+          });
+        }
+
+        CMS.registerPreviewTemplate("home", HomePreview);
+        CMS.registerPreviewTemplate("perfil", PerfilPreview);
+        CMS.registerPreviewTemplate("sobremi", SobremiPreview);
+        CMS.registerPreviewTemplate("estudio", EstudioPreview);
+        CMS.registerPreviewTemplate("servicios", ServiciosPreview);
+        CMS.registerPreviewTemplate("contacto", ContactoPreview);
+        CMS.registerPreviewTemplate("series", galleryPreview("/series", "Series"));
+        CMS.registerPreviewTemplate("encargos", galleryPreview("/encargos", "Encargos"));
+      })();
+
       CMS.init({
         config: {
           backend: {
@@ -28,7 +476,6 @@
             {
               name: "home",
               label: "Home",
-              editor: { preview: false },
               files: [
                 {
                   file: "bernardo-site/src/data/home.json",
@@ -46,7 +493,6 @@
             {
               name: "perfil",
               label: "📷 Foto de perfil",
-              editor: { preview: false },
               files: [
                 {
                   file: "bernardo-site/src/data/perfil.json",
@@ -62,7 +508,6 @@
             {
               name: "sobremi",
               label: "Sobre mí (texto)",
-              editor: { preview: false },
               files: [
                 {
                   file: "bernardo-site/src/data/sobremi.json",
@@ -79,7 +524,6 @@
             {
               name: "estudio",
               label: "Estudio",
-              editor: { preview: false },
               files: [
                 {
                   file: "bernardo-site/src/data/estudio.json",
@@ -102,7 +546,6 @@
             {
               name: "servicios",
               label: "Servicios",
-              editor: { preview: false },
               files: [
                 {
                   file: "bernardo-site/src/data/servicios.json",
@@ -128,7 +571,6 @@
             {
               name: "contacto",
               label: "Contacto",
-              editor: { preview: false },
               files: [
                 {
                   file: "bernardo-site/src/data/contacto.json",
@@ -148,7 +590,6 @@
               name: "series",
               label: "Series",
               folder: "bernardo-site/src/content/series",
-              editor: { preview: false },
               preview_path: "series/{{slug}}",
               create: true,
               slug: "{{slug}}",
@@ -191,7 +632,6 @@
               name: "encargos",
               label: "Encargos",
               folder: "bernardo-site/src/content/encargos",
-              editor: { preview: false },
               preview_path: "encargos/{{slug}}",
               create: true,
               slug: "{{slug}}",
