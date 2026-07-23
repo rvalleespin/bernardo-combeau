@@ -1,10 +1,12 @@
 ---
-title: "titulo de esta serie "
-year: "2026"
-excerpt: me gusta callejear
+title: La caída
+year: julio 2026
+excerpt: |-
+  Trabajo con flash
+  Modelo: @Omarcuenca
 order: 3
 cover:
-  src: /uploads/alexander-kaufmann-eegbiwxmzca-unsplash.jpg
+  src: /uploads/proyecto_20260712_0005.jpg
   alt: de cuando salgo un domingo
 images:
   - src: /uploads/andre-filipe-hgp3brk6flk-unsplash.jpg
