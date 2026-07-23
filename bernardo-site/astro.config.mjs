@@ -5,8 +5,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  // TODO: cambiar a bernardocombeau.cl (o el dominio que se compre) apenas esté conectado.
-  site: 'https://bernardo-combeau.vercel.app',
+  site: 'https://bernardocombeau.cl',
   output: 'server',
   adapter: vercel(),
   integrations: [sitemap()],
