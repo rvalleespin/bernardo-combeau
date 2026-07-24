@@ -375,54 +375,62 @@ img{max-width:100%;}
         function galleryPreview(active, crumbLabel) {
           return createClass({
             render: function () {
-              var entry = this.props.entry;
-              var getAsset = this.props.getAsset;
-              var title = entry.getIn(["data", "title"]) || "";
-              var year = entry.getIn(["data", "year"]) || "";
-              var client = entry.getIn(["data", "client"]) || "";
-              var excerpt = entry.getIn(["data", "excerpt"]) || "";
-              var images = listField(entry, ["data", "images"]);
-              var publication = entry.getIn(["data", "publication"]);
-              var yearLine = [year, client].filter(Boolean).join(" · ");
-              var pubName = publication && (publication.get ? publication.get("name") : publication.name);
-              var pubUrl = publication && (publication.get ? publication.get("url") : publication.url);
-              return h(
-                "div",
-                {},
-                nav(active),
-                h("p", { className: "crumb" }, h("a", { href: active }, crumbLabel + " /")),
-                h(
+              try {
+                var entry = this.props.entry;
+                var getAsset = this.props.getAsset;
+                var title = entry.getIn(["data", "title"]) || "";
+                var year = entry.getIn(["data", "year"]) || "";
+                var client = entry.getIn(["data", "client"]) || "";
+                var excerpt = entry.getIn(["data", "excerpt"]) || "";
+                var images = listField(entry, ["data", "images"]);
+                var publication = entry.getIn(["data", "publication"]);
+                var yearLine = [year, client].filter(Boolean).join(" · ");
+                var pubName = publication && (publication.get ? publication.get("name") : publication.name);
+                var pubUrl = publication && (publication.get ? publication.get("url") : publication.url);
+                return h(
                   "div",
-                  { className: "serie-head" },
-                  h("h2", {}, title),
-                  h("p", { className: "y" }, yearLine),
-                  h("p", {}, excerpt)
-                ),
-                h(
-                  "div",
-                  { className: "gallery" },
-                  images.map(function (img, i) {
-                    var cap =
-                      img.place || img.year || img.credit
-                        ? h(
-                            "div",
-                            { className: "cap" },
-                            h("span", {}, img.place),
-                            h("span", {}, [img.year, img.credit].filter(Boolean).join(" · "))
-                          )
-                        : null;
-                    return h("div", { key: i, className: "card" }, photoBox(getAsset, img.src, img.alt), cap);
-                  })
-                ),
-                pubName
-                  ? h(
-                      "div",
-                      { className: "ext" },
-                      h("a", { href: pubUrl, target: "_blank", rel: "noopener" }, "Publicado en — " + pubName + " →")
-                    )
-                  : null,
-                footer()
-              );
+                  {},
+                  nav(active),
+                  h("p", { className: "crumb" }, h("a", { href: active }, crumbLabel + " /")),
+                  h(
+                    "div",
+                    { className: "serie-head" },
+                    h("h2", {}, title),
+                    h("p", { className: "y" }, yearLine),
+                    h("p", {}, excerpt)
+                  ),
+                  h(
+                    "div",
+                    { className: "gallery" },
+                    images.filter(Boolean).map(function (img, i) {
+                      var cap =
+                        img.place || img.year || img.credit
+                          ? h(
+                              "div",
+                              { className: "cap" },
+                              h("span", {}, img.place),
+                              h("span", {}, [img.year, img.credit].filter(Boolean).join(" · "))
+                            )
+                          : null;
+                      return h("div", { key: i, className: "card" }, photoBox(getAsset, img.src, img.alt), cap);
+                    })
+                  ),
+                  pubName
+                    ? h(
+                        "div",
+                        { className: "ext" },
+                        h("a", { href: pubUrl, target: "_blank", rel: "noopener" }, "Publicado en — " + pubName + " →")
+                      )
+                    : null,
+                  footer()
+                );
+              } catch (e) {
+                return h(
+                  "p",
+                  { style: { padding: "2rem", fontFamily: "monospace", fontSize: ".8rem" } },
+                  "Vista previa no disponible en este momento (esto no afecta lo que estás editando ni guardando)."
+                );
+              }
             },
           });
         }
@@ -579,6 +587,7 @@ img{max-width:100%;}
                   widget: "list",
                   min: 1,
                   max: 10,
+                  summary: "{{fields.alt}}",
                   hint: "Mínimo 1, máximo 10 fotos por serie. Sube fotos verticales u horizontales de buena resolución (mínimo ~1500px de ancho) — evita capturas de pantalla o fotos muy comprimidas. No hace falta subir el archivo original de la cámara sin comprimir: unos pocos MB por foto está bien.",
                   fields: [
                     { label: "Imagen", name: "src", widget: "image" },
@@ -620,6 +629,7 @@ img{max-width:100%;}
                   name: "images",
                   widget: "list",
                   max: 60,
+                  summary: "{{fields.alt}}",
                   hint: "Sube fotos verticales u horizontales de buena resolución (mínimo ~1500px de ancho) — evita capturas de pantalla o fotos muy comprimidas. No hace falta subir el archivo original de la cámara sin comprimir: unos pocos MB por foto está bien.",
                   fields: [
                     { label: "Imagen", name: "src", widget: "image" },
