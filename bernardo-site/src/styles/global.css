@@ -120,8 +120,9 @@ h1,h2,h3{text-wrap:balance; margin:0; font-weight:300;}
    de las páginas de listado y la imagen que se comparte por WhatsApp/redes, pero
    Ramón pidió (24 jul 2026) que también se vea en la propia página de detalle, en
    una columna editorial junto al título en vez de perderse como puro metadato. */
-.detail-layout{ display:flex; flex-direction:column-reverse; gap:clamp(1.6rem,4vw,2.5rem); padding:0 clamp(1.2rem,4vw,3rem); }
+.detail-layout{ display:flex; flex-direction:column; gap:clamp(1.6rem,4vw,2.5rem); padding:0 clamp(1.2rem,4vw,3rem); }
 .detail-main{ flex:1; min-width:0; }
+.detail-main .serie-head{ padding-top:0; }
 .detail-main .serie-head, .detail-main .gallery, .detail-main .ext{ padding-left:0; padding-right:0; }
 .detail-cover{ width:100%; }
 .detail-cover .cover-label{ font-size:.72rem; color:var(--mute); margin-bottom:.6rem; max-width:32ch; }
