@@ -1,5 +1,5 @@
 ---
-title: Nombre de la serie
+title: edificios
 year: "2022"
 excerpt: Texto breve de contexto — de qué trata la serie, escrito como ensayo,
   no como ficha técnica de cámara.
