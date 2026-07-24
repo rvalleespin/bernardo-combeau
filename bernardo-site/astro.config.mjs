@@ -7,6 +7,6 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://bernardocombeau.cl',
   output: 'server',
-  adapter: vercel(),
+  adapter: vercel({ imageService: true }),
   integrations: [sitemap()],
 });

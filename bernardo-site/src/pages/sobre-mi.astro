@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 
+import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
@@ -16,7 +17,7 @@ import sobremi from '../data/sobremi.json';
 	<div class="page-head"><h2>Sobre mí</h2></div>
 	<div class="bio-grid">
 		{sobremi.foto ? (
-			<div class="photo"><img src={sobremi.foto} alt="Bernardo Combeau" /></div>
+			<div class="photo"><Image src={sobremi.foto} alt="Bernardo Combeau" width={800} quality={80} /></div>
 		) : (
 			<div class="photo placeholder"><span>[ foto de Bernardo — la está gestionando junto con las de estudio ]</span></div>
 		)}

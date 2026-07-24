@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 
+import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
@@ -16,7 +17,7 @@ const estudioSlots = Array.from({ length: 4 }, (_, i) => estudio.fotos[i] ?? nul
 	<div class="studio-grid">
 		{estudioSlots.map((src) => (
 			src ? (
-				<div class="photo"><img src={src} alt="Estudio de Bernardo Combeau" /></div>
+				<div class="photo"><Image src={src} alt="Estudio de Bernardo Combeau" width={800} quality={80} /></div>
 			) : (
 				<Photo pendingText="[ foto de estudio — pendiente ]" />
 			)

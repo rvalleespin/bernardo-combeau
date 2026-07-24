@@ -2,6 +2,7 @@
 export const prerender = true;
 
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Footer from '../components/Footer.astro';
 
@@ -35,7 +36,7 @@ const feedItems = [...seriesEntries, ...encargosEntries].slice(0, 6);
 				{navLinks.map((link) => <a href={link.href}>{link.label}</a>)}
 			</span>
 		</nav>
-		<div class="photo"><img src={home.fotoHero} alt="Retrato — Bernardo Combeau" /></div>
+		<div class="photo"><Image src={home.fotoHero} alt="Retrato — Bernardo Combeau" width={1920} quality={80} /></div>
 		<div class="overlay">
 			<h1>{heroLines.map((line, i) => <>{i > 0 && <br />}{line}</>)}</h1>
 			<a class="cta-pill" href="/series">Ver serie →</a>
@@ -48,7 +49,7 @@ const feedItems = [...seriesEntries, ...encargosEntries].slice(0, 6);
 		<div class="grid">
 			{feedItems.map((item) => (
 				<a class="card" href={item.href}>
-					<div class="photo"><img src={item.cover.src} alt={item.cover.alt} /></div>
+					<div class="photo"><Image src={item.cover.src} alt={item.cover.alt} width={800} quality={80} /></div>
 					<div class="cap2"><span class="t">{item.title}</span><span class="y">{item.year}</span></div>
 				</a>
 			))}
