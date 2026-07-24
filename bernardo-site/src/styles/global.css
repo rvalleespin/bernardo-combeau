@@ -116,16 +116,31 @@ h1,h2,h3{text-wrap:balance; margin:0; font-weight:300;}
 .serie-head .y{font-size:.85rem; color:var(--mute); margin-top:.5rem;}
 .serie-head p{max-width:56ch; margin-top:1.1rem; font-size:1rem; color:var(--ink);}
 
-/* Galería del detalle de una serie/encargo: cada foto se ve completa, sin recortar,
-   sea vertical u horizontal. Columnas tipo masonry en vez de grilla de altura fija,
-   porque cada foto conserva su propia proporción — reemplaza el carrusel anterior
-   (Ramón, 20 jul 2026: la caja fija del carrusel nunca calzaba bien con fotos de
-   cualquier proporción; clic en una foto de la cuadrícula abre el lightbox de abajo). */
+/* Portada de la serie/encargo: no forma parte del álbum (images) — es la miniatura
+   de las páginas de listado y la imagen que se comparte por WhatsApp/redes, pero
+   Ramón pidió (24 jul 2026) que también se vea en la propia página de detalle, en
+   una columna editorial junto al título en vez de perderse como puro metadato. */
+.detail-layout{ display:flex; flex-direction:column-reverse; gap:clamp(1.6rem,4vw,2.5rem); padding:0 clamp(1.2rem,4vw,3rem); }
+.detail-main{ flex:1; min-width:0; }
+.detail-main .serie-head, .detail-main .gallery, .detail-main .ext{ padding-left:0; padding-right:0; }
+.detail-cover{ width:100%; }
+.detail-cover .cover-label{ font-size:.72rem; color:var(--mute); margin-bottom:.6rem; max-width:32ch; }
+.detail-cover .cover-photo{ aspect-ratio:4/5; }
+@media (min-width:760px){
+  .detail-layout{ flex-direction:row; }
+  .detail-cover{ width:260px; flex-shrink:0; }
+}
+
+/* Galería del detalle de una serie/encargo: reemplaza el carrusel anterior (Ramón,
+   20 jul 2026: la caja fija del carrusel nunca calzaba bien con fotos de cualquier
+   proporción). Las miniaturas de la cuadrícula usan el mismo recorte 4:5 que el resto
+   del sitio (.card .photo) para que se vean parejas sin importar si la foto original
+   es vertical u horizontal — clic en una foto abre el lightbox de abajo, que sí
+   muestra la imagen completa sin recortar (24 jul 2026: Ramón pidió parejo el
+   encuadre de las miniaturas después de ver una foto apaisada rompiendo la fila). */
 .gallery{ columns:2; column-gap:clamp(1rem,2.5vw,1.5rem); padding:0 clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); }
 @media (min-width:820px){ .gallery{ columns:3; } }
 .gallery .card{ display:block; break-inside:avoid; margin-bottom:clamp(1rem,2.5vw,1.5rem); cursor:zoom-in; }
-.gallery .card .photo{ aspect-ratio:auto; }
-.gallery .photo img{ height:auto; object-fit:contain; }
 
 /* Lightbox sin JavaScript: cada foto de la cuadrícula enlaza a #foto-N; el propio
    navegador aplica :target al div con ese id. El link "✕" vuelve a "#" (sin target),

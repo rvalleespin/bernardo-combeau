@@ -24,24 +24,36 @@ const nextEntry = allEntries[currentIndex + 1];
 	<Nav active="/encargos" />
 
 	<p class="crumb"><a href="/encargos">Encargos /</a></p>
-	<div class="serie-head">
-		<h2>{title}</h2>
-		<p class="y">{[year, client].filter(Boolean).join(' · ')}</p>
-		<p>{excerpt}</p>
-	</div>
+	<div class="detail-layout">
+		<div class="detail-main">
+			<div class="serie-head">
+				<h2>{title}</h2>
+				<p class="y">{[year, client].filter(Boolean).join(' · ')}</p>
+				<p>{excerpt}</p>
+			</div>
 
-	<div class="gallery">
-		{images.map((img, i) => (
-			<a class="card" href={`#foto-${i}`}>
-				<div class="photo"><img src={img.src} alt={img.alt} /></div>
-				{(img.place || img.year || img.credit) && (
-					<div class="cap">
-						<span>{img.place}</span>
-						<span>{[img.year, img.credit].filter(Boolean).join(' · ')}</span>
-					</div>
-				)}
-			</a>
-		))}
+			<div class="gallery">
+				{images.map((img, i) => (
+					<a class="card" href={`#foto-${i}`}>
+						<div class="photo"><img src={img.src} alt={img.alt} /></div>
+						{(img.place || img.year || img.credit) && (
+							<div class="cap">
+								<span>{img.place}</span>
+								<span>{[img.year, img.credit].filter(Boolean).join(' · ')}</span>
+							</div>
+						)}
+					</a>
+				))}
+			</div>
+
+			{publication && (
+				<div class="ext"><a href={publication.url} target="_blank" rel="noopener">Publicado en — {publication.name} →</a></div>
+			)}
+		</div>
+		<div class="detail-cover">
+			<p class="cover-label">Portada — miniatura en Series/Encargos/Home y foto al compartir el link</p>
+			<div class="photo cover-photo"><img src={cover.src} alt={cover.alt} /></div>
+		</div>
 	</div>
 
 	{images.map((img, i) => (
@@ -60,10 +72,6 @@ const nextEntry = allEntries[currentIndex + 1];
 			{i < images.length - 1 && <a href={`#foto-${i + 1}`} class="lightbox-next" aria-label="Foto siguiente">→</a>}
 		</div>
 	))}
-
-	{publication && (
-		<div class="ext"><a href={publication.url} target="_blank" rel="noopener">Publicado en — {publication.name} →</a></div>
-	)}
 
 	<div class="serie-nav">
 		{prevEntry ? <a href={`/encargos/${prevEntry.id}`}>← {prevEntry.data.title}</a> : <a href="/">← Volver a Home</a>}

@@ -24,24 +24,32 @@ const nextEntry = allEntries[currentIndex + 1];
 	<Nav active="/series" />
 
 	<p class="crumb"><a href="/series">Series /</a></p>
-	<div class="serie-head">
-		<h2>{title}</h2>
-		<p class="y">{year}</p>
-		<p>{excerpt}</p>
-	</div>
+	<div class="detail-layout">
+		<div class="detail-main">
+			<div class="serie-head">
+				<h2>{title}</h2>
+				<p class="y">{year}</p>
+				<p>{excerpt}</p>
+			</div>
 
-	<div class="gallery">
-		{images.map((img, i) => (
-			<a class="card" href={`#foto-${i}`}>
-				<div class="photo"><img src={img.src} alt={img.alt} /></div>
-				{(img.place || img.year || img.credit) && (
-					<div class="cap">
-						<span>{img.place}</span>
-						<span>{[img.year, img.credit].filter(Boolean).join(' · ')}</span>
-					</div>
-				)}
-			</a>
-		))}
+			<div class="gallery">
+				{images.map((img, i) => (
+					<a class="card" href={`#foto-${i}`}>
+						<div class="photo"><img src={img.src} alt={img.alt} /></div>
+						{(img.place || img.year || img.credit) && (
+							<div class="cap">
+								<span>{img.place}</span>
+								<span>{[img.year, img.credit].filter(Boolean).join(' · ')}</span>
+							</div>
+						)}
+					</a>
+				))}
+			</div>
+		</div>
+		<div class="detail-cover">
+			<p class="cover-label">Portada — miniatura en Series/Encargos/Home y foto al compartir el link</p>
+			<div class="photo cover-photo"><img src={cover.src} alt={cover.alt} /></div>
+		</div>
 	</div>
 
 	{images.map((img, i) => (
