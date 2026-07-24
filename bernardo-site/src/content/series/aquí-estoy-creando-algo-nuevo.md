@@ -9,10 +9,10 @@ cover:
   src: /uploads/proyecto_20260712_0005.jpg
   alt: de cuando salgo un domingo
 images:
+  - src: /uploads/tobias-reich-ci8uppze-v4-unsplash.jpg
+    alt: hello
   - src: /uploads/andre-filipe-hgp3brk6flk-unsplash.jpg
     alt: mi soñado viaje a tokyo
   - src: /uploads/alexander-lunyov-wxyuhsrtnmw-unsplash.jpg
     alt: esto es del verano
-  - src: /uploads/tobias-reich-ci8uppze-v4-unsplash.jpg
-    alt: hello
 ---
