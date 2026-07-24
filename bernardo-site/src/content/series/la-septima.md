@@ -10,4 +10,6 @@ cover:
 images:
   - alt: una nueva foto
     src: /uploads/vitaly-gariev-wedoxdz8pcg-unsplash.jpg
+  - src: /uploads/tobias-reich-ci8uppze-v4-unsplash.jpg
+    alt: esto donde va?
 ---
