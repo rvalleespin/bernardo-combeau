@@ -102,7 +102,7 @@ img{max-width:100%;}
 .gallery{ columns:2; column-gap:clamp(1rem,2.5vw,1.5rem); padding:0 clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); }
 @media (min-width:820px){ .gallery{ columns:3; } }
 .gallery .card{ display:block; break-inside:avoid; margin-bottom:clamp(1rem,2.5vw,1.5rem); }
-.gallery .photo{ aspect-ratio:auto; }
+.gallery .card .photo{ aspect-ratio:auto; }
 .gallery .photo img{ height:auto; object-fit:contain; }
 .card{ position:relative; display:block; text-decoration:none; color:inherit; }
 .card .photo{aspect-ratio:4/5;}
@@ -121,6 +121,17 @@ img{max-width:100%;}
 
 .ext{ padding:1.6rem clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); text-align:right; }
 .ext a{ font-size:.78rem; color:var(--ink); text-decoration:none; border:1px solid var(--line); padding:.35rem .7rem; border-radius:1px; }
+
+.detail-layout{ display:flex; flex-direction:column-reverse; gap:clamp(1.6rem,4vw,2.5rem); padding:0 clamp(1.2rem,4vw,3rem); }
+.detail-main{ flex:1; min-width:0; }
+.detail-main .serie-head, .detail-main .gallery, .detail-main .ext{ padding-left:0; padding-right:0; }
+.detail-cover{ width:100%; }
+.detail-cover .cover-label{ font-size:.72rem; color:var(--mute); margin-bottom:.6rem; max-width:32ch; }
+.detail-cover .cover-photo{ aspect-ratio:4/5; }
+@media (min-width:760px){
+  .detail-layout{ flex-direction:row; }
+  .detail-cover{ width:260px; flex-shrink:0; }
+}
 
         `;
         CMS.registerPreviewStyle(GLOBAL_CSS, { raw: true });
@@ -383,6 +394,9 @@ img{max-width:100%;}
                 var client = entry.getIn(["data", "client"]) || "";
                 var excerpt = entry.getIn(["data", "excerpt"]) || "";
                 var images = listField(entry, ["data", "images"]);
+                var cover = entry.getIn(["data", "cover"]);
+                var coverSrc = cover && (cover.get ? cover.get("src") : cover.src);
+                var coverAlt = cover && (cover.get ? cover.get("alt") : cover.alt);
                 var publication = entry.getIn(["data", "publication"]);
                 var yearLine = [year, client].filter(Boolean).join(" · ");
                 var pubName = publication && (publication.get ? publication.get("name") : publication.name);
@@ -394,34 +408,48 @@ img{max-width:100%;}
                   h("p", { className: "crumb" }, h("a", { href: active }, crumbLabel + " /")),
                   h(
                     "div",
-                    { className: "serie-head" },
-                    h("h2", {}, title),
-                    h("p", { className: "y" }, yearLine),
-                    h("p", {}, excerpt)
-                  ),
-                  h(
-                    "div",
-                    { className: "gallery" },
-                    images.filter(Boolean).map(function (img, i) {
-                      var cap =
-                        img.place || img.year || img.credit
-                          ? h(
-                              "div",
-                              { className: "cap" },
-                              h("span", {}, img.place),
-                              h("span", {}, [img.year, img.credit].filter(Boolean).join(" · "))
-                            )
-                          : null;
-                      return h("div", { key: i, className: "card" }, photoBox(getAsset, img.src, img.alt), cap);
-                    })
-                  ),
-                  pubName
-                    ? h(
+                    { className: "detail-layout" },
+                    h(
+                      "div",
+                      { className: "detail-main" },
+                      h(
                         "div",
-                        { className: "ext" },
-                        h("a", { href: pubUrl, target: "_blank", rel: "noopener" }, "Publicado en — " + pubName + " →")
-                      )
-                    : null,
+                        { className: "serie-head" },
+                        h("h2", {}, title),
+                        h("p", { className: "y" }, yearLine),
+                        h("p", {}, excerpt)
+                      ),
+                      h(
+                        "div",
+                        { className: "gallery" },
+                        images.filter(Boolean).map(function (img, i) {
+                          var cap =
+                            img.place || img.year || img.credit
+                              ? h(
+                                  "div",
+                                  { className: "cap" },
+                                  h("span", {}, img.place),
+                                  h("span", {}, [img.year, img.credit].filter(Boolean).join(" · "))
+                                )
+                              : null;
+                          return h("div", { key: i, className: "card" }, photoBox(getAsset, img.src, img.alt), cap);
+                        })
+                      ),
+                      pubName
+                        ? h(
+                            "div",
+                            { className: "ext" },
+                            h("a", { href: pubUrl, target: "_blank", rel: "noopener" }, "Publicado en — " + pubName + " →")
+                          )
+                        : null
+                    ),
+                    h(
+                      "div",
+                      { className: "detail-cover" },
+                      h("p", { className: "cover-label" }, "Portada — miniatura en Series/Encargos/Home y foto al compartir el link"),
+                      photoBox(getAsset, coverSrc, coverAlt, "cover-photo")
+                    )
+                  ),
                   footer()
                 );
               } catch (e) {

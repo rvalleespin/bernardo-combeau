@@ -124,7 +124,7 @@ h1,h2,h3{text-wrap:balance; margin:0; font-weight:300;}
 .gallery{ columns:2; column-gap:clamp(1rem,2.5vw,1.5rem); padding:0 clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); }
 @media (min-width:820px){ .gallery{ columns:3; } }
 .gallery .card{ display:block; break-inside:avoid; margin-bottom:clamp(1rem,2.5vw,1.5rem); cursor:zoom-in; }
-.gallery .photo{ aspect-ratio:auto; }
+.gallery .card .photo{ aspect-ratio:auto; }
 .gallery .photo img{ height:auto; object-fit:contain; }
 
 /* Lightbox sin JavaScript: cada foto de la cuadrícula enlaza a #foto-N; el propio
