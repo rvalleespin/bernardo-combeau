@@ -4,11 +4,10 @@ year: "2026"
 excerpt: prueba
 order: 7
 cover:
-  src: /uploads/bro-takes-photos-rvszv8tye8i-unsplash.jpg
-  alt: adjfnak
-  credit: arfkjanr
+  src: /uploads/vitaly-gariev-r-w9r70iy5c-unsplash.jpg
+  alt: esto lo cambio
+  credit: hola
 images:
-  - src: /uploads/vaclav-pechar-oc9c1ban-uc-unsplash.jpg
-    alt: arfjanrfk
-    credit: aeranrfk
+  - alt: una nueva foto
+    src: /uploads/vitaly-gariev-wedoxdz8pcg-unsplash.jpg
 ---
