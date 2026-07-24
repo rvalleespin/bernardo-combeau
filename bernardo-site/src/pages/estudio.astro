@@ -5,26 +5,23 @@ import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
-import Photo from '../components/Photo.astro';
 import estudio from '../data/estudio.json';
 
-const estudioSlots = Array.from({ length: 4 }, (_, i) => estudio.fotos[i] ?? null);
+const estudioFotos = estudio.fotos.filter(Boolean);
 ---
 
 <Layout title="Estudio — Bernardo Combeau" description="Estudio fotográfico de Bernardo Combeau en Las Condes, Santiago — sesiones de retrato y personal branding.">
 	<Nav active="/estudio" />
 	<div class="page-head"><h2>Estudio</h2></div>
-	<div class="studio-grid">
-		{estudioSlots.map((src) => (
-			src ? (
+	{estudioFotos.length > 0 && (
+		<div class="studio-grid">
+			{estudioFotos.map((src) => (
 				<div class="photo"><Image src={src} alt="Estudio de Bernardo Combeau" width={800} quality={80} /></div>
-			) : (
-				<Photo pendingText="[ foto de estudio — pendiente ]" />
-			)
-		))}
-	</div>
+			))}
+		</div>
+	)}
 	<div class="studio-note">
-		<p>Un estudio equipado para dirigir la luz tanto como dirijo a las personas. Trabajo con fondos infinitos en gris y negro, y un set de iluminación que me permite moverme entre resultados distintos: desde un retrato clásico y dramático hasta una imagen limpia y corporativa, según lo que tu proyecto necesite. Ubicado en {estudio.direccion ? estudio.direccion : <span class="gap">[falta el barrio/dirección — quedó en blanco en tu texto]</span>}, a pasos del Metro El Golf.</p>
+		<p>Un estudio equipado para dirigir la luz tanto como dirijo a las personas. Trabajo con fondos infinitos en gris y negro, y un set de iluminación que me permite moverme entre resultados distintos: desde un retrato clásico y dramático hasta una imagen limpia y corporativa, según lo que tu proyecto necesite.{estudio.direccion && ` Ubicado en ${estudio.direccion}, a pasos del Metro El Golf.`}</p>
 	</div>
 	<Footer />
 </Layout>

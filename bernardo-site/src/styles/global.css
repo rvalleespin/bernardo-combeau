@@ -24,6 +24,7 @@ h1,h2,h3{text-wrap:balance; margin:0; font-weight:300;}
 
 .page-head{padding:2.2rem clamp(1.2rem,4vw,3rem) 1.6rem;}
 .page-head h2{font-size:clamp(1.8rem,4vw,2.6rem);}
+.not-found-copy{margin-top:1.1rem; font-size:1rem; color:var(--mute);}
 
 .photo.placeholder{ display:flex; align-items:center; justify-content:center; }
 .photo.placeholder span{ font-size:.7rem; color:var(--mute); text-align:center; padding:1rem; line-height:1.4; }
