@@ -38,7 +38,7 @@ const encargos = defineCollection({
     publication: z
       .object({
         name: z.string(),
-        url: z.string().url(),
+        url: z.string(),
       })
       .optional(),
   }),
