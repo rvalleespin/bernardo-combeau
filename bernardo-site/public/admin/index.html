@@ -125,11 +125,10 @@ img{max-width:100%;}
 .detail-main .serie-head{ padding-top:0; }
 .detail-main .serie-head, .detail-main .gallery, .detail-main .ext{ padding-left:0; padding-right:0; }
 .detail-cover{ width:100%; }
-.detail-cover .cover-label{ font-size:.72rem; color:var(--mute); margin-bottom:.6rem; max-width:32ch; }
 .detail-cover .cover-photo{ aspect-ratio:4/5; }
 @media (min-width:760px){
   .detail-layout{ flex-direction:row; }
-  .detail-cover{ width:260px; flex-shrink:0; }
+  .detail-cover{ width:260px; flex-shrink:0; position:sticky; top:2rem; align-self:flex-start; }
 }
 
         `;
@@ -445,7 +444,6 @@ img{max-width:100%;}
                     h(
                       "div",
                       { className: "detail-cover" },
-                      h("p", { className: "cover-label" }, "Portada — miniatura en Series/Encargos/Home y foto al compartir el link"),
                       photoBox(getAsset, coverSrc, coverAlt, "cover-photo")
                     )
                   ),

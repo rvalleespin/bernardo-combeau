@@ -118,18 +118,18 @@ h1,h2,h3{text-wrap:balance; margin:0; font-weight:300;}
 
 /* Portada de la serie/encargo: no forma parte del álbum (images) — es la miniatura
    de las páginas de listado y la imagen que se comparte por WhatsApp/redes, pero
-   Ramón pidió (24 jul 2026) que también se vea en la propia página de detalle, en
-   una columna editorial junto al título en vez de perderse como puro metadato. */
+   Ramón pidió (24 jul 2026) que también se vea en la propia página de detalle, con
+   el mismo recorte que el resto de las fotos (nada de texto explicativo ni tamaño
+   especial) y fija en pantalla mientras se hace scroll por la galería. */
 .detail-layout{ display:flex; flex-direction:column; gap:clamp(1.6rem,4vw,2.5rem); padding:0 clamp(1.2rem,4vw,3rem); }
 .detail-main{ flex:1; min-width:0; }
 .detail-main .serie-head{ padding-top:0; }
 .detail-main .serie-head, .detail-main .gallery, .detail-main .ext{ padding-left:0; padding-right:0; }
 .detail-cover{ width:100%; }
-.detail-cover .cover-label{ font-size:.72rem; color:var(--mute); margin-bottom:.6rem; max-width:32ch; }
 .detail-cover .cover-photo{ aspect-ratio:4/5; }
 @media (min-width:760px){
   .detail-layout{ flex-direction:row; }
-  .detail-cover{ width:260px; flex-shrink:0; }
+  .detail-cover{ width:260px; flex-shrink:0; position:sticky; top:2rem; align-self:flex-start; }
 }
 
 /* Galería del detalle de una serie/encargo: reemplaza el carrusel anterior (Ramón,
