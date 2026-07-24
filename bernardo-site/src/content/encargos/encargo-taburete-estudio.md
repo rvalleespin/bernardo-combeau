@@ -1,5 +1,6 @@
 ---
-title: Nombre del encargo
+title: Juanjo
+client: Cliente quería un retrato en tonos azules mostrando su progreso en el gym
 year: "2025"
 excerpt: Texto breve de contexto sobre el encargo.
 order: 3
