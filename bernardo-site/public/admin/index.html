@@ -652,7 +652,13 @@ img{max-width:100%;}
                   required: false,
                   fields: [
                     { label: "Nombre del medio", name: "name", widget: "string" },
-                    { label: "URL", name: "url", widget: "string" },
+                    {
+                      label: "URL",
+                      name: "url",
+                      widget: "string",
+                      pattern: ["^https?://.+", "Debe ser un link completo, empezando con http:// o https:// — o deja este bloque sin completar si todavía no hay publicación."],
+                      hint: "Si no tienes el link todavía, deja \"Publicación externa\" sin completar en vez de poner un guion o un texto de prueba.",
+                    },
                   ],
                 },
               ],
