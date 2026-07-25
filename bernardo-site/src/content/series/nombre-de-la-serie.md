@@ -14,9 +14,4 @@ images:
     year: "2024"
   - src: /uploads/emily-irene-photo-co-2u39conwd1i-unsplash.jpg
     alt: foto estudio
-  - src: /uploads/bernardo-portafolio-02-metro-urbano.jpg
-    alt: Metro urbano
-    credit: © Bernardo Combeau
-    place: Valparaíso, Chile
-    year: "2024"
 ---
