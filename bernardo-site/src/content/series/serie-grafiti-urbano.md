@@ -1,15 +1,17 @@
 ---
-title: "nueva serie "
+title: Psycho
 year: "2026"
-excerpt: se pudo
+excerpt: Secuencia en color de la clásica escena del crimen de Marion Crane en
+  la película PSYCHO (1960), intepretado aquí por Matías Massu
 order: 4
 cover:
-  src: /uploads/doncoombez-pmxft4fort0-unsplash.jpg
-  alt: aves
+  src: /uploads/img_9967.jpg
+  alt: .
 images:
-  - src: /uploads/bernardo-portafolio-09-grafiti-urbano.jpg
-    alt: Retrato con fondo de grafiti urbano
-    credit: © Bernardo Combeau
-  - src: /uploads/kristaps-ungurs-bvy49uejbpw-unsplash.jpg
-    alt: "aerea "
+  - src: /uploads/img_9736.jpg
+    alt: "1"
+  - src: /uploads/img_0116.jpg
+    alt: "2"
+  - src: /uploads/img_9799.jpg
+    alt: "3"
 ---
