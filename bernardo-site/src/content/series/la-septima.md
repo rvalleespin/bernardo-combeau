@@ -8,8 +8,6 @@ cover:
   alt: Antonio
   credit: ""
 images:
-  - alt: una nueva foto
-    src: /uploads/vitaly-gariev-wedoxdz8pcg-unsplash.jpg
   - src: /uploads/ck2.jpg
     alt: Cristobal
   - src: /uploads/crissanmartin1.jpg
