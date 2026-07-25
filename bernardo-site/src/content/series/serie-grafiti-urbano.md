@@ -14,4 +14,18 @@ images:
     alt: "2"
   - src: /uploads/img_9799.jpg
     alt: "3"
+  - src: /uploads/img_9820.jpg
+    alt: "4"
+  - src: /uploads/img_9904.jpg
+    alt: "5"
+  - src: /uploads/proyecto_20251106_0002-copia.jpg
+    alt: "6"
+  - src: /uploads/img_9933.jpg
+    alt: "7"
+  - src: /uploads/img_9952.jpg
+    alt: "8"
+  - src: /uploads/img_9966.jpg
+    alt: "9"
+  - src: /uploads/img_9967.jpg
+    alt: "10"
 ---
