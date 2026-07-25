@@ -12,6 +12,4 @@ images:
     credit: © Bernardo Combeau
     place: Región de Valparaíso, Chile
     year: "2024"
-  - src: /uploads/emily-irene-photo-co-2u39conwd1i-unsplash.jpg
-    alt: foto estudio
 ---
