@@ -1,15 +1,16 @@
 ---
-title: Buenos resultados
-year: 2024–2025
-excerpt: "el breve texto "
+title: Actores
+year: 2022–2026
+excerpt: Actores y actrices chilenos(as)
 order: 1
 cover:
-  src: /uploads/alexander-lunyov-wxyuhsrtnmw-unsplash.jpg
-  alt: Metro urbano
+  src: /uploads/cm3.jpg
+  alt: Catherine Mazoyer
 images:
-  - src: /uploads/bernardo-portafolio-04-bicicleta-atardecer.jpg
-    alt: Bicicleta al atardecer
-    credit: © Bernardo Combeau
-    place: Región de Valparaíso, Chile
-    year: "2024"
+  - src: /uploads/cata-guerra_mg_3007.jpg
+    alt: Catalina Guerra
+  - src: /uploads/feliperios_img_2526.jpg
+    alt: Felipe Rios
+  - src: /uploads/gv_jeep_1042.jpg
+    alt: Guido Vecchiola
 ---
