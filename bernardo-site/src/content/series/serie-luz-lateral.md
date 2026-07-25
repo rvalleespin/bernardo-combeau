@@ -1,7 +1,7 @@
 ---
-title: "serie de ajustes "
+title: quedó filete
 year: "2026"
-excerpt: ve ven mejor
+excerpt: parece que funciona
 order: 2
 cover:
   src: /uploads/doncoombez-pmxft4fort0-unsplash.jpg
