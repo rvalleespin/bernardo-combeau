@@ -1,13 +1,17 @@
 ---
-title: "Nombre del encargo"
+title: Autoretrato
+client: Experimento disruptivo
 year: "2025"
-excerpt: "Texto breve de contexto sobre el encargo."
+excerpt: Texto breve de contexto sobre el encargo.
 order: 2
 cover:
-  src: "/uploads/bernardo-portafolio-03-piscina-corbata.jpg"
-  alt: "Retrato conceptual en piscina, camisa y corbata"
+  src: /uploads/bernardo-portafolio-03-piscina-corbata.jpg
+  alt: Retrato conceptual en piscina, camisa y corbata
 images:
-  - src: "/uploads/bernardo-portafolio-03-piscina-corbata.jpg"
-    alt: "Retrato conceptual en piscina, camisa y corbata"
-    credit: "© Bernardo Combeau"
+  - src: /uploads/bernardo-portafolio-03-piscina-corbata.jpg
+    alt: Retrato conceptual en piscina, camisa y corbata
+    credit: © Bernardo Combeau
+publication:
+  name: "-"
+  url: "-"
 ---
