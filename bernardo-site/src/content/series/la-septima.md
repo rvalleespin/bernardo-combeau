@@ -1,10 +1,10 @@
 ---
-title: "la septima "
-year: "2026"
-excerpt: prueba
+title: Retratos masculinos
+year: 2022-2026
+excerpt: Selección de retratos de hombre
 order: 7
 cover:
-  src: /uploads/vitaly-gariev-r-w9r70iy5c-unsplash.jpg
+  src: /uploads/antoniowalker_mg_7245.jpg
   alt: esto lo cambio
   credit: hola
 images:
