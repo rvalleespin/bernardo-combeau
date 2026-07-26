@@ -2,7 +2,7 @@
 title: Modelos
 year: 2022-2026
 excerpt: Models and wannabe models
-order: -1
+order: 10
 cover:
   src: /uploads/jessy2.jpg
   alt: Jessy

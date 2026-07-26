@@ -811,11 +811,21 @@ img{max-width:100%;}
               preview_path: "series/{{slug}}",
               create: true,
               slug: "{{slug}}",
+              // Muestra el N.º de orden junto al título en cada tarjeta de este listado
+              // (antes solo se veía el título, así que había que abrir cada serie para
+              // saber su posición) y habilita ordenar la lista del panel por ese campo.
+              summary: "#{{order}} — {{title}}",
+              sortable_fields: ["order", "title", "year"],
               fields: [
                 { label: "Título", name: "title", widget: "string" },
                 { label: "Año (ej. 2024–2025)", name: "year", widget: "string" },
                 { label: "Excerpt (1-2 frases de contexto)", name: "excerpt", widget: "text" },
-                { label: "Orden (menor número = aparece primero)", name: "order", widget: "number" },
+                {
+                  label: "Orden (menor número = aparece primero)",
+                  name: "order",
+                  widget: "number",
+                  hint: "No hay botón de \"arrastrar para reordenar\" — el orden se controla con este número. Deja espacio entre series (10, 20, 30...) en vez de 1, 2, 3, así puedes insertar una nueva entre dos sin tener que renumerar el resto (ej. 25 entre la 20 y la 30).",
+                },
                 {
                   label: "Portada",
                   name: "cover",
@@ -854,12 +864,19 @@ img{max-width:100%;}
               preview_path: "encargos/{{slug}}",
               create: true,
               slug: "{{slug}}",
+              summary: "#{{order}} — {{title}}",
+              sortable_fields: ["order", "title", "year"],
               fields: [
                 { label: "Título", name: "title", widget: "string" },
                 { label: "Cliente (si es público)", name: "client", widget: "string", required: false },
                 { label: "Año", name: "year", widget: "string" },
                 { label: "Excerpt (1-2 frases de contexto)", name: "excerpt", widget: "text" },
-                { label: "Orden (menor número = aparece primero)", name: "order", widget: "number" },
+                {
+                  label: "Orden (menor número = aparece primero)",
+                  name: "order",
+                  widget: "number",
+                  hint: "No hay botón de \"arrastrar para reordenar\" — el orden se controla con este número. Deja espacio entre encargos (10, 20, 30...) en vez de 1, 2, 3, así puedes insertar uno nuevo entre dos sin tener que renumerar el resto (ej. 25 entre el 20 y el 30).",
+                },
                 {
                   label: "Portada",
                   name: "cover",
