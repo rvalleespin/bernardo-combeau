@@ -1,7 +1,7 @@
 ---
 title: Erotic
 year: 2022-2026
-excerpt: Desnudos más no porno
+excerpt: Desnudos mas no porno
 order: 7
 cover:
   src: /uploads/pascal_mg_9471.jpg
