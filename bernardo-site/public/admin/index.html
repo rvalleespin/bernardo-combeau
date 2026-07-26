@@ -700,6 +700,12 @@ img{max-width:100%;}
           site_url: "https://bernardocombeau.cl",
           media_folder: "bernardo-site/public/uploads",
           public_folder: "/uploads",
+          // Tope de 10MB por archivo — generoso para una foto profesional bien exportada,
+          // pero bloquea con un aviso claro los excesos tipo TIFF/RAW-casi-sin-comprimir
+          // que encontramos en uploads reales (hasta 12,6MB). Pedido de Bernardo (24 jul
+          // 2026): quería un requisito de peso/tamaño adecuado para una galería de
+          // fotógrafo, no solo una sugerencia en el hint.
+          media_library: { config: { max_file_size: 10485760 } },
           collections: [
             {
               name: "home",
