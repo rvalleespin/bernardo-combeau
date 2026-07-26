@@ -99,9 +99,9 @@ img{max-width:100%;}
 
 .grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(1.4rem,3vw,2rem); padding:0 clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); }
 @media (min-width:820px){ .grid{grid-template-columns:repeat(3,1fr);} }
-.gallery{ columns:2; column-gap:clamp(1rem,2.5vw,1.5rem); padding:0 clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); }
-@media (min-width:820px){ .gallery{ columns:3; } }
-.gallery .card{ display:block; break-inside:avoid; margin-bottom:clamp(1rem,2.5vw,1.5rem); }
+.gallery{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(1rem,2.5vw,1.5rem); padding:0 clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); }
+@media (min-width:820px){ .gallery{ grid-template-columns:repeat(3,1fr); } }
+.gallery .card{ display:block; }
 .gallery .cover-card{ cursor:default; }
 .card{ position:relative; display:block; text-decoration:none; color:inherit; }
 .card .photo{aspect-ratio:1/1;}
