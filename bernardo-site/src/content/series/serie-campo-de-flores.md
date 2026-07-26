@@ -4,7 +4,7 @@ year: 2022–2026
 excerpt: Mujeres que inspiran
 order: 5
 cover:
-  src: /uploads/maria-paz_mg_3583.jpg
+  src: /uploads/pazi.jpg
   alt: Retrato en campo de flores
 images:
   - src: /uploads/ita3.jpg
