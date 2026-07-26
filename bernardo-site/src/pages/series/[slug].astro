@@ -32,9 +32,6 @@ const nextEntry = allEntries[currentIndex + 1];
 	</div>
 
 	<div class="gallery">
-		<div class="card cover-card">
-			<div class="photo"><Image src={cover.src} alt={cover.alt} width={800} quality={80} /></div>
-		</div>
 		{images.map((img, i) => (
 			<a class="card" href={`#foto-${i}`}>
 				<div class="photo"><Image src={img.src} alt={img.alt} width={800} quality={80} /></div>

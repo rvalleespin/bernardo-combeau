@@ -102,7 +102,6 @@ img{max-width:100%;}
 .gallery{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(1rem,2.5vw,1.5rem); padding:0 clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); }
 @media (min-width:820px){ .gallery{ grid-template-columns:repeat(3,1fr); } }
 .gallery .card{ display:block; }
-.gallery .cover-card{ cursor:default; }
 .card{ position:relative; display:block; text-decoration:none; color:inherit; }
 .card .photo{aspect-ratio:1/1;}
 .card .cap2{margin-top:.65rem; text-align:center;}
@@ -382,9 +381,6 @@ img{max-width:100%;}
                 var client = entry.getIn(["data", "client"]) || "";
                 var excerpt = entry.getIn(["data", "excerpt"]) || "";
                 var images = listField(entry, ["data", "images"]);
-                var cover = entry.getIn(["data", "cover"]);
-                var coverSrc = cover && (cover.get ? cover.get("src") : cover.src);
-                var coverAlt = cover && (cover.get ? cover.get("alt") : cover.alt);
                 var publication = entry.getIn(["data", "publication"]);
                 var yearLine = [year, client].filter(Boolean).join(" · ");
                 var pubName = publication && (publication.get ? publication.get("name") : publication.name);
@@ -404,7 +400,6 @@ img{max-width:100%;}
                   h(
                     "div",
                     { className: "gallery" },
-                    h("div", { className: "card cover-card" }, photoBox(getAsset, coverSrc, coverAlt)),
                     images.filter(Boolean).map(function (img, i) {
                       var cap =
                         img.place || img.year || img.credit
