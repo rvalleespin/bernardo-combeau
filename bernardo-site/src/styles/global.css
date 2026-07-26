@@ -97,7 +97,7 @@ h1,h2,h3{text-wrap:balance; margin:0; font-weight:300;}
 .grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(1.4rem,3vw,2rem); padding:0 clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); }
 @media (min-width:820px){ .grid{grid-template-columns:repeat(3,1fr);} }
 .card{ position:relative; display:block; text-decoration:none; color:inherit; }
-.card .photo{aspect-ratio:4/5; transition:transform .5s cubic-bezier(.2,.7,.3,1);}
+.card .photo{aspect-ratio:1/1; transition:transform .5s cubic-bezier(.2,.7,.3,1);}
 .card:hover .photo img{transform:scale(1.035);}
 .card .photo img{transition:transform .5s cubic-bezier(.2,.7,.3,1);}
 @media (prefers-reduced-motion:reduce){ .card:hover .photo img{transform:none;} }
@@ -119,11 +119,13 @@ h1,h2,h3{text-wrap:balance; margin:0; font-weight:300;}
 
 /* Galería del detalle de una serie/encargo: reemplaza el carrusel anterior (Ramón,
    20 jul 2026: la caja fija del carrusel nunca calzaba bien con fotos de cualquier
-   proporción). Las miniaturas de la cuadrícula usan el mismo recorte 4:5 que el resto
-   del sitio (.card .photo) para que se vean parejas sin importar si la foto original
-   es vertical u horizontal — clic en una foto abre el lightbox de abajo, que sí
-   muestra la imagen completa sin recortar (24 jul 2026: Ramón pidió parejo el
-   encuadre de las miniaturas después de ver una foto apaisada rompiendo la fila).
+   proporción). Las miniaturas de la cuadrícula usan el mismo recorte cuadrado (1:1)
+   que el resto del sitio (.card .photo) para que se vean parejas sin importar si la
+   foto original es vertical u horizontal — clic en una foto abre el lightbox de abajo,
+   que sí muestra la imagen completa sin recortar, en su proporción y tamaño original
+   (24 jul 2026: Ramón pidió parejo el encuadre de las miniaturas tras ver una foto
+   apaisada rompiendo la fila; Bernardo después pidió específicamente que ese encuadre
+   parejo fuera 1:1 cuadrado — antes era 4:5).
    La portada (cover) va como primera tarjeta de esta misma cuadrícula —mismo tamaño,
    se mueve con el resto al hacer scroll— tras varias vueltas probando una columna
    aparte fija/editorial que Ramón terminó pidiendo sacar (24 jul 2026): no es un
