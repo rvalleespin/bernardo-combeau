@@ -1,15 +1,22 @@
 ---
-title: quedó filete
-year: "2026"
-excerpt: parece que funciona
-order: 2
+title: Modelos
+year: 2022-2026
+excerpt: Models and wannabe models
+order: -1
 cover:
-  src: /uploads/doncoombez-pmxft4fort0-unsplash.jpg
-  alt: Retrato con luz lateral
+  src: /uploads/jessy2.jpg
+  alt: Jessy
 images:
-  - src: /uploads/kristaps-ungurs-tumwfhnizlm-unsplash.jpg
-    alt: otra mas
-  - src: /uploads/bernardo-portafolio-06-luz-lateral-rosa.jpg
-    alt: Retrato con luz lateral
-    credit: © Bernardo Combeau
+  - src: /uploads/dyan3.jpg
+    alt: Dianne
+  - src: /uploads/guille-2.jpg
+    alt: Guille
+  - src: /uploads/paulharris_mg_5015.jpg
+    alt: Paul
+  - src: /uploads/pazi_img_0031.jpg
+    alt: .
+  - alt: Maca
+    src: /uploads/img_4191.jpg
+  - src: /uploads/proyecto_20260528_0011.jpg
+    alt: Seba
 ---
