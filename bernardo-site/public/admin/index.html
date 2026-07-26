@@ -681,6 +681,14 @@ img{max-width:100%;}
       };
       CMS.registerLocale("es", ES_LOCALE);
 
+      // Tope de 10MB por archivo — generoso para una foto profesional bien exportada,
+      // pero bloquea con un aviso claro los excesos tipo TIFF/RAW-casi-sin-comprimir que
+      // encontramos en uploads reales (hasta 12,6MB). Pedido de Bernardo (24 jul 2026):
+      // quería un requisito de peso/tamaño adecuado para una galería de fotógrafo, no
+      // solo una sugerencia en el hint. Decap solo aplica `max_file_size` por campo (no
+      // existe una opción global) — se agrega `media_library` en cada widget de imagen.
+      var UPLOAD_LIMIT = { media_library: { config: { max_file_size: 10485760 } } };
+
       CMS.init({
         config: {
           locale: "es",
@@ -695,12 +703,6 @@ img{max-width:100%;}
           site_url: "https://bernardocombeau.cl",
           media_folder: "bernardo-site/public/uploads",
           public_folder: "/uploads",
-          // Tope de 10MB por archivo — generoso para una foto profesional bien exportada,
-          // pero bloquea con un aviso claro los excesos tipo TIFF/RAW-casi-sin-comprimir
-          // que encontramos en uploads reales (hasta 12,6MB). Pedido de Bernardo (24 jul
-          // 2026): quería un requisito de peso/tamaño adecuado para una galería de
-          // fotógrafo, no solo una sugerencia en el hint.
-          media_library: { config: { max_file_size: 10485760 } },
           collections: [
             {
               name: "home",
@@ -712,7 +714,7 @@ img{max-width:100%;}
                   name: "home",
                   preview_path: "",
                   fields: [
-                    { label: "Foto de portada (hero)", name: "fotoHero", widget: "image", hint: "Foto horizontal, buena resolución (mínimo ~2000px de ancho). Formato JPG o PNG — no HEIC, no se ve en la mayoría de navegadores." },
+                    { label: "Foto de portada (hero)", name: "fotoHero", widget: "image", hint: "Foto horizontal, buena resolución (mínimo ~2000px de ancho). Formato JPG o PNG — no HEIC, no se ve en la mayoría de navegadores.", ...UPLOAD_LIMIT },
                     { label: "Frase del hero", name: "fraseHero", widget: "text", hint: "Usa una línea en blanco para forzar el salto de línea" },
                     { label: "Crédito (esquina del hero)", name: "creditoHero", widget: "string" },
                   ],
@@ -729,7 +731,7 @@ img{max-width:100%;}
                   name: "sobremi",
                   preview_path: "sobre-mi",
                   fields: [
-                    { label: "Tu foto (cámbiala cuando quieras)", name: "foto", widget: "image", required: false, hint: "Formato JPG o PNG — no HEIC, no se ve en la mayoría de navegadores. Buena resolución, evita capturas de pantalla." },
+                    { label: "Tu foto (cámbiala cuando quieras)", name: "foto", widget: "image", required: false, hint: "Formato JPG o PNG — no HEIC, no se ve en la mayoría de navegadores. Buena resolución, evita capturas de pantalla.", ...UPLOAD_LIMIT },
                     { label: "Párrafo 1", name: "parrafo1", widget: "text" },
                     { label: "Párrafo 2", name: "parrafo2", widget: "text" },
                   ],
@@ -751,7 +753,7 @@ img{max-width:100%;}
                       label: "Fotos del estudio (hasta 4)",
                       name: "fotos",
                       widget: "list",
-                      field: { label: "Foto", name: "src", widget: "image" },
+                      field: { label: "Foto", name: "src", widget: "image", ...UPLOAD_LIMIT },
                       max: 4,
                       hint: "Formato JPG o PNG — no HEIC, no se ve en la mayoría de navegadores. Buena resolución, evita capturas de pantalla.",
                     },
@@ -820,7 +822,7 @@ img{max-width:100%;}
                   widget: "object",
                   hint: "Formato JPG o PNG — no HEIC, no se ve en la mayoría de navegadores.",
                   fields: [
-                    { label: "Imagen", name: "src", widget: "image" },
+                    { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
                     { label: "Descripción para lectores de pantalla", name: "alt", widget: "string" },
                     { label: "Crédito", name: "credit", widget: "string", required: false },
                     { label: "Lugar", name: "place", widget: "string", required: false },
@@ -836,7 +838,7 @@ img{max-width:100%;}
                   summary: "{{fields.alt}}",
                   hint: "Mínimo 1, máximo 10 fotos por serie. Formato JPG o PNG — no HEIC, no se ve en la mayoría de navegadores. Sube fotos verticales u horizontales de buena resolución (mínimo ~1500px de ancho) — evita capturas de pantalla o fotos muy comprimidas. No hace falta subir el archivo original de la cámara sin comprimir: unos pocos MB por foto está bien.",
                   fields: [
-                    { label: "Imagen", name: "src", widget: "image" },
+                    { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
                     { label: "Descripción para lectores de pantalla", name: "alt", widget: "string" },
                     { label: "Crédito", name: "credit", widget: "string", required: false },
                     { label: "Lugar", name: "place", widget: "string", required: false },
@@ -864,7 +866,7 @@ img{max-width:100%;}
                   widget: "object",
                   hint: "Formato JPG o PNG — no HEIC, no se ve en la mayoría de navegadores.",
                   fields: [
-                    { label: "Imagen", name: "src", widget: "image" },
+                    { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
                     { label: "Descripción para lectores de pantalla", name: "alt", widget: "string" },
                     { label: "Crédito", name: "credit", widget: "string", required: false },
                     { label: "Lugar", name: "place", widget: "string", required: false },
@@ -879,7 +881,7 @@ img{max-width:100%;}
                   summary: "{{fields.alt}}",
                   hint: "Formato JPG o PNG — no HEIC, no se ve en la mayoría de navegadores. Sube fotos verticales u horizontales de buena resolución (mínimo ~1500px de ancho) — evita capturas de pantalla o fotos muy comprimidas. No hace falta subir el archivo original de la cámara sin comprimir: unos pocos MB por foto está bien.",
                   fields: [
-                    { label: "Imagen", name: "src", widget: "image" },
+                    { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
                     { label: "Descripción para lectores de pantalla", name: "alt", widget: "string" },
                     { label: "Crédito", name: "credit", widget: "string", required: false },
                     { label: "Lugar", name: "place", widget: "string", required: false },
