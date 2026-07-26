@@ -11,10 +11,10 @@ images:
     alt: Dianne
   - src: /uploads/guille-2.jpg
     alt: Guille
+  - src: /uploads/pazi_img_0031.jpg
+    alt: Pacita
   - src: /uploads/paulharris_mg_5015.jpg
     alt: Paul
-  - src: /uploads/pazi_img_0031.jpg
-    alt: .
   - alt: Maca
     src: /uploads/img_4191.jpg
   - src: /uploads/proyecto_20260528_0011.jpg
