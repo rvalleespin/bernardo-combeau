@@ -4,7 +4,7 @@ year: 2022-2026
 excerpt: Models and wannabe models
 order: 1
 cover:
-  src: /uploads/jessy2.jpg
+  src: /uploads/jessy.jpg
   alt: Jessy
 images:
   - src: /uploads/proyecto_20260528_0011.jpg
