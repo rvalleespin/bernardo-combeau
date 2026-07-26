@@ -1,14 +1,14 @@
 ---
-title: edificios
-year: "2022"
-excerpt: Texto breve de contexto — de qué trata la serie, escrito como ensayo,
-  no como ficha técnica de cámara.
+title: Erotic
+year: 2022-2026
+excerpt: Desnudos más no porno
 order: 5
 cover:
-  src: /uploads/alexander-kaufmann-jjjer_-n3oa-unsplash.jpg
+  src: /uploads/pascal_mg_9471.jpg
   alt: Retrato con tocado de orejas, estética urbana
 images:
-  - src: /uploads/alexander-kaufmann-eegbiwxmzca-unsplash.jpg
-    alt: Retrato con tocado de orejas, estética urbana
-    credit: © Bernardo Combeau
+  - src: /uploads/bern_mg_0441.jpg
+    alt: Bern
+  - src: /uploads/bern_c.jpg
+    alt: Bern
 ---
