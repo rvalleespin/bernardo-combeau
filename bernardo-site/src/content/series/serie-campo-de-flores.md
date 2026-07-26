@@ -2,7 +2,7 @@
 title: Retratos femeninos
 year: 2022–2026
 excerpt: Mujeres que inspiran
-order: 50
+order: 5
 cover:
   src: /uploads/maria-paz_mg_3583.jpg
   alt: Retrato en campo de flores

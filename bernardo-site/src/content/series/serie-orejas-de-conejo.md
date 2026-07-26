@@ -2,7 +2,7 @@
 title: Erotic
 year: 2022-2026
 excerpt: Desnudos más no porno
-order: 70
+order: 7
 cover:
   src: /uploads/pascal_mg_9471.jpg
   alt: Retrato con tocado de orejas, estética urbana

@@ -3,7 +3,7 @@ title: Autoretrato
 client: Experimento disruptivo
 year: "2025"
 excerpt: "-"
-order: 20
+order: 2
 cover:
   src: /uploads/bernardo-portafolio-03-piscina-corbata.jpg
   alt: Retrato conceptual en piscina, camisa y corbata
