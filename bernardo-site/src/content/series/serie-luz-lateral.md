@@ -7,6 +7,8 @@ cover:
   src: /uploads/jessy2.jpg
   alt: Jessy
 images:
+  - src: /uploads/proyecto_20260528_0011.jpg
+    alt: Seba
   - src: /uploads/dyan3.jpg
     alt: Dianne
   - src: /uploads/guille-2.jpg
@@ -17,6 +19,4 @@ images:
     alt: Paul
   - alt: Maca
     src: /uploads/img_4191.jpg
-  - src: /uploads/proyecto_20260528_0011.jpg
-    alt: Seba
 ---
