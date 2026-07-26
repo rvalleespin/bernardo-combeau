@@ -13,4 +13,6 @@ images:
     alt: Felipe Rios
   - src: /uploads/gv_jeep_1042.jpg
     alt: Guido Vecchiola
+  - src: /uploads/cm3.jpg
+    alt: Catherine
 ---
