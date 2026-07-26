@@ -17,4 +17,6 @@ images:
     alt: "-"
   - src: /uploads/proyecto_20260712_0004.jpg
     alt: "-"
+  - src: /uploads/proyecto_20260712_0005.jpg
+    alt: "5"
 ---
