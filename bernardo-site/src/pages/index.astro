@@ -12,20 +12,20 @@ import nav from '../data/nav.json';
 const heroLines = home.fraseHero.split('\n');
 
 const navLinks = [
-  { href: '/series', label: nav.series },
-  { href: '/encargos', label: nav.encargos },
+  { href: '/retratos', label: nav.retratos },
+  { href: '/proyectos', label: nav.proyectos },
   { href: '/estudio', label: nav.estudio },
   { href: '/servicios', label: nav.servicios },
   { href: '/sobre-mi', label: nav.sobremi },
   { href: '/contacto', label: nav.contacto },
 ];
 
-const seriesEntries = (await getCollection('series')).sort((a, b) => a.data.order - b.data.order)
-  .map((e) => ({ href: `/series/${e.id}`, title: e.data.title, year: e.data.year, cover: e.data.cover }));
-const encargosEntries = (await getCollection('encargos')).sort((a, b) => a.data.order - b.data.order)
-  .map((e) => ({ href: `/encargos/${e.id}`, title: e.data.title, year: e.data.year, cover: e.data.cover }));
-
-const feedItems = [...seriesEntries, ...encargosEntries].slice(0, 6);
+const retratosEntries = (await getCollection('retratos')).sort((a, b) => a.data.order - b.data.order)
+  .map((e) => ({ href: `/retratos/${e.id}`, title: e.data.title, year: e.data.year, cover: e.data.cover }))
+  .slice(0, 6);
+const proyectosEntries = (await getCollection('proyectos')).sort((a, b) => a.data.order - b.data.order)
+  .map((e) => ({ href: `/proyectos/${e.id}`, title: e.data.title, year: e.data.year, cover: e.data.cover }))
+  .slice(0, 6);
 ---
 
 <Layout title="Bernardo Combeau — Fotografía">
@@ -40,15 +40,27 @@ const feedItems = [...seriesEntries, ...encargosEntries].slice(0, 6);
 		<div class="photo"><Image src={home.fotoHero} alt="Retrato — Bernardo Combeau" width={1920} quality={80} /></div>
 		<div class="overlay">
 			<h1>{heroLines.map((line, i) => <>{i > 0 && <br />}{line}</>)}</h1>
-			<a class="cta-pill" href="/series">Ver serie →</a>
+			<a class="cta-pill" href="/retratos">Ver retratos →</a>
 		</div>
 		<div class="credit">{home.creditoHero}</div>
 	</div>
 
 	<div class="feed">
-		<div class="feed-title"><h2>Lo último</h2></div>
+		<div class="feed-title"><h2>Retratos</h2></div>
 		<div class="grid">
-			{feedItems.map((item) => (
+			{retratosEntries.map((item) => (
+				<a class="card" href={item.href}>
+					<div class="photo"><Image src={item.cover.src} alt={item.cover.alt} width={800} quality={80} /></div>
+					<div class="cap2"><span class="t">{item.title}</span><span class="y">{item.year}</span></div>
+				</a>
+			))}
+		</div>
+	</div>
+
+	<div class="feed">
+		<div class="feed-title"><h2>Proyectos</h2></div>
+		<div class="grid">
+			{proyectosEntries.map((item) => (
 				<a class="card" href={item.href}>
 					<div class="photo"><Image src={item.cover.src} alt={item.cover.alt} width={800} quality={80} /></div>
 					<div class="cap2"><span class="t">{item.title}</span><span class="y">{item.year}</span></div>

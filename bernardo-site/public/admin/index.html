@@ -124,8 +124,8 @@ img{max-width:100%;}
         CMS.registerPreviewStyle(GLOBAL_CSS, { raw: true });
 
         var NAV_LINKS = [
-          { href: "/series", label: "Series" },
-          { href: "/encargos", label: "Encargos" },
+          { href: "/retratos", label: "Retratos" },
+          { href: "/proyectos", label: "Proyectos" },
           { href: "/estudio", label: "Estudio" },
           { href: "/servicios", label: "Servicios" },
           { href: "/sobre-mi", label: "Sobre mí" },
@@ -212,7 +212,7 @@ img{max-width:100%;}
                   "div",
                   { className: "overlay" },
                   h("h1", {}, titleChildren),
-                  h("a", { className: "cta-pill", href: "/series" }, "Ver serie →")
+                  h("a", { className: "cta-pill", href: "/retratos" }, "Ver retratos →")
                 ),
                 h("div", { className: "credit" }, creditoHero)
               ),
@@ -441,8 +441,8 @@ img{max-width:100%;}
         CMS.registerPreviewTemplate("estudio", EstudioPreview);
         CMS.registerPreviewTemplate("servicios", ServiciosPreview);
         CMS.registerPreviewTemplate("contacto", ContactoPreview);
-        CMS.registerPreviewTemplate("series", galleryPreview("/series", "Series"));
-        CMS.registerPreviewTemplate("encargos", galleryPreview("/encargos", "Encargos"));
+        CMS.registerPreviewTemplate("retratos", galleryPreview("/retratos", "Retratos"));
+        CMS.registerPreviewTemplate("proyectos", galleryPreview("/proyectos", "Proyectos"));
       })();
 
       // Traduce al español los textos propios de Decap (botones, confirmaciones, la
@@ -818,8 +818,8 @@ img{max-width:100%;}
                   name: "nav",
                   preview_path: "",
                   fields: [
-                    { label: "Series", name: "series", widget: "string" },
-                    { label: "Encargos", name: "encargos", widget: "string" },
+                    { label: "Retratos", name: "retratos", widget: "string" },
+                    { label: "Proyectos", name: "proyectos", widget: "string" },
                     { label: "Estudio", name: "estudio", widget: "string" },
                     { label: "Servicios", name: "servicios", widget: "string" },
                     { label: "Sobre mí", name: "sobremi", widget: "string" },
@@ -829,10 +829,10 @@ img{max-width:100%;}
               ],
             },
             {
-              name: "series",
-              label: "Series",
-              folder: "bernardo-site/src/content/series",
-              preview_path: "series/{{slug}}",
+              name: "retratos",
+              label: "Retratos",
+              folder: "bernardo-site/src/content/retratos",
+              preview_path: "retratos/{{slug}}",
               create: true,
               slug: "{{slug}}",
               // Muestra el N.º de orden junto al título en cada tarjeta de este listado
@@ -842,6 +842,7 @@ img{max-width:100%;}
               sortable_fields: ["order", "title", "year"],
               fields: [
                 { label: "Título", name: "title", widget: "string" },
+                { label: "Cliente (si es público)", name: "client", widget: "string", required: false },
                 { label: "Año (ej. 2024–2025)", name: "year", widget: "string" },
                 { label: "Excerpt (1-2 frases de contexto)", name: "excerpt", widget: "text" },
                 { label: "Orden (menor número = aparece primero)", name: "order", widget: "number" },
@@ -864,13 +865,13 @@ img{max-width:100%;}
                   ],
                 },
                 {
-                  label: "Fotos de la serie",
+                  label: "Fotos del retrato (hasta 60)",
                   name: "images",
                   widget: "list",
                   min: 1,
-                  max: 10,
+                  max: 60,
                   summary: "{{fields.alt}}",
-                  hint: "Mínimo 1, máximo 10 fotos por serie. Formato JPG o PNG — no HEIC, no se ve en la mayoría de navegadores. Sube fotos verticales u horizontales de buena resolución (mínimo ~1500px de ancho) — evita capturas de pantalla o fotos muy comprimidas. No hace falta subir el archivo original de la cámara sin comprimir: unos pocos MB por foto está bien.",
+                  hint: "Mínimo 1 foto. Formato JPG o PNG — no HEIC, no se ve en la mayoría de navegadores. Sube fotos verticales u horizontales de buena resolución (mínimo ~1500px de ancho) — evita capturas de pantalla o fotos muy comprimidas. No hace falta subir el archivo original de la cámara sin comprimir: unos pocos MB por foto está bien.",
                   fields: [
                     { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
                     {
@@ -884,13 +885,30 @@ img{max-width:100%;}
                     { label: "Año", name: "year", widget: "string", required: false },
                   ],
                 },
+                {
+                  label: "Publicación externa (si salió publicado en un medio)",
+                  name: "publication",
+                  widget: "object",
+                  required: false,
+                  hint: "Es para un medio EXTERNO (una revista, un sitio de noticias, etc.) — no para el propio sitio. Si este retrato todavía no ha sido publicado en ningún medio, deja los dos campos de abajo completamente vacíos: no escribas un guion, un punto ni ningún otro texto de relleno, porque igual se mostraría en la página.",
+                  fields: [
+                    { label: "Nombre del medio", name: "name", widget: "string" },
+                    {
+                      label: "URL",
+                      name: "url",
+                      widget: "string",
+                      pattern: ["^https?://.+", "Debe ser un link completo, empezando con http:// o https:// — o deja este bloque sin completar si todavía no hay publicación."],
+                      hint: "Si no tienes el link todavía, deja \"Publicación externa\" sin completar en vez de poner un guion o un texto de prueba.",
+                    },
+                  ],
+                },
               ],
             },
             {
-              name: "encargos",
-              label: "Encargos",
-              folder: "bernardo-site/src/content/encargos",
-              preview_path: "encargos/{{slug}}",
+              name: "proyectos",
+              label: "Proyectos",
+              folder: "bernardo-site/src/content/proyectos",
+              preview_path: "proyectos/{{slug}}",
               create: true,
               slug: "{{slug}}",
               summary: "#{{order}} — {{title}}",
@@ -898,7 +916,7 @@ img{max-width:100%;}
               fields: [
                 { label: "Título", name: "title", widget: "string" },
                 { label: "Cliente (si es público)", name: "client", widget: "string", required: false },
-                { label: "Año", name: "year", widget: "string" },
+                { label: "Año (ej. 2024–2025)", name: "year", widget: "string" },
                 { label: "Excerpt (1-2 frases de contexto)", name: "excerpt", widget: "text" },
                 { label: "Orden (menor número = aparece primero)", name: "order", widget: "number" },
                 {
@@ -920,12 +938,13 @@ img{max-width:100%;}
                   ],
                 },
                 {
-                  label: "Fotos del encargo (hasta 60)",
+                  label: "Fotos del proyecto (hasta 60)",
                   name: "images",
                   widget: "list",
+                  min: 1,
                   max: 60,
                   summary: "{{fields.alt}}",
-                  hint: "Formato JPG o PNG — no HEIC, no se ve en la mayoría de navegadores. Sube fotos verticales u horizontales de buena resolución (mínimo ~1500px de ancho) — evita capturas de pantalla o fotos muy comprimidas. No hace falta subir el archivo original de la cámara sin comprimir: unos pocos MB por foto está bien.",
+                  hint: "Mínimo 1 foto. Formato JPG o PNG — no HEIC, no se ve en la mayoría de navegadores. Sube fotos verticales u horizontales de buena resolución (mínimo ~1500px de ancho) — evita capturas de pantalla o fotos muy comprimidas. No hace falta subir el archivo original de la cámara sin comprimir: unos pocos MB por foto está bien.",
                   fields: [
                     { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
                     {
@@ -944,7 +963,7 @@ img{max-width:100%;}
                   name: "publication",
                   widget: "object",
                   required: false,
-                  hint: "Es para un medio EXTERNO (una revista, un sitio de noticias, etc.) — no para el propio sitio. Si este encargo todavía no ha sido publicado en ningún medio, deja los dos campos de abajo completamente vacíos: no escribas un guion, un punto ni ningún otro texto de relleno, porque igual se mostraría en la página.",
+                  hint: "Es para un medio EXTERNO (una revista, un sitio de noticias, etc.) — no para el propio sitio. Si este proyecto todavía no ha sido publicado en ningún medio, deja los dos campos de abajo completamente vacíos: no escribas un guion, un punto ni ningún otro texto de relleno, porque igual se mostraría en la página.",
                   fields: [
                     { label: "Nombre del medio", name: "name", widget: "string" },
                     {

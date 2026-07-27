@@ -8,26 +8,34 @@ import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 
 export async function getStaticPaths() {
-  const entries = await getCollection('series');
+  const entries = await getCollection('proyectos');
   return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 }
 
 const { entry } = Astro.props;
-const { title, year, excerpt, images, cover } = entry.data;
+const { title, year, excerpt, images, client, publication, cover } = entry.data;
 
-const allEntries = (await getCollection('series')).sort((a, b) => a.data.order - b.data.order);
+// "Publicado en" es para un medio EXTERNO — un nombre de un solo carácter (placeholder
+// tipo "-" o ".") o un link que apunta al propio sitio no cuenta como publicación real
+// (pasó con las 3 entradas de Encargos: quedó guardado así por error desde el panel).
+const hasRealPublication =
+  publication?.name?.trim().length > 1 &&
+  publication?.url &&
+  !publication.url.includes('bernardocombeau.cl');
+
+const allEntries = (await getCollection('proyectos')).sort((a, b) => a.data.order - b.data.order);
 const currentIndex = allEntries.findIndex((e) => e.id === entry.id);
 const prevEntry = allEntries[currentIndex - 1];
 const nextEntry = allEntries[currentIndex + 1];
 ---
 
 <Layout title={`${title} — Bernardo Combeau`} description={excerpt} image={cover.src}>
-	<Nav active="/series" />
+	<Nav active="/proyectos" />
 
-	<p class="crumb"><a href="/series">Series /</a></p>
+	<p class="crumb"><a href="/proyectos">Proyectos /</a></p>
 	<div class="serie-head">
 		<h2>{title}</h2>
-		<p class="y">{year}</p>
+		<p class="y">{[year, client].filter(Boolean).join(' · ')}</p>
 		<p>{excerpt}</p>
 	</div>
 
@@ -44,6 +52,10 @@ const nextEntry = allEntries[currentIndex + 1];
 			</a>
 		))}
 	</div>
+
+	{hasRealPublication && (
+		<div class="ext"><a href={publication.url} target="_blank" rel="noopener">Publicado en — {publication.name} →</a></div>
+	)}
 
 	{images.map((img, i) => (
 		<div class="lightbox" id={`foto-${i}`}>
@@ -63,8 +75,8 @@ const nextEntry = allEntries[currentIndex + 1];
 	))}
 
 	<div class="serie-nav">
-		{prevEntry ? <a href={`/series/${prevEntry.id}`}>← {prevEntry.data.title}</a> : <a href="/">← Volver a Home</a>}
-		{nextEntry ? <a href={`/series/${nextEntry.id}`}>{nextEntry.data.title} →</a> : <a href="/series">Volver a Series →</a>}
+		{prevEntry ? <a href={`/proyectos/${prevEntry.id}`}>← {prevEntry.data.title}</a> : <a href="/">← Volver a Home</a>}
+		{nextEntry ? <a href={`/proyectos/${nextEntry.id}`}>{nextEntry.data.title} →</a> : <a href="/proyectos">Volver a Proyectos →</a>}
 	</div>
 
 	<Footer />

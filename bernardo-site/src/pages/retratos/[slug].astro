@@ -8,7 +8,7 @@ import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 
 export async function getStaticPaths() {
-  const entries = await getCollection('encargos');
+  const entries = await getCollection('retratos');
   return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 }
 
@@ -23,16 +23,16 @@ const hasRealPublication =
   publication?.url &&
   !publication.url.includes('bernardocombeau.cl');
 
-const allEntries = (await getCollection('encargos')).sort((a, b) => a.data.order - b.data.order);
+const allEntries = (await getCollection('retratos')).sort((a, b) => a.data.order - b.data.order);
 const currentIndex = allEntries.findIndex((e) => e.id === entry.id);
 const prevEntry = allEntries[currentIndex - 1];
 const nextEntry = allEntries[currentIndex + 1];
 ---
 
 <Layout title={`${title} — Bernardo Combeau`} description={excerpt} image={cover.src}>
-	<Nav active="/encargos" />
+	<Nav active="/retratos" />
 
-	<p class="crumb"><a href="/encargos">Encargos /</a></p>
+	<p class="crumb"><a href="/retratos">Retratos /</a></p>
 	<div class="serie-head">
 		<h2>{title}</h2>
 		<p class="y">{[year, client].filter(Boolean).join(' · ')}</p>
@@ -75,8 +75,8 @@ const nextEntry = allEntries[currentIndex + 1];
 	))}
 
 	<div class="serie-nav">
-		{prevEntry ? <a href={`/encargos/${prevEntry.id}`}>← {prevEntry.data.title}</a> : <a href="/">← Volver a Home</a>}
-		{nextEntry ? <a href={`/encargos/${nextEntry.id}`}>{nextEntry.data.title} →</a> : <a href="/encargos">Volver a Encargos →</a>}
+		{prevEntry ? <a href={`/retratos/${prevEntry.id}`}>← {prevEntry.data.title}</a> : <a href="/">← Volver a Home</a>}
+		{nextEntry ? <a href={`/retratos/${nextEntry.id}`}>{nextEntry.data.title} →</a> : <a href="/retratos">Volver a Retratos →</a>}
 	</div>
 
 	<Footer />

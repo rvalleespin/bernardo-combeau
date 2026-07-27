@@ -7,15 +7,15 @@ import Layout from '../../layouts/Layout.astro';
 import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 
-const entries = (await getCollection('series')).sort((a, b) => a.data.order - b.data.order);
+const entries = (await getCollection('proyectos')).sort((a, b) => a.data.order - b.data.order);
 ---
 
-<Layout title="Series — Bernardo Combeau" description="Series personales de Bernardo Combeau, fotógrafo en Santiago, Chile.">
-	<Nav active="/series" />
-	<div class="page-head"><h2>Series</h2></div>
+<Layout title="Proyectos — Bernardo Combeau" description="Proyectos de carácter personal de Bernardo Combeau, fotógrafo en Santiago, Chile.">
+	<Nav active="/proyectos" />
+	<div class="page-head"><h2>Proyectos</h2></div>
 	<div class="grid">
 		{entries.map((entry) => (
-			<a class="card" href={`/series/${entry.id}`}>
+			<a class="card" href={`/proyectos/${entry.id}`}>
 				<div class="photo"><Image src={entry.data.cover.src} alt={entry.data.cover.alt} width={800} quality={80} /></div>
 				<div class="cap2"><span class="t">{entry.data.title}</span><span class="y">{entry.data.year}</span></div>
 			</a>

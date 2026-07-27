@@ -10,38 +10,38 @@ const image = () =>
     year: z.string().optional(),
   });
 
-// Obra personal — modelo Kander: proyectos con título y texto propio, sin cliente.
-const series = defineCollection({
-  loader: glob({ pattern: ['**/*.md', '!README.md'], base: './src/content/series' }),
-  schema: z.object({
-    title: z.string(),
-    year: z.string(),
-    excerpt: z.string(),
-    order: z.number(),
-    cover: image(),
-    images: z.array(image()).min(1).max(10),
-  }),
+// Esquema compartido: ambas colecciones aceptan opcionalmente cliente y
+// publicación externa, para que una entrada se pueda mover libremente entre
+// Retratos y Proyectos sin chocar con el schema (25 jul 2026: reestructuración
+// pedida por Bernardo — antes "series"/"encargos" no compartían este shape).
+const entryFields = {
+  title: z.string(),
+  client: z.string().optional(),
+  year: z.string(),
+  excerpt: z.string(),
+  order: z.number(),
+  cover: image(),
+  images: z.array(image()).min(1).max(60),
+  publication: z
+    .object({
+      name: z.string(),
+      url: z.string(),
+    })
+    .optional(),
+};
+
+// Retratos — trabajo categorizado por tipo de sujeto: masculinos, femeninos,
+// corporativos, modelos, actores.
+const retratos = defineCollection({
+  loader: glob({ pattern: ['**/*.md', '!README.md'], base: './src/content/retratos' }),
+  schema: z.object(entryFields),
 });
 
-// Trabajo por encargo — editorial y comercial. A diferencia de series, enlaza
-// a la publicación externa cuando existe (patrón Kander: la prueba se ve, no se declara).
-const encargos = defineCollection({
-  loader: glob({ pattern: ['**/*.md', '!README.md'], base: './src/content/encargos' }),
-  schema: z.object({
-    title: z.string(),
-    client: z.string().optional(),
-    year: z.string(),
-    excerpt: z.string(),
-    order: z.number(),
-    cover: image(),
-    images: z.array(image()).max(60),
-    publication: z
-      .object({
-        name: z.string(),
-        url: z.string(),
-      })
-      .optional(),
-  }),
+// Proyectos — obra de carácter personal/conceptual (modelo Kander: la prueba
+// se ve, no se declara).
+const proyectos = defineCollection({
+  loader: glob({ pattern: ['**/*.md', '!README.md'], base: './src/content/proyectos' }),
+  schema: z.object(entryFields),
 });
 
-export const collections = { series, encargos };
+export const collections = { retratos, proyectos };
