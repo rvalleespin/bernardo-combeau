@@ -21,7 +21,7 @@ const estudioFotos = estudio.fotos.filter(Boolean);
 		</div>
 	)}
 	<div class="studio-note">
-		<p>Un estudio equipado para dirigir la luz tanto como dirijo a las personas. Trabajo con fondos infinitos en gris y negro, y un set de iluminación que me permite moverme entre resultados distintos: desde un retrato clásico y dramático hasta una imagen limpia y corporativa, según lo que tu proyecto necesite.{estudio.direccion && ` Ubicado en ${estudio.direccion}, a pasos del Metro El Golf.`}</p>
+		<p>{estudio.texto}{estudio.direccion && ` Ubicado en ${estudio.direccion}, a pasos del Metro El Golf.`}</p>
 	</div>
 	<Footer />
 </Layout>

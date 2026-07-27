@@ -32,6 +32,7 @@ const whatsappDigits = contacto.whatsapp.replace(/\D/g, '');
 			<a href={`mailto:${contacto.email}`}>
 				<span class="ic">✉</span>
 				<span class="lbl">Email</span>
+				<span class="addr">{contacto.email}</span>
 			</a>
 		) : (
 			<a href="#">

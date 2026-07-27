@@ -1,4 +1,6 @@
 ---
+import nav from '../data/nav.json';
+
 interface Props {
   active?: string;
 }
@@ -6,12 +8,12 @@ interface Props {
 const { active = '' } = Astro.props;
 
 const links = [
-  { href: '/series', label: 'Series' },
-  { href: '/encargos', label: 'Encargos' },
-  { href: '/estudio', label: 'Estudio' },
-  { href: '/servicios', label: 'Servicios' },
-  { href: '/sobre-mi', label: 'Sobre mí' },
-  { href: '/contacto', label: 'Contacto' },
+  { href: '/series', label: nav.series },
+  { href: '/encargos', label: nav.encargos },
+  { href: '/estudio', label: nav.estudio },
+  { href: '/servicios', label: nav.servicios },
+  { href: '/sobre-mi', label: nav.sobremi },
+  { href: '/contacto', label: nav.contacto },
 ];
 ---
 

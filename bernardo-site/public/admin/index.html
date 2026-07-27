@@ -248,6 +248,7 @@ img{max-width:100%;}
           render: function () {
             var entry = this.props.entry;
             var getAsset = this.props.getAsset;
+            var texto = entry.getIn(["data", "texto"]) || "";
             var direccion = entry.getIn(["data", "direccion"]) || "";
             var fotos = listField(entry, ["data", "fotos"]);
             var slots = [0, 1, 2, 3].map(function (i) {
@@ -275,9 +276,8 @@ img{max-width:100%;}
                 h(
                   "p",
                   {},
-                  "Un estudio equipado para dirigir la luz tanto como dirijo a las personas. Trabajo con fondos infinitos en gris y negro, y un set de iluminación que me permite moverme entre resultados distintos: desde un retrato clásico y dramático hasta una imagen limpia y corporativa, según lo que tu proyecto necesite. Ubicado en ",
-                  direccion ? direccion : h("span", { className: "gap" }, "[falta el barrio/dirección — quedó en blanco en tu texto]"),
-                  ", a pasos del Metro El Golf."
+                  texto,
+                  direccion ? " Ubicado en " + direccion + ", a pasos del Metro El Golf." : ""
                 )
               ),
               footer()
@@ -751,6 +751,7 @@ img{max-width:100%;}
                   name: "estudio",
                   preview_path: "estudio",
                   fields: [
+                    { label: "Texto de la página", name: "texto", widget: "text", hint: "El párrafo principal de Estudio. La frase de la dirección se agrega sola al final, tomada del campo de abajo." },
                     { label: "Dirección / barrio exacto", name: "direccion", widget: "string", required: false },
                     {
                       label: "Fotos del estudio (hasta 4)",
@@ -803,6 +804,26 @@ img{max-width:100%;}
                     { label: "WhatsApp (número, ej. 56912345678)", name: "whatsapp", widget: "string", required: false },
                     { label: "Email", name: "email", widget: "string", required: false },
                     { label: "Instagram (usuario, sin @)", name: "instagram", widget: "string", required: false },
+                  ],
+                },
+              ],
+            },
+            {
+              name: "navegacion",
+              label: "Nombres del menú",
+              files: [
+                {
+                  file: "bernardo-site/src/data/nav.json",
+                  label: "Menú de navegación",
+                  name: "nav",
+                  preview_path: "",
+                  fields: [
+                    { label: "Series", name: "series", widget: "string" },
+                    { label: "Encargos", name: "encargos", widget: "string" },
+                    { label: "Estudio", name: "estudio", widget: "string" },
+                    { label: "Servicios", name: "servicios", widget: "string" },
+                    { label: "Sobre mí", name: "sobremi", widget: "string" },
+                    { label: "Contacto", name: "contacto", widget: "string" },
                   ],
                 },
               ],
