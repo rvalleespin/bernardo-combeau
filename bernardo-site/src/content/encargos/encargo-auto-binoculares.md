@@ -1,9 +1,10 @@
 ---
 title: El Músico
 year: "2023"
-excerpt: |-
-  Beto Peña.
-  Compositor e intérprete de música clasica y popular
+excerpt: |
+  Alberto Peña.
+  Compositor e intérprete de música clasica y popular.
+  Retrato editorial para promoción artística.
 order: 1
 cover:
   src: /uploads/beto3.jpg
@@ -18,6 +19,6 @@ images:
   - alt: "-"
     src: /uploads/beto7.jpg
 publication:
-  name: .
-  url: .
+  name: "-"
+  url: https://bernardocombeau.cl
 ---
