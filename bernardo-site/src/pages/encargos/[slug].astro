@@ -15,6 +15,14 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { title, year, excerpt, images, client, publication, cover } = entry.data;
 
+// "Publicado en" es para un medio EXTERNO — un nombre de un solo carácter (placeholder
+// tipo "-" o ".") o un link que apunta al propio sitio no cuenta como publicación real
+// (pasó con las 3 entradas de Encargos: quedó guardado así por error desde el panel).
+const hasRealPublication =
+  publication?.name?.trim().length > 1 &&
+  publication?.url &&
+  !publication.url.includes('bernardocombeau.cl');
+
 const allEntries = (await getCollection('encargos')).sort((a, b) => a.data.order - b.data.order);
 const currentIndex = allEntries.findIndex((e) => e.id === entry.id);
 const prevEntry = allEntries[currentIndex - 1];
@@ -45,7 +53,7 @@ const nextEntry = allEntries[currentIndex + 1];
 		))}
 	</div>
 
-	{publication && (
+	{hasRealPublication && (
 		<div class="ext"><a href={publication.url} target="_blank" rel="noopener">Publicado en — {publication.name} →</a></div>
 	)}
 

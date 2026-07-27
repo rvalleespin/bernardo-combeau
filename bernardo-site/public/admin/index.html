@@ -385,6 +385,9 @@ img{max-width:100%;}
                 var yearLine = [year, client].filter(Boolean).join(" · ");
                 var pubName = publication && (publication.get ? publication.get("name") : publication.name);
                 var pubUrl = publication && (publication.get ? publication.get("url") : publication.url);
+                // Igual que en el sitio real: un nombre de un solo carácter o un link al
+                // propio dominio no cuenta como "publicado en un medio externo".
+                var hasRealPublication = pubName && pubName.trim().length > 1 && pubUrl && pubUrl.indexOf("bernardocombeau.cl") === -1;
                 return h(
                   "div",
                   {},
@@ -413,7 +416,7 @@ img{max-width:100%;}
                       return h("div", { key: i, className: "card" }, photoBox(getAsset, img.src, img.alt), cap);
                     })
                   ),
-                  pubName
+                  hasRealPublication
                     ? h(
                         "div",
                         { className: "ext" },
@@ -828,7 +831,12 @@ img{max-width:100%;}
                   hint: "Formato JPG o PNG — no HEIC, no se ve en la mayoría de navegadores.",
                   fields: [
                     { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
-                    { label: "Descripción para lectores de pantalla", name: "alt", widget: "string" },
+                    {
+                      label: "Descripción para lectores de pantalla",
+                      name: "alt",
+                      widget: "string",
+                      hint: "Describe en pocas palabras lo que se ve en la foto (quién o qué aparece, la pose o acción, algún detalle relevante) — como si se la describieras a alguien que no puede verla. Evita dejarlo vacío o con un guion/punto de relleno. Ya no hace falta escribir aquí el número de la secuencia (1, 2, 3...): el orden de las fotos ya se respeta solo, según el orden en que las dejes en esta lista.",
+                    },
                     { label: "Crédito", name: "credit", widget: "string", required: false },
                     { label: "Lugar", name: "place", widget: "string", required: false },
                     { label: "Año", name: "year", widget: "string", required: false },
@@ -844,7 +852,12 @@ img{max-width:100%;}
                   hint: "Mínimo 1, máximo 10 fotos por serie. Formato JPG o PNG — no HEIC, no se ve en la mayoría de navegadores. Sube fotos verticales u horizontales de buena resolución (mínimo ~1500px de ancho) — evita capturas de pantalla o fotos muy comprimidas. No hace falta subir el archivo original de la cámara sin comprimir: unos pocos MB por foto está bien.",
                   fields: [
                     { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
-                    { label: "Descripción para lectores de pantalla", name: "alt", widget: "string" },
+                    {
+                      label: "Descripción para lectores de pantalla",
+                      name: "alt",
+                      widget: "string",
+                      hint: "Describe en pocas palabras lo que se ve en la foto (quién o qué aparece, la pose o acción, algún detalle relevante) — como si se la describieras a alguien que no puede verla. Evita dejarlo vacío o con un guion/punto de relleno. Ya no hace falta escribir aquí el número de la secuencia (1, 2, 3...): el orden de las fotos ya se respeta solo, según el orden en que las dejes en esta lista.",
+                    },
                     { label: "Crédito", name: "credit", widget: "string", required: false },
                     { label: "Lugar", name: "place", widget: "string", required: false },
                     { label: "Año", name: "year", widget: "string", required: false },
@@ -874,7 +887,12 @@ img{max-width:100%;}
                   hint: "Formato JPG o PNG — no HEIC, no se ve en la mayoría de navegadores.",
                   fields: [
                     { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
-                    { label: "Descripción para lectores de pantalla", name: "alt", widget: "string" },
+                    {
+                      label: "Descripción para lectores de pantalla",
+                      name: "alt",
+                      widget: "string",
+                      hint: "Describe en pocas palabras lo que se ve en la foto (quién o qué aparece, la pose o acción, algún detalle relevante) — como si se la describieras a alguien que no puede verla. Evita dejarlo vacío o con un guion/punto de relleno. Ya no hace falta escribir aquí el número de la secuencia (1, 2, 3...): el orden de las fotos ya se respeta solo, según el orden en que las dejes en esta lista.",
+                    },
                     { label: "Crédito", name: "credit", widget: "string", required: false },
                     { label: "Lugar", name: "place", widget: "string", required: false },
                     { label: "Año", name: "year", widget: "string", required: false },
@@ -889,7 +907,12 @@ img{max-width:100%;}
                   hint: "Formato JPG o PNG — no HEIC, no se ve en la mayoría de navegadores. Sube fotos verticales u horizontales de buena resolución (mínimo ~1500px de ancho) — evita capturas de pantalla o fotos muy comprimidas. No hace falta subir el archivo original de la cámara sin comprimir: unos pocos MB por foto está bien.",
                   fields: [
                     { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
-                    { label: "Descripción para lectores de pantalla", name: "alt", widget: "string" },
+                    {
+                      label: "Descripción para lectores de pantalla",
+                      name: "alt",
+                      widget: "string",
+                      hint: "Describe en pocas palabras lo que se ve en la foto (quién o qué aparece, la pose o acción, algún detalle relevante) — como si se la describieras a alguien que no puede verla. Evita dejarlo vacío o con un guion/punto de relleno. Ya no hace falta escribir aquí el número de la secuencia (1, 2, 3...): el orden de las fotos ya se respeta solo, según el orden en que las dejes en esta lista.",
+                    },
                     { label: "Crédito", name: "credit", widget: "string", required: false },
                     { label: "Lugar", name: "place", widget: "string", required: false },
                     { label: "Año", name: "year", widget: "string", required: false },
@@ -900,6 +923,7 @@ img{max-width:100%;}
                   name: "publication",
                   widget: "object",
                   required: false,
+                  hint: "Es para un medio EXTERNO (una revista, un sitio de noticias, etc.) — no para el propio sitio. Si este encargo todavía no ha sido publicado en ningún medio, deja los dos campos de abajo completamente vacíos: no escribas un guion, un punto ni ningún otro texto de relleno, porque igual se mostraría en la página.",
                   fields: [
                     { label: "Nombre del medio", name: "name", widget: "string" },
                     {

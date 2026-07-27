@@ -19,7 +19,4 @@ images:
     alt: "-"
   - src: /uploads/juanjo_mg_9643.jpg
     alt: "-"
-publication:
-  name: .
-  url: https://bernardocombeau.cl
 ---

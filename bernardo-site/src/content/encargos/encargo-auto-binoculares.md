@@ -18,7 +18,4 @@ images:
     src: /uploads/beto4.jpg
   - alt: "-"
     src: /uploads/beto7.jpg
-publication:
-  name: "-"
-  url: https://bernardocombeau.cl
 ---

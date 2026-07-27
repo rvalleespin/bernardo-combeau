@@ -17,7 +17,4 @@ images:
     alt: mirando a camara
   - src: /uploads/bc_mercurio_mg_0085.jpg
     alt: rompiendo
-publication:
-  name: "-"
-  url: https://bernardocombeau.cl
 ---
