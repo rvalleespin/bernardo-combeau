@@ -3,7 +3,7 @@ title: Psycho
 year: "2026"
 excerpt: Secuencia en color de la clásica escena del crimen de Marion Crane en
   la película PSYCHO (1960), intepretado aquí por Matías Massu
-order: 6
+order: 3
 cover:
   src: /uploads/img_9967.jpg
   alt: .

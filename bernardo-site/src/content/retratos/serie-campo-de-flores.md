@@ -2,7 +2,7 @@
 title: Retratos femeninos
 year: 2022–2026
 excerpt: Mujeres que inspiran
-order: 5
+order: 6
 cover:
   src: /uploads/pazi.jpg
   alt: .

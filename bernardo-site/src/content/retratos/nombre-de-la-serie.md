@@ -2,7 +2,7 @@
 title: Actores
 year: 2022–2026
 excerpt: Actores y actrices chilenos(as)
-order: 3
+order: 4
 cover:
   src: /uploads/catherine.jpg
   alt: Catherine Mazoyer
