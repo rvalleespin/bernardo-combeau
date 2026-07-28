@@ -13,6 +13,8 @@ images:
     alt: Bern
   - src: /uploads/respindola_mg_8203_b-w.jpg
     alt: Ramon
+  - src: /uploads/pascal_mg_9471-copia.jpg
+    alt: Pascal
 publication:
   url: https://bernardocombeau.cl
   name: .
