@@ -28,4 +28,9 @@ images:
     alt: Nico
   - src: /uploads/santi_chala_1022.jpg
     alt: Santi
+  - src: /uploads/florian_2897.jpg
+    alt: Florian
+publication:
+  name: .
+  url: https://www.bernardocombeau.cl
 ---
