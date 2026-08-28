@@ -4,8 +4,8 @@
     {
       "name": "bernardo-site",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "bernardo-site", "run", "dev"],
-      "port": 4321
+      "runtimeArgs": ["--prefix", "bernardo-site", "run", "dev", "--", "--port", "4333"],
+      "port": 4333
     }
   ]
 }

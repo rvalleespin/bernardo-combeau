@@ -18,6 +18,7 @@ const navLinks = [
   { href: '/servicios', label: nav.servicios },
   { href: '/sobre-mi', label: nav.sobremi },
   { href: '/contacto', label: nav.contacto },
+  { href: '/modelo', label: nav.modelo },
 ];
 
 const retratosEntries = (await getCollection('retratos')).sort((a, b) => a.data.order - b.data.order)

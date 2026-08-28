@@ -1,0 +1,168 @@
+---
+export const prerender = true;
+
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import modelo from '../../data/modelo.json';
+import contacto from '../../data/contacto.json';
+
+const { heroFoto, heroVideoUrl, bio, medidas, portfolio, polaroids, trabajos } = modelo;
+
+// Acepta un link normal de YouTube o Vimeo y lo convierte al formato embebible.
+// No se sube el video como archivo al repo (Git no es un lugar razonable para
+// video pesado) — siempre es un link a una plataforma externa.
+function toEmbedUrl(url) {
+  if (!url) return null;
+  const yt = url.match(/(?:youtu\.be\/|youtube\.com\/watch\?v=|youtube\.com\/embed\/)([\w-]+)/);
+  if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
+  const vimeo = url.match(/vimeo\.com\/(\d+)/);
+  if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}`;
+  return url;
+}
+
+const heroEmbed = toEmbedUrl(heroVideoUrl);
+
+const medidasList = [
+  ['Altura', medidas?.altura],
+  ['Ojos', medidas?.ojos],
+  ['Pelo', medidas?.pelo],
+  ['Pecho', medidas?.pecho],
+  ['Cintura', medidas?.cintura],
+  ['Terno', medidas?.terno],
+  ['Calzado', medidas?.calzado],
+].filter(([, v]) => v);
+
+const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
+---
+
+<Layout title="Bernardo Combeau — Modelo" description="Bernardo Combeau, modelo en Santiago, Chile — book, polaroids y trabajos comerciales." image={heroFoto || undefined}>
+	<div class="modelo">
+		{medidasList.length > 0 && (
+			<div class="ticker">
+				{medidasList.map(([label, value]) => `${label.toUpperCase()}: ${value}`).join(' — ')}
+			</div>
+		)}
+
+		<header class="mhead">
+			<a class="back" href="/">← Volver a fotografía</a>
+			<span class="word">Bernardo Combeau <em>Modelo</em></span>
+		</header>
+
+		{(heroEmbed || heroFoto) && (
+			<div class="hero">
+				{heroEmbed ? (
+					<div class="hero-video"><iframe src={heroEmbed} title="Reel de Bernardo Combeau" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>
+				) : (
+					<Image src={heroFoto} alt="Bernardo Combeau — Modelo" width={1920} quality={80} />
+				)}
+			</div>
+		)}
+
+		{bio && (
+			<div class="bio-block"><p>{bio}</p></div>
+		)}
+
+		{portfolio && portfolio.length > 0 && (
+			<section class="mgallery">
+				<h2>Portfolio</h2>
+				<div class="grid-uniform">
+					{portfolio.map((img) => (
+						<div class="photo"><Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={800} quality={80} /></div>
+					))}
+				</div>
+			</section>
+		)}
+
+		{polaroids && polaroids.length > 0 && (
+			<section class="mgallery">
+				<h2>Polaroids</h2>
+				<div class="grid-mosaic">
+					{polaroids.map((img) => (
+						<div class="photo"><Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={600} quality={80} /></div>
+					))}
+				</div>
+			</section>
+		)}
+
+		{trabajos && trabajos.length > 0 && (
+			<section class="mgallery">
+				<h2>Trabajos</h2>
+				<div class="grid-uniform">
+					{trabajos.map((item) => (
+						item.tipo === 'video' ? (
+							<div class="photo video"><iframe src={toEmbedUrl(item.url)} title={item.cliente || 'Comercial'} frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>
+						) : (
+							<div class="photo"><Image src={item.src} alt={item.cliente || 'Campaña'} width={800} quality={80} /></div>
+						)
+					))}
+				</div>
+			</section>
+		)}
+
+		{medidasList.length > 0 && (
+			<section class="stats">
+				<h2>Datos físicos</h2>
+				<dl>
+					{medidasList.map(([label, value]) => (
+						<>
+							<dt>{label}</dt>
+							<dd>{value}</dd>
+						</>
+					))}
+				</dl>
+			</section>
+		)}
+
+		<footer class="mfoot">
+			<div class="contact-links">
+				{whatsappDigits && <a href={`https://wa.me/${whatsappDigits}`} target="_blank" rel="noopener">WhatsApp</a>}
+				{contacto.email && <a href={`mailto:${contacto.email}`}>{contacto.email}</a>}
+				{contacto.instagram && <a href={`https://instagram.com/${contacto.instagram.replace(/^@/, '')}`} target="_blank" rel="noopener">Instagram</a>}
+			</div>
+			<a class="back" href="/">← Volver a fotografía</a>
+		</footer>
+	</div>
+</Layout>
+
+<style>
+	.modelo{ --mp: #0b0b0a; --mi: #f4f2ec; --mm: #8d8a82; --ml: #242320;
+		background:var(--mp); color:var(--mi); font-family:-apple-system,BlinkMacSystemFont,sans-serif; }
+	.ticker{ font-size:.68rem; letter-spacing:.06em; text-align:center; padding:.6rem 1rem;
+		border-bottom:1px solid var(--ml); color:var(--mm); }
+	.mhead{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.6rem;
+		padding:1.6rem clamp(1.2rem,4vw,3rem); }
+	.mhead .back{ color:var(--mm); text-decoration:none; font-size:.82rem; }
+	.mhead .word{ font-family:Georgia,'Times New Roman',serif; font-size:1.15rem; letter-spacing:.01em; }
+	.mhead .word em{ font-style:italic; color:var(--mm); }
+	.hero{ width:100%; }
+	.hero img{ width:100%; height:auto; display:block; }
+	.hero-video{ position:relative; width:100%; aspect-ratio:16/9; }
+	.hero-video iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+	.bio-block{ max-width:62ch; margin:0 auto; padding:clamp(2.4rem,6vw,4rem) clamp(1.2rem,4vw,3rem); }
+	.bio-block p{ font-size:1.1rem; line-height:1.8; white-space:pre-line; }
+	.mgallery{ padding:clamp(1.4rem,3vw,2.2rem) clamp(1.2rem,4vw,3rem); }
+	.mgallery h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
+		font-size:1.3rem; margin:0 0 1.2rem; color:var(--mm); }
+	.grid-uniform{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(1rem,2.5vw,1.5rem); }
+	@media (min-width:820px){ .grid-uniform{ grid-template-columns:repeat(3,1fr); } }
+	.grid-uniform .photo{ aspect-ratio:1/1; overflow:hidden; }
+	.grid-uniform .photo.video{ aspect-ratio:16/9; position:relative; }
+	.grid-uniform .photo.video iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+	.grid-uniform .photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+	.grid-mosaic{ columns:2; column-gap:clamp(1rem,2.5vw,1.5rem); }
+	@media (min-width:820px){ .grid-mosaic{ columns:4; } }
+	.grid-mosaic .photo{ break-inside:avoid; margin-bottom:clamp(1rem,2.5vw,1.5rem); }
+	.grid-mosaic .photo img{ width:100%; height:auto; display:block; }
+	.stats{ padding:clamp(1.4rem,3vw,2.2rem) clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); }
+	.stats h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
+		font-size:1.3rem; margin:0 0 1.2rem; color:var(--mm); }
+	.stats dl{ display:grid; grid-template-columns:repeat(2,1fr); gap:1rem 2rem; max-width:48rem; }
+	@media (min-width:600px){ .stats dl{ grid-template-columns:repeat(4,1fr); } }
+	.stats dt{ font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--mm); margin:0; }
+	.stats dd{ font-size:1.05rem; margin:.2rem 0 0; }
+	.mfoot{ display:flex; flex-direction:column; align-items:center; gap:1.2rem;
+		padding:clamp(2rem,5vw,3rem) clamp(1.2rem,4vw,3rem) clamp(3rem,6vw,4rem); border-top:1px solid var(--ml); }
+	.contact-links{ display:flex; gap:1.5rem; flex-wrap:wrap; justify-content:center; }
+	.contact-links a{ color:var(--mi); text-decoration:none; font-size:.9rem; border-bottom:1px solid var(--mm); }
+	.mfoot .back{ color:var(--mm); text-decoration:none; font-size:.82rem; }
+</style>
