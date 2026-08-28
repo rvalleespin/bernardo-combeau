@@ -1,17 +1,22 @@
 {
   "heroFoto": "",
-  "heroVideoUrl": "",
-  "bio": "",
-  "medidas": {
-    "altura": "",
-    "ojos": "",
-    "pelo": "",
-    "pecho": "",
-    "cintura": "",
-    "terno": "",
-    "calzado": ""
-  },
-  "portfolio": [],
+  "heroCaption": "Santiago, Chile · 46 · 185 cm · Grey Hair · Blue Eyes",
+  "galeria": [],
+  "identity": "Model based in Santiago, Chile, with experience in fashion, commercial, e-commerce and advertising. Also a professional photographer, Bernardo brings a strong understanding of light, movement and visual storytelling to both sides of the camera.",
+  "selectedWork": [],
+  "reelUrl": "",
   "polaroids": [],
-  "trabajos": []
+  "details": {
+    "height": "",
+    "chest": "",
+    "waist": "",
+    "hips": "",
+    "shoes": "",
+    "hair": "",
+    "eyes": ""
+  },
+  "booking": {
+    "region": "Chile & International",
+    "instagram": "@bcombeau"
+  }
 }
