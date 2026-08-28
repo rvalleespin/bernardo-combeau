@@ -15,4 +15,9 @@ images:
     alt: Guido Vecchiola
   - src: /uploads/cm3.jpg
     alt: Catherine
+  - alt: Eduardo Vial
+    src: /uploads/eduardo-vial_img_3422.jpg
+publication:
+  name: .
+  url: https://bernardocombeau.cl/
 ---
