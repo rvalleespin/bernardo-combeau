@@ -37,23 +37,28 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 
 <Layout title="Bernardo Combeau — Model" description="Bernardo Combeau, model based in Santiago, Chile — fashion, commercial, e-commerce and advertising." image={heroFoto || undefined}>
 	<div class="modelo">
-		<header class="mhead">
-			<a class="back" href="/">← Volver a fotografía</a>
-			<span class="word">Bernardo Combeau <em>Model</em></span>
-		</header>
-
-		{heroFoto && (
-			<div class="hero">
+		{heroFoto ? (
+			<div class="mhero">
+				<a class="back" href="/">← Volver a fotografía</a>
 				<Image src={heroFoto} alt="Bernardo Combeau" width={2000} quality={82} />
-				{heroCaption && <p class="hero-caption">{heroCaption}</p>}
+				<div class="mhero-scrim"></div>
+				<div class="mhero-caption">
+					<span class="word">Bernardo Combeau <em>Model</em></span>
+					{heroCaption && <p class="hero-caption">{heroCaption}</p>}
+				</div>
 			</div>
+		) : (
+			<header class="mhead">
+				<a class="back" href="/">← Volver a fotografía</a>
+				<span class="word">Bernardo Combeau <em>Model</em></span>
+			</header>
 		)}
 
 		{galeria && galeria.length > 0 && (
 			<section class="mgallery">
 				<div class="grid-12">
 					{galeria.slice(0, 12).map((img) => (
-						<div class="photo"><Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={700} quality={80} /></div>
+						<div class="photo"><Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={1200} quality={80} /></div>
 					))}
 				</div>
 				{selectedWork && selectedWork.length > 0 && (
@@ -141,17 +146,28 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 	.mhead .word{ font-family:Georgia,'Times New Roman',serif; font-size:1.15rem; letter-spacing:.01em; }
 	.mhead .word em{ font-style:italic; color:var(--mm); }
 
-	.hero img{ width:100%; height:auto; display:block; }
-	.hero-caption{ text-align:center; font-family:Georgia,'Times New Roman',serif; font-weight:300;
-		font-size:.9rem; letter-spacing:.08em; color:var(--mm); padding:1.2rem 1rem; margin:0; }
+	.mhero{ position:relative; width:100%; height:100vh; min-height:560px; max-height:960px; overflow:hidden; }
+	.mhero img{ width:100%; height:100%; object-fit:cover; object-position:32% 22%; display:block; }
+	.mhero .back{ position:absolute; z-index:2; top:1.6rem; left:clamp(1.2rem,4vw,3rem);
+		color:var(--mi); text-decoration:none; font-size:.8rem; letter-spacing:.02em;
+		text-shadow:0 1px 6px rgba(0,0,0,.5); }
+	.mhero-scrim{ position:absolute; inset:0; z-index:1;
+		background:linear-gradient(0deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.25) 32%, rgba(0,0,0,0) 55%); }
+	.mhero-caption{ position:absolute; z-index:2; left:clamp(1.2rem,4vw,3rem); right:clamp(1.2rem,4vw,3rem);
+		bottom:clamp(1.6rem,5vw,3.2rem); }
+	.mhero-caption .word{ display:block; font-family:Georgia,'Times New Roman',serif; font-weight:400;
+		font-size:clamp(1.8rem,5vw,3.2rem); letter-spacing:.01em; color:var(--mi); }
+	.mhero-caption .word em{ font-style:italic; color:var(--mm); }
+	.mhero-caption .hero-caption{ font-family:Georgia,'Times New Roman',serif; font-weight:300;
+		font-size:.88rem; letter-spacing:.08em; color:var(--mm); margin:.6rem 0 0; }
 
 	.mgallery{ padding:clamp(1.4rem,3vw,2.2rem) clamp(1.2rem,4vw,3rem); }
 	.mgallery h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
 		font-size:1.3rem; margin:0 0 1.2rem; color:var(--mm); }
 
-	.grid-12{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(.6rem,2vw,1rem); }
-	@media (min-width:820px){ .grid-12{ grid-template-columns:repeat(4,1fr); } }
-	.grid-12 .photo{ aspect-ratio:1/1; overflow:hidden; }
+	.grid-12{ display:grid; grid-template-columns:1fr; gap:clamp(1rem,3vw,1.8rem); }
+	@media (min-width:600px){ .grid-12{ grid-template-columns:repeat(2,1fr); } }
+	.grid-12 .photo{ aspect-ratio:4/5; overflow:hidden; }
 	.grid-12 .photo img{ width:100%; height:100%; object-fit:cover; display:block; }
 
 	.book-cta{ text-align:center; padding-top:clamp(1.4rem,3vw,2rem); }
