@@ -22,15 +22,16 @@ function toEmbedUrl(url) {
 
 const reelEmbed = toEmbedUrl(reelUrl);
 
-const detailsList = [
-  ['Height', details?.height],
-  ['Chest', details?.chest],
-  ['Waist', details?.waist],
-  ['Hips', details?.hips],
-  ['Shoes', details?.shoes],
-  ['Hair', details?.hair],
-  ['Eyes', details?.eyes],
-].filter(([, v]) => v);
+// Tres columnas, como pidió Bernardo: la altura sola, las tres medidas de
+// cuerpo siempre juntas, y el resto de los rasgos aparte. Cada columna se
+// cae sola si no tiene ningún dato cargado.
+const detailGroups = [
+  [['Height', details?.height]],
+  [['Chest', details?.chest], ['Waist', details?.waist], ['Hips', details?.hips]],
+  [['Shoes', details?.shoes], ['Hair', details?.hair], ['Eyes', details?.eyes]],
+]
+  .map((group) => group.filter(([, v]) => v))
+  .filter((group) => group.length > 0);
 
 const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 ---
@@ -38,18 +39,23 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 <Layout title="Bernardo Combeau — Model" description="Bernardo Combeau, model based in Santiago, Chile — fashion, commercial, e-commerce and advertising." image={heroFoto || undefined}>
 	<div class="modelo">
 		<header class="mhead">
+			<span class="wordmark">Bernardo Combeau</span>
 			<a class="back" href="/">← Volver a fotografía</a>
-			<div class="mhead-name">
-				<span class="word">Bernardo Combeau <em>Model</em></span>
-				{heroCaption && <p class="hero-caption">{heroCaption}</p>}
-			</div>
 		</header>
 
 		{heroFoto && (
-			<div class="mhero">
-				<Image src={heroFoto} alt="Bernardo Combeau" width={2000} quality={82} />
+			<div class="mhero-wrap">
+				<div class="mhero">
+					<Image src={heroFoto} alt="Bernardo Combeau" width={1800} quality={82} />
+					<div class="mhero-scrim"></div>
+				</div>
+				<div class="mhero-overlay">
+					<span class="word">Bernardo Combeau <em>Model</em></span>
+				</div>
 			</div>
 		)}
+
+		{heroCaption && <p class="hero-caption">{heroCaption}</p>}
 
 		{galeria && galeria.length > 0 && (
 			<section class="mgallery">
@@ -107,17 +113,21 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 			</section>
 		)}
 
-		{detailsList.length > 0 && (
+		{detailGroups.length > 0 && (
 			<section class="stats">
 				<h2>Details</h2>
-				<dl>
-					{detailsList.map(([label, value]) => (
-						<>
-							<dt>{label}</dt>
-							<dd>{value}</dd>
-						</>
+				<div class="stat-cols">
+					{detailGroups.map((group) => (
+						<dl class="stat-col">
+							{group.map(([label, value]) => (
+								<div class="stat">
+									<dt>{label}</dt>
+									<dd>{value}</dd>
+								</div>
+							))}
+						</dl>
 					))}
-				</dl>
+				</div>
 			</section>
 		)}
 
@@ -137,24 +147,55 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 <style>
 	.modelo{ --mp: #ffffff; --mi: #111110; --mm: #84817a; --ml: #e7e4dd;
 		background:var(--mp); color:var(--mi); font-family:-apple-system,BlinkMacSystemFont,sans-serif; }
-	.mhead{ display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:.6rem 1.2rem;
-		padding:1.6rem clamp(1.2rem,4vw,3rem) 1.4rem; }
-	.mhead .back{ color:var(--mm); text-decoration:none; font-size:.82rem; padding-top:.3rem; }
-	.mhead-name{ text-align:right; }
-	.mhead-name .word{ display:block; font-family:Georgia,'Times New Roman',serif; font-weight:400;
-		font-size:clamp(1.3rem,3vw,1.7rem); letter-spacing:.01em; color:var(--mi); }
-	.mhead-name .word em{ font-style:italic; color:var(--mm); }
-	.mhead-name .hero-caption{ font-family:Georgia,'Times New Roman',serif; font-weight:300;
-		font-size:.82rem; letter-spacing:.06em; color:var(--mm); margin:.4rem 0 0; }
+	/* Barra superior fija, como la referencia: el nombre vive acá arriba
+	   además de ir sobre la foto. */
+	.mhead{ position:sticky; top:0; z-index:10; background:var(--mp);
+		display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.4rem 1.2rem;
+		padding:1.1rem clamp(1.2rem,4vw,3rem); border-bottom:1px solid var(--ml); }
+	.mhead .wordmark{ font-size:.82rem; font-weight:600; letter-spacing:.18em; text-transform:uppercase;
+		color:var(--mi); }
+	.mhead .back{ color:var(--mm); text-decoration:none; font-size:.8rem; }
 
-	.mhero{ width:100%; }
-	.mhero img{ width:100%; height:auto; display:block; }
+	/* El hero es una banda apaisada recortada, no la foto entera a ancho
+	   completo (así deja de salir gigante). El sujeto queda a la izquierda
+	   del encuadre y el nombre cae sobre el fondo desenfocado de la derecha,
+	   sin taparlo. */
+	.mhero-wrap{ position:relative; }
+	.mhero{ position:relative; width:100%; aspect-ratio:16/9; overflow:hidden; }
+	.mhero img{ width:100%; height:100%; object-fit:cover; object-position:28% 34%; display:block; }
+	.mhero-scrim{ position:absolute; inset:0; z-index:1;
+		background:linear-gradient(270deg, rgba(0,0,0,.52) 0%, rgba(0,0,0,.28) 30%, rgba(0,0,0,0) 58%); }
+	.mhero-overlay{ position:absolute; z-index:2; top:50%; transform:translateY(-50%);
+		right:clamp(1.4rem,5vw,4.5rem); max-width:min(48%,32rem); text-align:right; }
+	.mhero-overlay .word{ display:block; font-family:Georgia,'Times New Roman',serif; font-weight:400;
+		font-size:clamp(1.5rem,3.4vw,2.9rem); line-height:1.15; letter-spacing:.01em; color:#fff;
+		text-shadow:0 1px 14px rgba(0,0,0,.35); }
+	.mhero-overlay .word em{ font-style:italic; color:rgba(255,255,255,.72); }
 
-	.mgallery{ padding:clamp(1.4rem,3vw,2.2rem) clamp(1.2rem,4vw,3rem); }
+	.hero-caption{ text-align:center; font-family:Georgia,'Times New Roman',serif; font-weight:300;
+		font-size:.86rem; letter-spacing:.08em; color:var(--mm);
+		margin:0; padding:clamp(1.3rem,3vw,2rem) clamp(1.2rem,4vw,3rem) 0; }
+
+	/* En vertical no hay lugar para poner el nombre al lado sin pisarlo:
+	   la foto se queda con él y el nombre pasa a la línea de abajo. */
+	@media (max-width:760px){
+		.mhero{ aspect-ratio:4/5; }
+		.mhero img{ object-position:14% 32%; }
+		.mhero-scrim{ display:none; }
+		.mhero-overlay{ position:static; transform:none; max-width:none; text-align:center;
+			padding:clamp(1.2rem,4vw,2rem) clamp(1.2rem,4vw,3rem) 0; }
+		.mhero-overlay .word{ color:var(--mi); text-shadow:none; }
+		.mhero-overlay .word em{ color:var(--mm); }
+		.hero-caption{ padding-top:.5rem; }
+	}
+
+	/* Aire generoso entre fotos y entre secciones: es lo que da la lectura
+	   de revista que pidió Bernardo. */
+	.mgallery{ padding:clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem); }
 	.mgallery h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
-		font-size:1.3rem; margin:0 0 1.2rem; color:var(--mm); }
+		font-size:1.3rem; margin:0 0 clamp(1.4rem,3vw,2.2rem); color:var(--mm); }
 
-	.grid-12{ display:grid; grid-template-columns:1fr; gap:clamp(1rem,3vw,1.8rem); }
+	.grid-12{ display:grid; grid-template-columns:1fr; gap:clamp(1.6rem,5vw,4rem); }
 	@media (min-width:600px){ .grid-12{ grid-template-columns:repeat(2,1fr); } }
 	.grid-12 .photo{ aspect-ratio:4/5; overflow:hidden; }
 	.grid-12 .photo img{ width:100%; height:100%; object-fit:cover; display:block; }
@@ -171,7 +212,7 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 		margin-bottom:1rem; border-bottom:1px solid var(--ml); padding-bottom:.6rem; }
 	.work-name{ font-family:Georgia,'Times New Roman',serif; font-size:1.15rem; letter-spacing:.03em; }
 	.work-detalle{ font-size:.75rem; letter-spacing:.05em; color:var(--mm); text-transform:uppercase; }
-	.grid-work{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(.6rem,2vw,1rem); }
+	.grid-work{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(1.2rem,3.5vw,2.4rem); }
 	@media (min-width:820px){ .grid-work{ grid-template-columns:repeat(4,1fr); } }
 	.grid-work .photo{ aspect-ratio:3/4; overflow:hidden; }
 	.grid-work .photo img{ width:100%; height:100%; object-fit:cover; display:block; }
@@ -179,7 +220,7 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 	.reel{ position:relative; width:100%; max-width:800px; margin:0 auto; aspect-ratio:16/9; }
 	.reel iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
 
-	.grid-polaroids{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(.6rem,2vw,1rem); }
+	.grid-polaroids{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(1.2rem,3.5vw,2.4rem); }
 	@media (min-width:640px){ .grid-polaroids{ grid-template-columns:repeat(4,1fr); } }
 	.grid-polaroids .photo{ aspect-ratio:1/1; overflow:hidden; }
 	.grid-polaroids .photo img{ width:100%; height:100%; object-fit:cover; display:block; }
@@ -187,10 +228,17 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 	.stats{ padding:clamp(1.4rem,3vw,2.2rem) clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); }
 	.stats h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
 		font-size:1.3rem; margin:0 0 1.2rem; color:var(--mm); }
-	.stats dl{ display:grid; grid-template-columns:repeat(2,1fr); gap:1rem 2rem; max-width:48rem; }
-	@media (min-width:600px){ .stats dl{ grid-template-columns:repeat(4,1fr); } }
-	.stats dt{ font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--mm); margin:0; }
-	.stats dd{ font-size:1.05rem; margin:.2rem 0 0; }
+	/* Tres columnas: la altura sola, las medidas de cuerpo juntas, el resto
+	   aparte. Etiqueta y valor comparten tamaño y van pegados — se separan
+	   por color, no por escala. */
+	.stat-cols{ display:grid; grid-template-columns:1fr; gap:1.6rem 3rem; max-width:56rem; }
+	@media (min-width:640px){ .stat-cols{ grid-template-columns:auto auto auto; justify-content:start; gap:1.6rem clamp(3rem,7vw,6rem); } }
+	.stat-col{ display:flex; flex-direction:column; gap:.35rem; margin:0; }
+	.stat{ display:flex; align-items:baseline; gap:.45rem; }
+	.stats dt, .stats dd{ font-size:.98rem; line-height:1.4; letter-spacing:.01em; margin:0; }
+	.stats dt{ color:var(--mm); }
+	.stats dt::after{ content:" —"; }
+	.stats dd{ color:var(--mi); }
 
 	.mfoot{ display:flex; flex-direction:column; align-items:center; gap:1rem; text-align:center;
 		padding:clamp(2rem,5vw,3rem) clamp(1.2rem,4vw,3rem) clamp(3rem,6vw,4rem); border-top:1px solid var(--ml); }
