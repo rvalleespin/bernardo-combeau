@@ -388,11 +388,15 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 		font-size:clamp(1.5rem,3vw,2.4rem); letter-spacing:-.02em; line-height:1.1;
 		margin:0 0 clamp(1.2rem,2.5vw,1.8rem); color:#fff; text-shadow:0 1px 14px rgba(0,0,0,.4); }
 	.motion-acciones{ display:flex; gap:clamp(.7rem,2vw,1.2rem); justify-content:center; flex-wrap:wrap; }
-	.btn{ display:inline-block; min-width:9.5rem; padding:.85rem 1.8rem;
-		border:1px solid rgba(255,255,255,.75); color:#fff; text-decoration:none;
-		font-size:.82rem; letter-spacing:.14em; text-transform:uppercase;
+	/* Ancho mínimo igual en los dos: es lo que hace que el par se lea como un
+	   juego apareado y no como dos enlaces sueltos. Borde de 2px, que
+	   adelgaza a 1px en pantallas chicas, igual que la referencia. */
+	.btn{ display:inline-block; min-width:8.75rem; padding:.75rem 1.25rem;
+		border:2px solid #fff; border-radius:0; color:#fff; text-decoration:none;
+		font-size:.82rem; letter-spacing:.14em; text-transform:uppercase; text-align:center;
 		transition:background-color .2s ease, color .2s ease; }
 	.btn:hover, .btn:focus-visible{ background:#fff; color:#111110; }
+	@media (max-width:786px){ .btn{ border-width:1px; padding:.75rem .65rem; } }
 
 	/* Control de pausa: cualquier cosa que se mueva sola y dure más de cinco
 	   segundos necesita una forma visible de detenerla (WCAG 2.2.2). La
