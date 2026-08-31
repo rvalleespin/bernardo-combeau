@@ -8,19 +8,34 @@ import contacto from '../../data/contacto.json';
 
 const { heroFoto, heroCaption, galeria, identity, selectedWork, reelUrl, polaroids, details, booking } = modelo;
 
-// Acepta un link normal de YouTube o Vimeo y lo convierte al formato embebible.
 // El reel siempre vive en una plataforma externa — no se sube el archivo de
 // video al repo (Git no es un lugar razonable para video pesado).
-function toEmbedUrl(url) {
+function parseReel(url) {
   if (!url) return null;
   const yt = url.match(/(?:youtu\.be\/|youtube\.com\/watch\?v=|youtube\.com\/embed\/)([\w-]+)/);
-  if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
-  const vimeo = url.match(/vimeo\.com\/(\d+)/);
-  if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}`;
-  return url;
+  if (yt) return { tipo: 'youtube', id: yt[1] };
+  const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vimeo) return { tipo: 'vimeo', id: vimeo[1] };
+  return null;
 }
 
-const reelEmbed = toEmbedUrl(reelUrl);
+const reel = parseReel(reelUrl);
+
+// Reproducción de fondo: en silencio, en bucle y sin nada de interfaz. En
+// YouTube el bucle sólo funciona si además se le pasa el propio id como
+// playlist; Vimeo tiene su parámetro background que apaga toda la UI de una.
+const reelFondo = !reel
+  ? null
+  : reel.tipo === 'youtube'
+    ? `https://www.youtube-nocookie.com/embed/${reel.id}?autoplay=1&mute=1&loop=1&playlist=${reel.id}&controls=0&showinfo=0&modestbranding=1&rel=0&iv_load_policy=3&playsinline=1&disablekb=1&fs=0`
+    : `https://player.vimeo.com/video/${reel.id}?background=1&autoplay=1&muted=1&loop=1&autopause=0`;
+
+// El mismo video, pero para verlo de verdad al tocar el botón.
+const reelLink = !reel
+  ? null
+  : reel.tipo === 'youtube'
+    ? `https://www.youtube.com/watch?v=${reel.id}`
+    : `https://vimeo.com/${reel.id}`;
 
 // Tres columnas, como pidió Bernardo: la altura sola, las tres medidas de
 // cuerpo siempre juntas, y el resto de los rasgos aparte. Cada columna se
@@ -58,10 +73,12 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 		{heroCaption && <p class="hero-caption">{heroCaption}</p>}
 
 		{galeria && galeria.length > 0 && (
-			<section class="mgallery">
+			<section class="mgallery" id="galeria">
 				<div class="grid-12">
 					{galeria.slice(0, 12).map((img) => (
-						<div class="photo"><Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={1200} quality={80} /></div>
+						<button class="photo" type="button" data-full={img.src} data-alt={img.alt || 'Bernardo Combeau'}>
+							<Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={1200} quality={80} />
+						</button>
 					))}
 				</div>
 				{selectedWork && selectedWork.length > 0 && (
@@ -86,7 +103,9 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 							</div>
 							<div class="grid-work">
 								{(job.fotos || []).map((img) => (
-									<div class="photo"><Image src={img.src} alt={img.alt || job.nombre} width={800} quality={80} /></div>
+									<button class="photo" type="button" data-full={img.src} data-alt={img.alt || job.nombre}>
+										<Image src={img.src} alt={img.alt || job.nombre} width={800} quality={80} />
+									</button>
 								))}
 							</div>
 						</div>
@@ -95,10 +114,20 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 			</section>
 		)}
 
-		{reelEmbed && (
-			<section class="mgallery">
-				<h2>Motion / Commercials</h2>
-				<div class="reel"><iframe src={reelEmbed} title="Reel — Bernardo Combeau" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>
+		{reelFondo && (
+			<section class="motion" aria-labelledby="motion-titulo">
+				<div class="motion-video" aria-hidden="true">
+					<iframe src={reelFondo} title="Reel — Bernardo Combeau" frameborder="0" tabindex="-1"
+						allow="autoplay; fullscreen; picture-in-picture" loading="lazy"></iframe>
+				</div>
+				<div class="motion-scrim"></div>
+				<div class="motion-contenido">
+					<h2 id="motion-titulo">Motion / Commercials</h2>
+					<div class="motion-acciones">
+						<a class="btn" href="#galeria">Stills</a>
+						<a class="btn" href={reelLink} target="_blank" rel="noopener">Motion</a>
+					</div>
+				</div>
 			</section>
 		)}
 
@@ -107,7 +136,9 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 				<h2>Polaroids</h2>
 				<div class="grid-polaroids">
 					{polaroids.slice(0, 4).map((img) => (
-						<div class="photo"><Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={600} quality={80} /></div>
+						<button class="photo" type="button" data-full={img.src} data-alt={img.alt || 'Bernardo Combeau'}>
+							<Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={600} quality={80} />
+						</button>
 					))}
 				</div>
 			</section>
@@ -141,8 +172,69 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 			</div>
 			<a class="back" href="/">← Volver a fotografía</a>
 		</footer>
+
+		<dialog class="visor" aria-label="Foto a tamaño completo">
+			<img class="visor-img" src="" alt="" />
+			<button class="visor-btn visor-cerrar" type="button" aria-label="Cerrar">✕</button>
+			<button class="visor-btn visor-prev" type="button" aria-label="Foto anterior">‹</button>
+			<button class="visor-btn visor-next" type="button" aria-label="Foto siguiente">›</button>
+			<p class="visor-pie"></p>
+		</dialog>
 	</div>
 </Layout>
+
+<script>
+	// Visor a tamaño completo. <dialog> nativo: ya trae el foco atrapado y el
+	// cierre con Escape, así que no hace falta librería. Se muestra el archivo
+	// original en vez de la miniatura optimizada, y se carga recién al abrir.
+	const dlg = document.querySelector('.visor');
+	if (dlg) {
+		const img = dlg.querySelector('.visor-img');
+		const pie = dlg.querySelector('.visor-pie');
+		const fotos = Array.from(document.querySelectorAll('button.photo'));
+		let i = 0;
+		let origen = null;
+
+		const pintar = () => {
+			const f = fotos[i];
+			img.src = f.dataset.full;
+			img.alt = f.dataset.alt || '';
+			pie.textContent = f.dataset.alt || '';
+			const varias = fotos.length > 1;
+			dlg.querySelector('.visor-prev').hidden = !varias;
+			dlg.querySelector('.visor-next').hidden = !varias;
+		};
+		const mover = (paso) => { i = (i + paso + fotos.length) % fotos.length; pintar(); };
+
+		fotos.forEach((f, idx) => f.addEventListener('click', () => {
+			i = idx; origen = f; pintar(); dlg.showModal();
+		}));
+
+		// La limpieza va acá y no colgada del evento 'close': ese evento no
+		// llega a dispararse en todos los navegadores, así que si dependiera
+		// de él la foto quedaría cargada y el foco perdido. Es idempotente,
+		// da igual si además llega el evento.
+		const cerrar = () => {
+			if (dlg.open) dlg.close();
+			img.removeAttribute('src');
+			if (origen) origen.focus();
+		};
+
+		dlg.querySelector('.visor-cerrar').addEventListener('click', cerrar);
+		dlg.querySelector('.visor-prev').addEventListener('click', () => mover(-1));
+		dlg.querySelector('.visor-next').addEventListener('click', () => mover(1));
+		dlg.addEventListener('keydown', (e) => {
+			if (e.key === 'ArrowLeft') { e.preventDefault(); mover(-1); }
+			if (e.key === 'ArrowRight') { e.preventDefault(); mover(1); }
+		});
+		// Clic en el fondo (fuera de la foto y de los botones) cierra.
+		dlg.addEventListener('click', (e) => { if (e.target === dlg) cerrar(); });
+		// Escape: lo maneja el navegador, así que se intercepta para que pase
+		// igual por la limpieza.
+		dlg.addEventListener('cancel', (e) => { e.preventDefault(); cerrar(); });
+		dlg.addEventListener('close', cerrar);
+	}
+</script>
 
 <style>
 	.modelo{ --mp: #ffffff; --mi: #111110; --mm: #84817a; --ml: #e7e4dd;
@@ -240,8 +332,54 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 	.grid-work .photo{ aspect-ratio:3/4; overflow:hidden; }
 	.grid-work .photo img{ width:100%; height:100%; object-fit:cover; display:block; }
 
-	.reel{ position:relative; width:100%; max-width:800px; margin:0 auto; aspect-ratio:16/9; }
-	.reel iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+	/* Franja de Motion: el reel corre de fondo, en silencio y en bucle, y
+	   encima van el título y los dos accesos. */
+	.motion{ position:relative; width:100%; aspect-ratio:21/9; min-height:340px; max-height:70vh;
+		overflow:hidden; background:#0b0b0a; display:grid; place-items:center; }
+	.motion-video{ position:absolute; inset:0; overflow:hidden; }
+	/* El iframe llega en 16/9 y la franja es más apaisada: se sobredimensiona
+	   y se centra para que cubra sin barras negras. */
+	.motion-video iframe{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+		width:100vw; height:56.25vw; min-height:100%; min-width:177.78vh;
+		border:0; pointer-events:none; }
+	.motion-scrim{ position:absolute; inset:0; background:rgba(0,0,0,.42); }
+	.motion-contenido{ position:relative; z-index:2; text-align:center;
+		padding:clamp(1.4rem,4vw,3rem); }
+	.motion-contenido h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
+		font-size:clamp(1.5rem,3vw,2.4rem); letter-spacing:-.02em; line-height:1.1;
+		margin:0 0 clamp(1.2rem,2.5vw,1.8rem); color:#fff; text-shadow:0 1px 14px rgba(0,0,0,.4); }
+	.motion-acciones{ display:flex; gap:clamp(.7rem,2vw,1.2rem); justify-content:center; flex-wrap:wrap; }
+	.btn{ display:inline-block; min-width:9.5rem; padding:.85rem 1.8rem;
+		border:1px solid rgba(255,255,255,.75); color:#fff; text-decoration:none;
+		font-size:.82rem; letter-spacing:.14em; text-transform:uppercase;
+		transition:background-color .2s ease, color .2s ease; }
+	.btn:hover, .btn:focus-visible{ background:#fff; color:#111110; }
+
+	/* Si el visitante pidió menos movimiento, la franja se queda quieta. */
+	@media (prefers-reduced-motion: reduce){
+		.motion-video{ display:none; }
+		.motion-scrim{ background:#15130f; }
+	}
+
+	/* Visor a tamaño completo */
+	button.photo{ display:block; width:100%; padding:0; border:0; background:none;
+		cursor:zoom-in; font:inherit; color:inherit; }
+	button.photo:focus-visible{ outline:2px solid var(--mi); outline-offset:3px; }
+
+	.visor{ width:100vw; max-width:100vw; height:100dvh; max-height:100dvh;
+		margin:0; padding:0; border:0; background:rgba(10,10,9,.96); overflow:hidden; }
+	.visor::backdrop{ background:rgba(10,10,9,.9); }
+	.visor-img{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+		max-width:92vw; max-height:88dvh; width:auto; height:auto; display:block; }
+	.visor-btn{ position:absolute; z-index:2; background:none; border:0; color:#fff;
+		cursor:pointer; line-height:1; padding:.6rem .9rem; opacity:.75; }
+	.visor-btn:hover, .visor-btn:focus-visible{ opacity:1; }
+	.visor-cerrar{ top:.7rem; right:.9rem; font-size:1.5rem; }
+	.visor-prev, .visor-next{ top:50%; transform:translateY(-50%); font-size:2.6rem; }
+	.visor-prev{ left:.4rem; }
+	.visor-next{ right:.4rem; }
+	.visor-pie{ position:absolute; left:0; right:0; bottom:.9rem; margin:0; text-align:center;
+		font-size:.8rem; letter-spacing:.04em; color:rgba(255,255,255,.62); padding:0 3.5rem; }
 
 	.grid-polaroids{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(1.2rem,3.5vw,2.4rem); }
 	@media (min-width:640px){ .grid-polaroids{ grid-template-columns:repeat(4,1fr); } }
