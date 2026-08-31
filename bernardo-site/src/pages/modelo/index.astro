@@ -1,0 +1,752 @@
+---
+export const prerender = true;
+
+import { Image, getImage } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+// Cada sección de la página es un archivo propio, y en el panel es una
+// entrada propia dentro de "Modelo". Antes era un solo modelo.json con todo
+// adentro, que en el panel se veía como un formulario interminable.
+import portada from '../../data/modelo/portada.json';
+import galeriaData from '../../data/modelo/galeria.json';
+import identityData from '../../data/modelo/identity.json';
+import selectedWorkData from '../../data/modelo/selected-work.json';
+import motion from '../../data/modelo/motion.json';
+import polaroidsData from '../../data/modelo/polaroids.json';
+import details from '../../data/modelo/details.json';
+import booking from '../../data/modelo/booking.json';
+import contacto from '../../data/contacto.json';
+import nav from '../../data/nav.json';
+
+const { heroFoto, heroCaption } = portada;
+const galeria = galeriaData.fotos;
+const identity = identityData.texto;
+const selectedWork = selectedWorkData.trabajos;
+const polaroids = polaroidsData.fotos;
+const { titulo: motionTitulo, reelUrl, videoFondoUrl, poster: motionPoster } = motion;
+
+// Ni el reel ni el loop de fondo se suben al repo: Git no es lugar para video
+// pesado. El reel vive en YouTube/Vimeo; el loop de fondo es un mp4 alojado
+// fuera (Vercel Blob, R2, Bunny) y referenciado por URL.
+function parseReel(url) {
+	if (!url) return null;
+	const yt = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([\w-]+)/);
+	if (yt) return { tipo: 'youtube', id: yt[1] };
+	// El hash de privacidad de Vimeo es parte del identificador: sin el, un
+	// video no listado (lo normal en este rubro) responde "does not exist".
+	const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)(?:\/([0-9a-zA-Z]+))?/);
+	if (vimeo) {
+		const h = url.match(/[?&]h=([0-9a-zA-Z]+)/);
+		return { tipo: 'vimeo', id: vimeo[1], hash: vimeo[2] || (h ? h[1] : null) };
+	}
+	return null;
+}
+
+const reel = parseReel(reelUrl);
+
+// El reel de verdad: con controles y con sonido, en su proporcion nativa.
+const reelEmbed = !reel
+	? null
+	: reel.tipo === 'youtube'
+		? `https://www.youtube-nocookie.com/embed/${reel.id}?rel=0&playsinline=1&iv_load_policy=3`
+		: `https://player.vimeo.com/video/${reel.id}?${reel.hash ? `h=${reel.hash}&` : ''}dnt=1&playsinline=1`;
+
+// Respaldo para la franja cuando todavia no hay mp4 propio: el mismo reel, en
+// silencio y en bucle. Recortado a 21/9 corta cabeza y pies, asi que es el
+// plan B, no el plan A.
+const reelFondo = !reel
+	? null
+	: reel.tipo === 'youtube'
+		? `https://www.youtube-nocookie.com/embed/${reel.id}?autoplay=1&mute=1&loop=1&playlist=${reel.id}&controls=0&playsinline=1&disablekb=1&fs=0&iv_load_policy=3`
+		: `https://player.vimeo.com/video/${reel.id}?${reel.hash ? `h=${reel.hash}&` : ''}background=1&autopause=0&dnt=1`;
+
+// La franja aparece solo si hay algo que mostrar: mp4 propio o reel.
+const hayFranja = Boolean(videoFondoUrl || reelFondo);
+
+const motionPosterSrc = motionPoster
+	? (await getImage({ src: motionPoster, width: 1920, quality: 70 })).src
+	: null;
+
+// Anchos VALIDOS del optimizador de Vercel en este proyecto
+// (.vercel/output/config.json -> images.sizes). Verificado en un build real:
+// getImage() ajusta solo cualquier otro valor al mas cercano, y si se omite
+// `quality` el adaptador pone q=100. Nunca armar la URL a mano: en `astro dev`
+// el endpoint es otro (/_image?href=...) y daria 404 en local.
+const LB_ANCHOS = [1200, 1920, 2048];
+
+async function conVisor(fotos) {
+	return Promise.all((fotos || []).map(async (f) => {
+		const lb = {};
+		for (const w of LB_ANCHOS) {
+			lb[w] = (await getImage({ src: f.src, width: w, quality: 82 })).src;
+		}
+		return { ...f, lb };
+	}));
+}
+
+const galeriaV = await conVisor(galeria);
+const polaroidsV = await conVisor(polaroids);
+const selectedV = await Promise.all((selectedWork || []).map(async (job) => ({
+	...job, fotos: await conVisor(job.fotos),
+})));
+
+// La linea meta se parte en sus items para que el quiebre en movil caiga
+// siempre en un separador y nunca dentro de "185 cm" o "Grey Hair".
+const metaItems = (heroCaption || '').split('\u00b7').map((t) => t.trim()).filter(Boolean);
+
+// Tres columnas, como pidio Bernardo: la altura sola, las tres medidas de
+// cuerpo siempre juntas, y el resto de los rasgos aparte. Cada columna se
+// cae sola si no tiene ningun dato cargado.
+const detailGroups = [
+	[['Height', details?.height]],
+	[['Chest', details?.chest], ['Waist', details?.waist], ['Hips', details?.hips]],
+	[['Shoes', details?.shoes], ['Hair', details?.hair], ['Eyes', details?.eyes]],
+]
+	.map((group) => group.filter(([, v]) => v))
+	.filter((group) => group.length > 0);
+
+const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
+
+// Mientras el titulo del menu este vacio la pagina esta "en obra": no se
+// anuncia en el sitio y tampoco se ofrece a buscadores. Sacarla del menu no
+// alcanza, porque igual entra al sitemap y se indexa.
+const enObra = !(nav.modelo && nav.modelo.trim());
+---
+
+<Layout title="Bernardo Combeau — Model" description="Bernardo Combeau, model based in Santiago, Chile — fashion, commercial, e-commerce and advertising." image={heroFoto || undefined} noindex={enObra}>
+	<div class="modelo">
+		<header class="mhead">
+			<span class="wordmark">Bernardo Combeau</span>
+			<a class="back" href="/">← Volver a fotografía</a>
+		</header>
+
+		{heroFoto && (
+			<div class="mhero-wrap">
+				<div class="mhero">
+					<Image src={heroFoto} alt="Bernardo Combeau" width={1800} quality={82} loading="eager" fetchpriority="high" />
+					<div class="mhero-scrim"></div>
+				</div>
+				<div class="mhero-overlay">
+					<span class="word">Bernardo Combeau <em>Model</em></span>
+				</div>
+			</div>
+		)}
+
+		{metaItems.length > 0 && (
+			<p class="hero-caption">
+				{metaItems.map((item, n) => (
+					<>
+						<span class="meta-item">{item}{n < metaItems.length - 1 && <i class="meta-sep" aria-hidden="true">·</i>}</span>
+						{/* El separador viaja DENTRO del item para que nunca quede huerfano
+						    al inicio de una linea, y el <wbr> pone el unico punto de quiebre
+						    posible: entre items. Sin el, la fila entera es una sola palabra
+						    y desborda a lo ancho en vez de partirse. */}
+						{n < metaItems.length - 1 && <wbr />}
+					</>
+				))}
+			</p>
+		)}
+
+		{galeria && galeria.length > 0 && (
+			<section class="mgallery" id="galeria">
+				<div class="grid-12" data-visor-grupo>
+					{galeriaV.slice(0, 12).map((img) => (
+						<button class="photo" type="button" aria-haspopup="dialog"
+							data-lb={JSON.stringify(img.lb)} data-alt={img.alt || 'Bernardo Combeau'}>
+							<Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={1200} quality={80} />
+						</button>
+					))}
+				</div>
+				{selectedWork && selectedWork.length > 0 && (
+					<div class="book-cta"><a href="#selected-work">Ver book completo →</a></div>
+				)}
+			</section>
+		)}
+
+		{identity && (
+			<div class="identity"><p>{identity}</p></div>
+		)}
+
+		{selectedWork && selectedWork.length > 0 && (
+			<section class="mgallery" id="selected-work">
+				<h2>Selected Work</h2>
+				<div class="work-list">
+					{selectedV.map((job) => (
+						<div class="work-item">
+							<div class="work-head">
+								<span class="work-name">{job.nombre}</span>
+								{job.detalle && <span class="work-detalle">{job.detalle}</span>}
+							</div>
+							<div class="grid-work" data-visor-grupo>
+								{(job.fotos || []).map((img) => (
+									<button class="photo" type="button" aria-haspopup="dialog"
+										data-lb={JSON.stringify(img.lb)} data-alt={img.alt || job.nombre}>
+										<Image src={img.src} alt={img.alt || job.nombre} width={800} quality={80} />
+									</button>
+								))}
+							</div>
+						</div>
+					))}
+				</div>
+			</section>
+		)}
+
+		{hayFranja && (
+			<section class="motion" id="motion" aria-labelledby="motion-titulo"
+				style={motionPosterSrc ? `background-image:url(${motionPosterSrc})` : undefined}>
+				<div class="motion-media" aria-hidden="true">
+					{/* El src lo pone el script, nunca el HTML: asi no se descarga si el
+					    visitante pidio menos movimiento ni en pantallas chicas, y el boton
+					    de pausa puede cortarlo de verdad en vez de solo taparlo. */}
+					{videoFondoUrl ? (
+						<video class="motion-video" data-src={videoFondoUrl}
+							muted loop playsinline preload="none" tabindex="-1"
+							poster={motionPosterSrc || undefined}></video>
+					) : (
+						<iframe class="motion-embed" data-src={reelFondo} title="" tabindex="-1"
+							frameborder="0" allow="autoplay; picture-in-picture"></iframe>
+					)}
+				</div>
+				<div class="motion-scrim"></div>
+				<div class="motion-contenido">
+					<h2 id="motion-titulo">{motionTitulo || 'Motion / Commercials'}</h2>
+					<div class="motion-acciones">
+						<a class="btn" href="#galeria">Stills</a>
+						{reelEmbed && <a class="btn" href="#reel">Motion</a>}
+					</div>
+				</div>
+				<button class="motion-pausa" type="button" hidden>Pausar</button>
+			</section>
+		)}
+
+		{reelEmbed && (
+			<section class="reel" id="reel" aria-labelledby="reel-titulo">
+				<h2 id="reel-titulo">Reel</h2>
+				{/* En su proporcion nativa y con controles: la franja de arriba es
+				    decorativa y va recortada, esta es la pieza que se mira de verdad. */}
+				<div class="reel-marco">
+					<iframe data-src={reelEmbed} title="Reel — Bernardo Combeau" frameborder="0"
+						allow="fullscreen; picture-in-picture" allowfullscreen></iframe>
+				</div>
+				<noscript>
+					<p class="reel-alt"><a href={reelUrl} target="_blank" rel="noopener">Ver el reel completo →</a></p>
+				</noscript>
+			</section>
+		)}
+
+		{polaroids && polaroids.length > 0 && (
+			<section class="mgallery">
+				<h2>Polaroids</h2>
+				<div class="grid-polaroids" data-visor-grupo>
+					{polaroidsV.slice(0, 4).map((img) => (
+						<button class="photo" type="button" aria-haspopup="dialog"
+							data-lb={JSON.stringify(img.lb)} data-alt={img.alt || 'Bernardo Combeau'}>
+							<Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={600} quality={80} />
+						</button>
+					))}
+				</div>
+			</section>
+		)}
+
+		{detailGroups.length > 0 && (
+			<section class="stats">
+				<h2>Details</h2>
+				<div class="stat-cols">
+					{detailGroups.map((group) => (
+						<dl class="stat-col">
+							{group.map(([label, value]) => (
+								<div class="stat">
+									<dt>{label}</dt>
+									<dd>{value}</dd>
+								</div>
+							))}
+						</dl>
+					))}
+				</div>
+			</section>
+		)}
+
+		<footer class="mfoot">
+			<h2>Booking</h2>
+			{booking?.region && <p class="region">{booking.region}</p>}
+			<div class="contact-links">
+				{contacto.email && <a href={`mailto:${contacto.email}`}>{contacto.email}</a>}
+				{whatsappDigits && <a href={`https://wa.me/${whatsappDigits}`} target="_blank" rel="noopener">{contacto.whatsapp}</a>}
+				{booking?.instagram && <a href={`https://instagram.com/${booking.instagram.replace(/^@/, '')}`} target="_blank" rel="noopener">{booking.instagram}</a>}
+			</div>
+			<a class="back" href="/">← Volver a fotografía</a>
+		</footer>
+
+		<dialog class="visor" aria-label="Foto a tamaño completo">
+			<figure class="visor-fig">
+				<img class="visor-img" alt="" decoding="async" />
+			</figure>
+			{/* autofocus va en Cerrar a proposito: sin el, showModal() manda el foco
+			    al primer focusable del DOM, que aca seria "Foto anterior". */}
+			<button class="visor-btn visor-cerrar" type="button" autofocus aria-label="Cerrar visor">✕</button>
+			<button class="visor-btn visor-prev" type="button" aria-label="Foto anterior">‹</button>
+			<button class="visor-btn visor-next" type="button" aria-label="Foto siguiente">›</button>
+			<p class="visor-pie" aria-hidden="true"></p>
+			{/* Al navegar con las flechas cambia la imagen pero no se mueve el foco:
+			    sin esta region viva un lector de pantalla no anuncia nada. */}
+			<p class="visor-sr" role="status" aria-live="polite"></p>
+		</dialog>
+	</div>
+</Layout>
+
+<script>
+	// ---- Franja de Motion ----------------------------------------------------
+	// El fondo se monta desde aca y no desde el HTML: si el visitante pidio menos
+	// movimiento no se carga nunca (un iframe de plataforma ignora esa preferencia
+	// por su cuenta), en movil no se sirve video decorativo, y el boton de pausa
+	// puede cortarlo de verdad quitandole el src.
+	const banda = document.querySelector('.motion');
+	if (banda) {
+		const vid = banda.querySelector('video.motion-video');
+		const marco = banda.querySelector('iframe.motion-embed');
+		const medio = vid || marco;
+		const btn = banda.querySelector('.motion-pausa');
+		const fuente = medio && medio.dataset.src;
+		const menosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)');
+		// Como la referencia: en pantallas chicas manda el poster, no el video.
+		// Ahi el autoplay es menos confiable y el loop es puro adorno pagado con
+		// datos del visitante.
+		const pantallaGrande = window.matchMedia('(min-width: 768px)');
+		const ahorroDatos = navigator.connection && navigator.connection.saveData;
+		let corriendo = false;
+
+		const rotular = () => { btn.textContent = corriendo ? 'Pausar' : 'Reproducir'; };
+
+		const encender = () => {
+			if (corriendo || !fuente) return;
+			if (vid) {
+				if (!vid.src) vid.src = fuente;
+				vid.muted = true;
+				const p = vid.play();
+				// Nunca dar por hecho el autoplay: el modo de bajo consumo de iOS lo
+				// bloquea aun con muted + playsinline, y no es detectable. Si falla,
+				// se queda el poster y no se insiste.
+				if (p && p.catch) p.catch(() => { corriendo = false; rotular(); });
+			} else if (!marco.src) {
+				marco.src = fuente;
+			}
+			corriendo = true;
+			rotular();
+		};
+
+		const apagar = () => {
+			if (!corriendo) return;
+			if (vid) vid.pause();
+			else marco.removeAttribute('src');
+			corriendo = false;
+			rotular();
+		};
+
+		if (fuente && pantallaGrande.matches && !menosMovimiento.matches && !ahorroDatos) {
+			btn.hidden = false;
+			rotular();
+			if ('IntersectionObserver' in window) {
+				// No cargar nada hasta que la franja este por entrar en pantalla.
+				const obs = new IntersectionObserver((entradas) => {
+					entradas.forEach((e) => { if (e.isIntersecting) { encender(); obs.disconnect(); } });
+				}, { rootMargin: '250px' });
+				obs.observe(banda);
+			} else {
+				encender();
+			}
+			btn.addEventListener('click', () => { corriendo ? apagar() : encender(); });
+		}
+	}
+
+	// ---- Reel completo -------------------------------------------------------
+	// Mismo criterio: el reproductor pesado no se monta hasta que hace falta.
+	const reelMarco = document.querySelector('.reel-marco iframe');
+	if (reelMarco && reelMarco.dataset.src) {
+		const montar = () => { if (!reelMarco.src) reelMarco.src = reelMarco.dataset.src; };
+		if ('IntersectionObserver' in window) {
+			const obs = new IntersectionObserver((entradas) => {
+				entradas.forEach((e) => { if (e.isIntersecting) { montar(); obs.disconnect(); } });
+			}, { rootMargin: '300px' });
+			obs.observe(reelMarco);
+		} else { montar(); }
+	}
+
+	// ---- Visor a tamano completo ---------------------------------------------
+	// <dialog> + showModal(): el navegador ya da top layer, ::backdrop, el resto
+	// del documento inerte, el foco atrapado y el cierre con Escape. No hace falta
+	// libreria y NO hay que escribir un focus trap a mano.
+	const dlg = document.querySelector('.visor');
+	if (dlg) {
+		const img = dlg.querySelector('.visor-img');
+		const pie = dlg.querySelector('.visor-pie');
+		const aviso = dlg.querySelector('.visor-sr');
+		const prev = dlg.querySelector('.visor-prev');
+		const next = dlg.querySelector('.visor-next');
+		let grupo = [];
+		let i = 0;
+		let ancho = 1920;
+
+		// El ancho se elige una vez al abrir. En un visor que hace "contain" con
+		// fotos verticales manda el ALTO, no el ancho, por eso no se usa innerWidth
+		// solo. El piso de 1200 cubre la pestaña en segundo plano, donde
+		// innerWidth/innerHeight pueden llegar en 0.
+		const elegirAncho = (set) => {
+			const disp = Object.keys(set).map(Number).sort((a, b) => a - b);
+			const dpr = Math.min(window.devicePixelRatio || 1, 2);
+			const necesita = Math.max(1200, Math.min(window.innerWidth, Math.round(window.innerHeight * 1.25)) * dpr);
+			return disp.find((w) => w >= necesita) || disp[disp.length - 1];
+		};
+
+		const urlDe = (boton) => {
+			const set = JSON.parse(boton.dataset.lb);
+			return set[ancho] || Object.values(set)[0];
+		};
+
+		const pintar = () => {
+			const f = grupo[i];
+			img.classList.remove('lista');
+			img.src = urlDe(f);
+			img.alt = f.dataset.alt || '';
+			if (img.decode) img.decode().catch(() => {}).then(() => img.classList.add('lista'));
+			else img.classList.add('lista');
+			pie.textContent = f.dataset.alt || '';
+			aviso.textContent = 'Foto ' + (i + 1) + ' de ' + grupo.length + '. ' + (f.dataset.alt || '');
+			const varias = grupo.length > 1;
+			prev.hidden = !varias;
+			next.hidden = !varias;
+			// Precarga los vecinos: la flecha se siente instantanea.
+			if (varias) {
+				[1, -1].forEach((d) => {
+					const v = grupo[(i + d + grupo.length) % grupo.length];
+					document.createElement('img').src = urlDe(v);
+				});
+			}
+		};
+
+		const mover = (paso) => { i = (i + paso + grupo.length) % grupo.length; pintar(); };
+
+		document.addEventListener('click', (e) => {
+			const b = e.target.closest('button.photo');
+			if (!b) return;
+			// Un grupo por grilla: sin esto las flechas saltan de la galeria a
+			// Selected Work y de ahi a las polaroids en una sola lista corrida.
+			const cont = b.closest('[data-visor-grupo]') || document;
+			grupo = Array.from(cont.querySelectorAll('button.photo'));
+			i = grupo.indexOf(b);
+			ancho = elegirAncho(JSON.parse(b.dataset.lb));
+			pintar();
+			// showModal() NO bloquea el scroll del fondo.
+			document.documentElement.classList.add('visor-abierto');
+			dlg.showModal();
+		});
+
+		// Idempotente: da igual si ademas llega el evento 'close'.
+		const cerrar = () => {
+			if (dlg.open) dlg.close();
+			img.removeAttribute('src');
+			document.documentElement.classList.remove('visor-abierto');
+			// El foco vuelve a la miniatura ACTUAL, no a la del clic original: si
+			// abriste la 1 y navegaste hasta la 6, quedas parado en la 6.
+			const destino = grupo[i];
+			if (destino) {
+				destino.focus({ preventScroll: true });
+				destino.scrollIntoView({ block: 'center' });
+			}
+		};
+
+		dlg.querySelector('.visor-cerrar').addEventListener('click', cerrar);
+		prev.addEventListener('click', () => mover(-1));
+		next.addEventListener('click', () => mover(1));
+
+		dlg.addEventListener('keydown', (e) => {
+			const acciones = {
+				ArrowLeft: () => mover(-1),
+				ArrowRight: () => mover(1),
+				Home: () => mover(-i),
+				End: () => mover(grupo.length - 1 - i),
+			};
+			const f = acciones[e.key];
+			if (f) { e.preventDefault(); f(); }
+		});
+
+		// Clic en el fondo (fuera de la foto) cierra.
+		dlg.addEventListener('click', (e) => {
+			if (e.target === dlg || e.target === img.parentElement) cerrar();
+		});
+		// Escape lo maneja el navegador: se intercepta para que pase por la limpieza.
+		dlg.addEventListener('cancel', (e) => { e.preventDefault(); cerrar(); });
+		dlg.addEventListener('close', cerrar);
+
+		// Gestos: deslizar al lado cambia de foto, deslizar hacia abajo cierra.
+		// El filtro por dominancia evita que un scroll con el pulgar torcido
+		// cambie de foto sin querer.
+		let x0 = null;
+		let y0 = null;
+		dlg.addEventListener('pointerdown', (e) => {
+			if (e.pointerType !== 'touch') return;
+			x0 = e.clientX; y0 = e.clientY;
+		});
+		dlg.addEventListener('pointerup', (e) => {
+			if (x0 === null) return;
+			const dx = e.clientX - x0;
+			const dy = e.clientY - y0;
+			x0 = null;
+			if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) mover(dx < 0 ? 1 : -1);
+			else if (dy > 90 && Math.abs(dy) > Math.abs(dx) * 1.5) cerrar();
+		});
+	}
+</script>
+
+<style>
+	.modelo{ --mp: #ffffff; --mi: #111110; --mm: #84817a; --ml: #e7e4dd;
+		background:var(--mp); color:var(--mi); font-family:-apple-system,BlinkMacSystemFont,sans-serif; }
+	/* Barra superior fija, como la referencia: el nombre vive acá arriba
+	   además de ir sobre la foto. */
+	.mhead{ position:sticky; top:0; z-index:10; background:var(--mp);
+		display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.4rem 1.2rem;
+		padding:1.1rem clamp(1.2rem,4vw,3rem); border-bottom:1px solid var(--ml); }
+	.mhead .wordmark{ font-size:.9rem; font-weight:600; letter-spacing:.18em; text-transform:uppercase;
+		color:var(--mi); }
+	.mhead .back{ color:var(--mm); text-decoration:none; font-size:.8rem; }
+
+	/* El hero es una banda apaisada recortada, no la foto entera a ancho
+	   completo (así deja de salir gigante). El sujeto queda a la izquierda
+	   del encuadre y el nombre cae sobre el fondo desenfocado de la derecha,
+	   sin taparlo. */
+	.mhero-wrap{ position:relative; }
+	/* La referencia fija el hero en min-height:100vh. Acá se usa 16/9 con
+	   tope de viewport: en pantallas anchas el tope evita que vuelva a
+	   crecer de más, y como el recorte es más apaisado que la foto, el
+	   ajuste siempre recorta arriba y abajo, nunca a los lados (que es
+	   donde viven Bernardo y el nombre). */
+	.mhero{ position:relative; width:100%; aspect-ratio:16/9; max-height:100vh; overflow:hidden; }
+	/* Fuente 855x641 (4:3). Como el marco es más apaisado que la foto, el
+	   ajuste recorta arriba y abajo: el 25% deja los ojos sobre la línea de
+	   tercios superior en vez de al medio. */
+	.mhero img{ width:100%; height:100%; object-fit:cover; object-position:50% 25%; display:block; }
+	.mhero-scrim{ position:absolute; inset:0; z-index:1;
+		background:linear-gradient(270deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.26) 32%, rgba(0,0,0,0) 60%); }
+	/* El borde derecho del nombre cae en el mismo margen que el header, así
+	   el wordmark, el link de volver y el nombre comparten retícula. Y va
+	   bajo el centro: la cara pesa arriba a la izquierda, el nombre abajo a
+	   la derecha, y la composición queda en diagonal en vez de enfrentada. */
+	/* El borde izquierdo del bloque se fija en 58%: Bernardo termina cerca del
+	   56% del encuadre, así que el nombre no puede alcanzarlo por más que
+	   crezca la tipografía. Si no cabe, parte de línea dentro de su caja en
+	   vez de invadirlo. */
+	.mhero-overlay{ position:absolute; z-index:2; top:50%; transform:translateY(-50%);
+		left:60%; right:clamp(1.2rem,4vw,3rem); text-align:right; }
+	/* La referencia trackea los titulares en negativo (-0.02em) y aprieta el
+	   interlineado a ~1.06 cuanto mas grande es el titular. */
+	.mhero-overlay .word{ display:block; font-family:Georgia,'Times New Roman',serif; font-weight:400;
+		font-size:clamp(1.9rem,4.2vw,3.85rem); line-height:1.06; letter-spacing:-.02em; color:#fff;
+		text-shadow:0 1px 14px rgba(0,0,0,.35); }
+	/* En bloque para que "Model" caiga siempre a su propia línea: si no, en
+	   pantallas muy anchas el nombre entero entra en una sola y cambia la
+	   composición. */
+	.mhero-overlay .word em{ display:block; font-style:italic; color:rgba(255,255,255,.72); }
+
+	/* Linea meta. Los sitios de modelo reales la dejan entre 16 y 20px SIEMPRE,
+	   sin importar cuanto mida el nombre: por eso va en px absolutos y no como
+	   fraccion del titular (atada al nombre en em, en movil vuelve a caer a
+	   12-13px y reaparece el problema que reporto Bernardo). Piso 17px.
+	   El tracking baja de .06em a .03em: a este tamano un tracking ancho se lee
+	   como letra chica legal, y era parte de por que la linea se perdia. */
+	.hero-caption{ text-align:center; font-family:Georgia,'Times New Roman',serif; font-weight:400;
+		font-size:clamp(1.0625rem,1.25vw,1.1875rem); letter-spacing:.03em; line-height:1.55;
+		color:var(--mi); text-wrap:balance;
+		margin:0; padding:clamp(1.3rem,3vw,2rem) clamp(1.2rem,4vw,3rem) 0; }
+	/* Cada dato es indivisible: si la linea quiebra en movil, quiebra en un
+	   separador y nunca dentro de "185 cm" o "Grey Hair". */
+	.meta-item{ white-space:nowrap; }
+	.meta-sep{ font-style:normal; color:var(--mm); margin:0 .5em; }
+
+	/* En vertical no hay lugar para poner el nombre al lado sin pisarlo:
+	   la foto se queda con él y el nombre pasa a la línea de abajo. */
+	@media (max-width:760px){
+		.mhero{ aspect-ratio:4/5; }
+		/* En vertical el recorte pasa a ser lateral: el 15% mantiene a
+		   Bernardo completo, de hombro a manos. */
+		.mhero img{ object-position:15% 40%; }
+		.mhero-scrim{ display:none; }
+		.mhero-overlay{ position:static; transform:none; max-width:none; text-align:center;
+			padding:clamp(1.2rem,4vw,2rem) clamp(1.2rem,4vw,3rem) 0; }
+		.mhero-overlay .word{ color:var(--mi); text-shadow:none; }
+		.mhero-overlay .word em{ color:var(--mm); }
+		.hero-caption{ padding-top:.5rem; }
+	}
+
+	/* Aire generoso entre fotos y entre secciones: es lo que da la lectura
+	   de revista que pidió Bernardo. */
+	.mgallery{ padding:clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem); }
+	.mgallery h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
+		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11; margin:0 0 clamp(1.4rem,3vw,2.2rem); color:var(--mm); }
+
+	.grid-12{ display:grid; grid-template-columns:1fr; gap:clamp(1.6rem,5vw,4rem); }
+	@media (min-width:600px){ .grid-12{ grid-template-columns:repeat(2,1fr); } }
+	.grid-12 .photo{ aspect-ratio:4/5; overflow:hidden; }
+	.grid-12 .photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+	.book-cta{ text-align:center; padding-top:clamp(1.4rem,3vw,2rem); }
+	.book-cta a{ display:inline-block; color:var(--mi); text-decoration:none; font-size:.8rem;
+		letter-spacing:.08em; text-transform:uppercase; border:1px solid var(--ml); padding:.75rem 1.6rem; }
+
+	.identity{ max-width:62ch; margin:0 auto; padding:clamp(2.4rem,6vw,4rem) clamp(1.2rem,4vw,3rem); }
+	.identity p{ font-size:1.1rem; line-height:1.8; }
+
+	.work-list{ display:flex; flex-direction:column; gap:clamp(2.2rem,5vw,3.2rem); }
+	.work-head{ display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:.4rem 1rem;
+		margin-bottom:1rem; border-bottom:1px solid var(--ml); padding-bottom:.6rem; }
+	.work-name{ font-family:Georgia,'Times New Roman',serif; font-size:1.15rem; letter-spacing:.03em; }
+	.work-detalle{ font-size:.75rem; letter-spacing:.05em; color:var(--mm); text-transform:uppercase; }
+	.grid-work{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(1.2rem,3.5vw,2.4rem); }
+	@media (min-width:820px){ .grid-work{ grid-template-columns:repeat(4,1fr); } }
+	.grid-work .photo{ aspect-ratio:3/4; overflow:hidden; }
+	.grid-work .photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+	/* Franja de Motion: el video corre de fondo, en silencio y en bucle, y
+	   encima van el titulo y los dos accesos. El poster va tambien como fondo
+	   de la seccion: si el video no arranca (bajo consumo, movil, autoplay
+	   denegado) igual se ve una imagen y no un rectangulo negro. */
+	.motion{ position:relative; width:100%; aspect-ratio:21/9;
+		min-height:clamp(320px,52vh,420px); max-height:76vh;
+		overflow:hidden; background:#0b0b0a center 35%/cover no-repeat;
+		display:grid; place-items:center; }
+	.motion-media{ position:absolute; inset:0; overflow:hidden; }
+	/* Con mp4 propio el recorte lo resuelve object-fit: sin matematica, sin JS
+	   y sin numeros magicos. */
+	.motion-video{ width:100%; height:100%; object-fit:cover; object-position:center 35%;
+		display:block; }
+	/* Respaldo con iframe: sobredimensionar y centrar. Las medidas van contra el
+	   CONTENEDOR (min-width/min-height 100% + aspect-ratio), no contra el
+	   viewport: la franja tiene max-height, asi que 100vw/56.25vw se despega del
+	   marco real y deja barras. El scale tapa la UI residual de la plataforma. */
+	.motion-embed{ position:absolute; top:50%; left:50%;
+		transform:translate(-50%,-50%) scale(1.04);
+		width:auto; height:auto; min-width:100%; min-height:100%; aspect-ratio:16/9;
+		border:0; pointer-events:none; }
+	/* Velo FIJO: el fotograma cambia todo el tiempo, asi que el contraste no
+	   puede depender de que el video sea oscuro. Mas denso al centro, que es
+	   donde caen el titulo y los botones. */
+	.motion-scrim{ position:absolute; inset:0;
+		background:linear-gradient(180deg, rgba(0,0,0,.34) 0%, rgba(0,0,0,.54) 50%, rgba(0,0,0,.34) 100%); }
+	.motion-contenido{ position:relative; z-index:2; text-align:center;
+		padding:clamp(1.4rem,4vw,3rem); }
+	.motion-contenido h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
+		font-size:clamp(1.5rem,3vw,2.4rem); letter-spacing:-.02em; line-height:1.1;
+		margin:0 0 clamp(1.2rem,2.5vw,1.8rem); color:#fff; text-shadow:0 1px 14px rgba(0,0,0,.45); }
+	.motion-acciones{ display:flex; gap:clamp(.8rem,2vw,1.25rem); justify-content:center; flex-wrap:wrap; }
+	/* Ancho minimo igual en los dos (140px, medido en la referencia): es lo que
+	   hace que el par se lea como un juego apareado y no como dos enlaces
+	   sueltos. Borde 2px que adelgaza a 1px en pantallas chicas. El velo oscuro
+	   no es decorativo: un boton de solo borde se pierde cuando pasa un
+	   fotograma claro. 14px con .1em — a 16px ese mismo tracking los deja
+	   demasiado anchos. */
+	.btn{ display:inline-flex; align-items:center; justify-content:center;
+		min-width:8.75rem; min-height:2.9375rem; padding:.75rem 1.25rem;
+		border:2px solid #fff; border-radius:0; background:rgba(0,0,0,.2);
+		color:#fff; text-decoration:none; font-size:.875rem; font-weight:600;
+		letter-spacing:.1em; text-transform:uppercase; text-align:center;
+		transition:background-color .25s ease, color .25s ease; }
+	.btn:hover, .btn:focus-visible{ background:#fff; color:#111110; }
+	.btn:focus-visible{ outline:2px solid #fff; outline-offset:3px; }
+	@media (max-width:786px){ .btn{ border-width:1px; min-width:7.5rem; padding:.7rem .9rem; } }
+
+	/* El reel de verdad: proporcion nativa, con controles y con sonido. Es una
+	   pieza distinta de la franja y no comparte recorte con ella — llevar un
+	   reel 16/9 a 21/9 corta 15,6% arriba y 15,6% abajo, o sea cabeza y pies. */
+	.reel{ padding:clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem); }
+	.reel h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
+		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11;
+		margin:0 0 clamp(1.4rem,3vw,2.2rem); color:var(--mm); }
+	.reel-marco{ position:relative; width:100%; max-width:72rem; margin:0 auto;
+		aspect-ratio:16/9; background:#0b0b0a; overflow:hidden; }
+	.reel-marco iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+	.reel-alt{ text-align:center; margin:1rem 0 0; }
+
+	/* Control de pausa: cualquier cosa que se mueva sola y dure más de cinco
+	   segundos necesita una forma visible de detenerla (WCAG 2.2.2). La
+	   preferencia de menos movimiento no lo reemplaza, porque sólo cubre a
+	   quien la tenga configurada. */
+	.motion-pausa{ position:absolute; z-index:3;
+		right:max(.8rem,env(safe-area-inset-right)); bottom:.8rem;
+		min-height:2.75rem; min-width:5.5rem;
+		background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.45); color:#fff;
+		font-size:.68rem; letter-spacing:.1em; text-transform:uppercase;
+		padding:.45rem .9rem; cursor:pointer; }
+	.motion-pausa:hover, .motion-pausa:focus-visible{ background:rgba(0,0,0,.75); }
+	.motion-pausa:focus-visible{ outline:2px solid #fff; outline-offset:2px; }
+
+	/* Visor a tamaño completo */
+	/* OJO: el bloque <style> de Astro esta SCOPED, asi que una regla sobre <html>
+	   se compilaria a html.visor-abierto[data-astro-cid-...] y no coincidiria
+	   nunca. Va con :global() a proposito. showModal() no bloquea el scroll del
+	   fondo por su cuenta; scrollbar-gutter evita el salto lateral al ocultarlo. */
+	:global(html.visor-abierto){ overflow:hidden; scrollbar-gutter:stable; }
+
+	button.photo{ display:block; width:100%; padding:0; border:0; background:none;
+		cursor:zoom-in; font:inherit; color:inherit; }
+	button.photo:focus-visible{ outline:2px solid var(--mi); outline-offset:3px; }
+
+	.visor{ width:100vw; max-width:100vw; height:100dvh; max-height:100dvh;
+		margin:0; padding:0; border:0; background:transparent; overflow:hidden;
+		overscroll-behavior:contain; color:#fff; }
+	.visor::backdrop{ background:#0b0b0a; opacity:.97; }
+	/* Flex, NO `grid + place-items:center` con max-height:100%: la fila del grid
+	   se autodimensiona al contenido y el porcentaje no restringe nada, asi que
+	   una foto alta se desborda por abajo. */
+	.visor-fig{ margin:0; width:100%; height:100%; display:flex;
+		align-items:center; justify-content:center;
+		padding:clamp(.75rem,3vw,3.5rem); box-sizing:border-box; touch-action:pan-y; }
+	.visor-img{ max-width:100%; max-height:100%; width:auto; height:auto; display:block;
+		opacity:0; transition:opacity .18s ease; }
+	.visor-img.lista{ opacity:1; }
+	@media (prefers-reduced-motion:reduce){ .visor-img{ transition:none; } }
+
+	.visor-btn{ position:fixed; z-index:2; background:none; border:0; color:#fff;
+		cursor:pointer; line-height:1; padding:0; opacity:.75;
+		min-width:48px; min-height:48px; display:grid; place-items:center; }
+	.visor-btn:hover, .visor-btn:focus-visible{ opacity:1; }
+	.visor-btn:focus-visible{ outline:2px solid #fff; outline-offset:2px; }
+	.visor-cerrar{ top:max(.7rem,env(safe-area-inset-top));
+		right:max(.9rem,env(safe-area-inset-right)); font-size:1.5rem; }
+	.visor-prev, .visor-next{ top:50%; transform:translateY(-50%); font-size:2.6rem; }
+	.visor-prev{ left:.4rem; }
+	.visor-next{ right:.4rem; }
+	/* En movil manda el gesto: las flechas se comen los bordes de una foto vertical. */
+	@media (max-width:640px){ .visor-prev, .visor-next{ display:none; } }
+
+	.visor-pie{ position:fixed; left:0; right:0; bottom:max(.9rem,env(safe-area-inset-bottom));
+		margin:0; text-align:center; font-size:.8rem; letter-spacing:.04em;
+		color:rgba(255,255,255,.62); padding:0 3.5rem; }
+	.visor-sr{ position:absolute; width:1px; height:1px; overflow:hidden;
+		clip-path:inset(50%); white-space:nowrap; }
+
+	.grid-polaroids{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(1.2rem,3.5vw,2.4rem); }
+	@media (min-width:640px){ .grid-polaroids{ grid-template-columns:repeat(4,1fr); } }
+	.grid-polaroids .photo{ aspect-ratio:1/1; overflow:hidden; }
+	.grid-polaroids .photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+	.stats{ padding:clamp(1.4rem,3vw,2.2rem) clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); }
+	.stats h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
+		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11; margin:0 0 1.2rem; color:var(--mm); }
+	/* Tres columnas: la altura sola, las medidas de cuerpo juntas, el resto
+	   aparte. Etiqueta y valor comparten tamaño y van pegados — se separan
+	   por color, no por escala. */
+	.stat-cols{ display:grid; grid-template-columns:1fr; gap:1.6rem 3rem; max-width:56rem; }
+	@media (min-width:640px){ .stat-cols{ grid-template-columns:auto auto auto; justify-content:start; gap:1.6rem clamp(3rem,7vw,6rem); } }
+	.stat-col{ display:flex; flex-direction:column; gap:.35rem; margin:0; }
+	.stat{ display:flex; align-items:baseline; gap:.45rem; }
+	.stats dt, .stats dd{ font-size:.98rem; line-height:1.4; letter-spacing:.01em; margin:0; }
+	.stats dt{ color:var(--mm); }
+	.stats dt::after{ content:" —"; }
+	.stats dd{ color:var(--mi); }
+
+	.mfoot{ display:flex; flex-direction:column; align-items:center; gap:1rem; text-align:center;
+		padding:clamp(2rem,5vw,3rem) clamp(1.2rem,4vw,3rem) clamp(3rem,6vw,4rem); border-top:1px solid var(--ml); }
+	.mfoot h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
+		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11; margin:0; color:var(--mm); }
+	.mfoot .region{ font-size:.85rem; letter-spacing:.05em; color:var(--mm); margin:0; }
+	.contact-links{ display:flex; gap:1.5rem; flex-wrap:wrap; justify-content:center; }
+	.contact-links a{ color:var(--mi); text-decoration:none; font-size:.9rem; border-bottom:1px solid var(--mm); }
+	.mfoot .back{ color:var(--mm); text-decoration:none; font-size:.82rem; margin-top:.6rem; }
+</style>

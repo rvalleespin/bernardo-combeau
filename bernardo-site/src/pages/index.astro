@@ -11,6 +11,8 @@ import nav from '../data/nav.json';
 
 const heroLines = home.fraseHero.split('\n');
 
+// Mismo criterio que en Nav.astro: título vacío deja el enlace fuera del
+// menú sin borrar la página.
 const navLinks = [
   { href: '/retratos', label: nav.retratos },
   { href: '/proyectos', label: nav.proyectos },
@@ -18,7 +20,8 @@ const navLinks = [
   { href: '/servicios', label: nav.servicios },
   { href: '/sobre-mi', label: nav.sobremi },
   { href: '/contacto', label: nav.contacto },
-];
+  { href: '/modelo', label: nav.modelo },
+].filter((link) => link.label && link.label.trim());
 
 const retratosEntries = (await getCollection('retratos')).sort((a, b) => a.data.order - b.data.order)
   .map((e) => ({ href: `/retratos/${e.id}`, title: e.data.title, year: e.data.year, cover: e.data.cover }))

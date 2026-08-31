@@ -6,12 +6,16 @@ interface Props {
   title?: string;
   description?: string;
   image?: string;
+  /** Para páginas que ya existen pero todavía no se quieren mostrar en
+   *  buscadores. Sacarlas del menú no basta: Google igual las encuentra. */
+  noindex?: boolean;
 }
 
 const {
   title = 'Bernardo Combeau — Fotografía',
   description = 'Bernardo Combeau, fotógrafo en Santiago, Chile. Retratos, personal branding y fotografía por encargo.',
   image = home.fotoHero,
+  noindex = false,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -28,6 +32,7 @@ const ogImageURL = image ? new URL(image, Astro.site) : null;
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		<meta name="description" content={description} />
+		{noindex && <meta name="robots" content="noindex, nofollow" />}
 		<link rel="canonical" href={canonicalURL} />
 
 		<meta property="og:type" content="website" />

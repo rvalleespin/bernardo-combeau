@@ -1,0 +1,36 @@
+{
+  "fotos": [
+    {
+      "src": "/uploads/modelo-galeria-elite-01.jpg",
+      "alt": "Bernardo Combeau — retrato"
+    },
+    {
+      "src": "/uploads/modelo-galeria-elite-02.jpg",
+      "alt": "Bernardo Combeau — traje azul, exterior"
+    },
+    {
+      "src": "/uploads/modelo-galeria-elite-03.jpg",
+      "alt": "Bernardo Combeau — editorial, atardecer"
+    },
+    {
+      "src": "/uploads/modelo-galeria-elite-04.jpg",
+      "alt": "Bernardo Combeau — casual, estudio"
+    },
+    {
+      "src": "/uploads/modelo-galeria-elite-05.jpg",
+      "alt": "Bernardo Combeau — traje, editorial"
+    },
+    {
+      "src": "/uploads/modelo-galeria-elite-06.jpg",
+      "alt": "Bernardo Combeau — blanco y negro, ventana"
+    },
+    {
+      "src": "/uploads/modelo-galeria-elite-07.jpg",
+      "alt": "Bernardo Combeau — camisa blanca, luz dura"
+    },
+    {
+      "src": "/uploads/modelo-galeria-elite-08.jpg",
+      "alt": "Bernardo Combeau — traje azul, estudio"
+    }
+  ]
+}

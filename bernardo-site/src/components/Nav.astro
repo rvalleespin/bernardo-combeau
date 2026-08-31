@@ -7,6 +7,9 @@ interface Props {
 
 const { active = '' } = Astro.props;
 
+// Un título vacío en "Títulos menú" saca ese enlace del menú sin borrar la
+// página: sigue existiendo en su dirección, sólo deja de estar anunciada.
+// Así se mantiene /modelo fuera del menú hasta que Bernardo la tenga lista.
 const links = [
   { href: '/retratos', label: nav.retratos },
   { href: '/proyectos', label: nav.proyectos },
@@ -14,7 +17,8 @@ const links = [
   { href: '/servicios', label: nav.servicios },
   { href: '/sobre-mi', label: nav.sobremi },
   { href: '/contacto', label: nav.contacto },
-];
+  { href: '/modelo', label: nav.modelo },
+].filter((link) => link.label && link.label.trim());
 ---
 
 <nav class="site-nav">
