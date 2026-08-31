@@ -161,7 +161,12 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 	   del encuadre y el nombre cae sobre el fondo desenfocado de la derecha,
 	   sin taparlo. */
 	.mhero-wrap{ position:relative; }
-	.mhero{ position:relative; width:100%; aspect-ratio:16/9; overflow:hidden; }
+	/* La referencia fija el hero en min-height:100vh. Acá se usa 16/9 con
+	   tope de viewport: en pantallas anchas el tope evita que vuelva a
+	   crecer de más, y como el recorte es más apaisado que la foto, el
+	   ajuste siempre recorta arriba y abajo, nunca a los lados (que es
+	   donde viven Bernardo y el nombre). */
+	.mhero{ position:relative; width:100%; aspect-ratio:16/9; max-height:100vh; overflow:hidden; }
 	.mhero img{ width:100%; height:100%; object-fit:cover; object-position:28% 34%; display:block; }
 	.mhero-scrim{ position:absolute; inset:0; z-index:1;
 		background:linear-gradient(270deg, rgba(0,0,0,.52) 0%, rgba(0,0,0,.28) 30%, rgba(0,0,0,0) 58%); }
