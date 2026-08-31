@@ -15,6 +15,7 @@ import polaroidsData from '../../data/modelo/polaroids.json';
 import details from '../../data/modelo/details.json';
 import booking from '../../data/modelo/booking.json';
 import contacto from '../../data/contacto.json';
+import nav from '../../data/nav.json';
 
 const { heroFoto, heroCaption } = portada;
 const galeria = galeriaData.fotos;
@@ -104,9 +105,14 @@ const detailGroups = [
 	.filter((group) => group.length > 0);
 
 const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
+
+// Mientras el titulo del menu este vacio la pagina esta "en obra": no se
+// anuncia en el sitio y tampoco se ofrece a buscadores. Sacarla del menu no
+// alcanza, porque igual entra al sitemap y se indexa.
+const enObra = !(nav.modelo && nav.modelo.trim());
 ---
 
-<Layout title="Bernardo Combeau — Model" description="Bernardo Combeau, model based in Santiago, Chile — fashion, commercial, e-commerce and advertising." image={heroFoto || undefined}>
+<Layout title="Bernardo Combeau — Model" description="Bernardo Combeau, model based in Santiago, Chile — fashion, commercial, e-commerce and advertising." image={heroFoto || undefined} noindex={enObra}>
 	<div class="modelo">
 		<header class="mhead">
 			<span class="wordmark">Bernardo Combeau</span>
