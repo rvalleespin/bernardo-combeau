@@ -46,7 +46,7 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 		{heroFoto && (
 			<div class="mhero-wrap">
 				<div class="mhero">
-					<Image src={heroFoto} alt="Bernardo Combeau" width={1800} quality={82} />
+					<Image src={heroFoto} alt="Bernardo Combeau" width={1800} quality={82} loading="eager" fetchpriority="high" />
 					<div class="mhero-scrim"></div>
 				</div>
 				<div class="mhero-overlay">
