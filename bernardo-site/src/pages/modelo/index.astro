@@ -37,21 +37,18 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 
 <Layout title="Bernardo Combeau — Model" description="Bernardo Combeau, model based in Santiago, Chile — fashion, commercial, e-commerce and advertising." image={heroFoto || undefined}>
 	<div class="modelo">
-		{heroFoto ? (
-			<div class="mhero">
-				<a class="back" href="/">← Volver a fotografía</a>
-				<Image src={heroFoto} alt="Bernardo Combeau" width={2000} quality={82} />
-				<div class="mhero-scrim"></div>
-				<div class="mhero-caption">
-					<span class="word">Bernardo Combeau <em>Model</em></span>
-					{heroCaption && <p class="hero-caption">{heroCaption}</p>}
-				</div>
-			</div>
-		) : (
-			<header class="mhead">
-				<a class="back" href="/">← Volver a fotografía</a>
+		<header class="mhead">
+			<a class="back" href="/">← Volver a fotografía</a>
+			<div class="mhead-name">
 				<span class="word">Bernardo Combeau <em>Model</em></span>
-			</header>
+				{heroCaption && <p class="hero-caption">{heroCaption}</p>}
+			</div>
+		</header>
+
+		{heroFoto && (
+			<div class="mhero">
+				<Image src={heroFoto} alt="Bernardo Combeau" width={2000} quality={82} />
+			</div>
 		)}
 
 		{galeria && galeria.length > 0 && (
@@ -138,28 +135,20 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 </Layout>
 
 <style>
-	.modelo{ --mp: #0b0b0a; --mi: #f4f2ec; --mm: #8d8a82; --ml: #242320;
+	.modelo{ --mp: #ffffff; --mi: #111110; --mm: #84817a; --ml: #e7e4dd;
 		background:var(--mp); color:var(--mi); font-family:-apple-system,BlinkMacSystemFont,sans-serif; }
-	.mhead{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.6rem;
-		padding:1.6rem clamp(1.2rem,4vw,3rem); }
-	.mhead .back{ color:var(--mm); text-decoration:none; font-size:.82rem; }
-	.mhead .word{ font-family:Georgia,'Times New Roman',serif; font-size:1.15rem; letter-spacing:.01em; }
-	.mhead .word em{ font-style:italic; color:var(--mm); }
+	.mhead{ display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:.6rem 1.2rem;
+		padding:1.6rem clamp(1.2rem,4vw,3rem) 1.4rem; }
+	.mhead .back{ color:var(--mm); text-decoration:none; font-size:.82rem; padding-top:.3rem; }
+	.mhead-name{ text-align:right; }
+	.mhead-name .word{ display:block; font-family:Georgia,'Times New Roman',serif; font-weight:400;
+		font-size:clamp(1.3rem,3vw,1.7rem); letter-spacing:.01em; color:var(--mi); }
+	.mhead-name .word em{ font-style:italic; color:var(--mm); }
+	.mhead-name .hero-caption{ font-family:Georgia,'Times New Roman',serif; font-weight:300;
+		font-size:.82rem; letter-spacing:.06em; color:var(--mm); margin:.4rem 0 0; }
 
-	.mhero{ position:relative; width:100%; height:100vh; min-height:560px; max-height:960px; overflow:hidden; }
-	.mhero img{ width:100%; height:100%; object-fit:cover; object-position:32% 22%; display:block; }
-	.mhero .back{ position:absolute; z-index:2; top:1.6rem; left:clamp(1.2rem,4vw,3rem);
-		color:var(--mi); text-decoration:none; font-size:.8rem; letter-spacing:.02em;
-		text-shadow:0 1px 6px rgba(0,0,0,.5); }
-	.mhero-scrim{ position:absolute; inset:0; z-index:1;
-		background:linear-gradient(0deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.25) 32%, rgba(0,0,0,0) 55%); }
-	.mhero-caption{ position:absolute; z-index:2; left:clamp(1.2rem,4vw,3rem); right:clamp(1.2rem,4vw,3rem);
-		bottom:clamp(1.6rem,5vw,3.2rem); }
-	.mhero-caption .word{ display:block; font-family:Georgia,'Times New Roman',serif; font-weight:400;
-		font-size:clamp(1.8rem,5vw,3.2rem); letter-spacing:.01em; color:var(--mi); }
-	.mhero-caption .word em{ font-style:italic; color:var(--mm); }
-	.mhero-caption .hero-caption{ font-family:Georgia,'Times New Roman',serif; font-weight:300;
-		font-size:.88rem; letter-spacing:.08em; color:var(--mm); margin:.6rem 0 0; }
+	.mhero{ width:100%; }
+	.mhero img{ width:100%; height:auto; display:block; }
 
 	.mgallery{ padding:clamp(1.4rem,3vw,2.2rem) clamp(1.2rem,4vw,3rem); }
 	.mgallery h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
