@@ -27,7 +27,7 @@ const reel = parseReel(reelUrl);
 const reelFondo = !reel
   ? null
   : reel.tipo === 'youtube'
-    ? `https://www.youtube-nocookie.com/embed/${reel.id}?autoplay=1&mute=1&loop=1&playlist=${reel.id}&controls=0&showinfo=0&modestbranding=1&rel=0&iv_load_policy=3&playsinline=1&disablekb=1&fs=0`
+    ? `https://www.youtube-nocookie.com/embed/${reel.id}?autoplay=1&mute=1&loop=1&playlist=${reel.id}&controls=0&playsinline=1&disablekb=1&fs=0&iv_load_policy=3`
     : `https://player.vimeo.com/video/${reel.id}?background=1&autoplay=1&muted=1&loop=1&autopause=0`;
 
 // El mismo video, pero para verlo de verdad al tocar el botón.
@@ -117,8 +117,11 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 		{reelFondo && (
 			<section class="motion" aria-labelledby="motion-titulo">
 				<div class="motion-video" aria-hidden="true">
-					<iframe src={reelFondo} title="Reel — Bernardo Combeau" frameborder="0" tabindex="-1"
-						allow="autoplay; fullscreen; picture-in-picture" loading="lazy"></iframe>
+					{/* El src lo pone el script: así no se carga si el visitante
+					    pidió menos movimiento, y el botón de pausa puede cortarlo
+					    de verdad en vez de sólo taparlo. */}
+					<iframe data-src={reelFondo} title="Reel — Bernardo Combeau" frameborder="0" tabindex="-1"
+						allow="autoplay; fullscreen; picture-in-picture"></iframe>
 				</div>
 				<div class="motion-scrim"></div>
 				<div class="motion-contenido">
@@ -128,6 +131,7 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 						<a class="btn" href={reelLink} target="_blank" rel="noopener">Motion</a>
 					</div>
 				</div>
+				<button class="motion-pausa" type="button" hidden>Pausar fondo</button>
 			</section>
 		)}
 
@@ -184,6 +188,41 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 </Layout>
 
 <script>
+	// Franja de Motion. El video de fondo se monta desde acá y no desde el
+	// HTML por dos razones: si el visitante pidió menos movimiento no se carga
+	// nunca (un iframe de YouTube ignora esa preferencia por su cuenta), y el
+	// botón de pausa puede cortarlo de verdad quitándole el src, en vez de
+	// dejarlo corriendo tapado.
+	const banda = document.querySelector('.motion');
+	if (banda) {
+		const marco = banda.querySelector('.motion-video iframe');
+		const btn = banda.querySelector('.motion-pausa');
+		const fuente = marco && marco.dataset.src;
+		const menosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)');
+		let corriendo = false;
+
+		const encender = () => { if (!corriendo && fuente) { marco.src = fuente; corriendo = true; } };
+		const apagar = () => { if (corriendo) { marco.removeAttribute('src'); corriendo = false; } };
+		const rotular = () => { btn.textContent = corriendo ? 'Pausar fondo' : 'Reproducir fondo'; };
+
+		if (fuente) {
+			btn.hidden = false;
+			if (menosMovimiento.matches) {
+				rotular();
+			} else if ('IntersectionObserver' in window) {
+				// No cargar el reel hasta que la franja esté por entrar en pantalla.
+				const obs = new IntersectionObserver((entradas) => {
+					entradas.forEach((e) => { if (e.isIntersecting) { encender(); rotular(); obs.disconnect(); } });
+				}, { rootMargin: '250px' });
+				obs.observe(banda);
+			} else {
+				encender(); rotular();
+			}
+			rotular();
+			btn.addEventListener('click', () => { corriendo ? apagar() : encender(); rotular(); });
+		}
+	}
+
 	// Visor a tamaño completo. <dialog> nativo: ya trae el foco atrapado y el
 	// cierre con Escape, así que no hace falta librería. Se muestra el archivo
 	// original en vez de la miniatura optimizada, y se carga recién al abrir.
@@ -355,11 +394,15 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 		transition:background-color .2s ease, color .2s ease; }
 	.btn:hover, .btn:focus-visible{ background:#fff; color:#111110; }
 
-	/* Si el visitante pidió menos movimiento, la franja se queda quieta. */
-	@media (prefers-reduced-motion: reduce){
-		.motion-video{ display:none; }
-		.motion-scrim{ background:#15130f; }
-	}
+	/* Control de pausa: cualquier cosa que se mueva sola y dure más de cinco
+	   segundos necesita una forma visible de detenerla (WCAG 2.2.2). La
+	   preferencia de menos movimiento no lo reemplaza, porque sólo cubre a
+	   quien la tenga configurada. */
+	.motion-pausa{ position:absolute; z-index:3; right:.8rem; bottom:.8rem;
+		background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.45); color:#fff;
+		font-size:.68rem; letter-spacing:.1em; text-transform:uppercase;
+		padding:.45rem .8rem; cursor:pointer; }
+	.motion-pausa:hover, .motion-pausa:focus-visible{ background:rgba(0,0,0,.7); }
 
 	/* Visor a tamaño completo */
 	button.photo{ display:block; width:100%; padding:0; border:0; background:none;
