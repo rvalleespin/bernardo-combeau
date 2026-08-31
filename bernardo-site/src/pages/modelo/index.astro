@@ -152,7 +152,7 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 	.mhead{ position:sticky; top:0; z-index:10; background:var(--mp);
 		display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.4rem 1.2rem;
 		padding:1.1rem clamp(1.2rem,4vw,3rem); border-bottom:1px solid var(--ml); }
-	.mhead .wordmark{ font-size:.82rem; font-weight:600; letter-spacing:.18em; text-transform:uppercase;
+	.mhead .wordmark{ font-size:.9rem; font-weight:600; letter-spacing:.18em; text-transform:uppercase;
 		color:var(--mi); }
 	.mhead .back{ color:var(--mm); text-decoration:none; font-size:.8rem; }
 
@@ -167,8 +167,10 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 		background:linear-gradient(270deg, rgba(0,0,0,.52) 0%, rgba(0,0,0,.28) 30%, rgba(0,0,0,0) 58%); }
 	.mhero-overlay{ position:absolute; z-index:2; top:50%; transform:translateY(-50%);
 		right:clamp(1.4rem,5vw,4.5rem); max-width:min(48%,32rem); text-align:right; }
+	/* La referencia trackea los titulares en negativo (-0.02em) y aprieta el
+	   interlineado a ~1.06 cuanto mas grande es el titular. */
 	.mhero-overlay .word{ display:block; font-family:Georgia,'Times New Roman',serif; font-weight:400;
-		font-size:clamp(1.5rem,3.4vw,2.9rem); line-height:1.15; letter-spacing:.01em; color:#fff;
+		font-size:clamp(1.6rem,3.5vw,3.2rem); line-height:1.06; letter-spacing:-.02em; color:#fff;
 		text-shadow:0 1px 14px rgba(0,0,0,.35); }
 	.mhero-overlay .word em{ font-style:italic; color:rgba(255,255,255,.72); }
 
@@ -193,7 +195,7 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 	   de revista que pidió Bernardo. */
 	.mgallery{ padding:clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem); }
 	.mgallery h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
-		font-size:1.3rem; margin:0 0 clamp(1.4rem,3vw,2.2rem); color:var(--mm); }
+		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11; margin:0 0 clamp(1.4rem,3vw,2.2rem); color:var(--mm); }
 
 	.grid-12{ display:grid; grid-template-columns:1fr; gap:clamp(1.6rem,5vw,4rem); }
 	@media (min-width:600px){ .grid-12{ grid-template-columns:repeat(2,1fr); } }
@@ -227,7 +229,7 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 
 	.stats{ padding:clamp(1.4rem,3vw,2.2rem) clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); }
 	.stats h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
-		font-size:1.3rem; margin:0 0 1.2rem; color:var(--mm); }
+		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11; margin:0 0 1.2rem; color:var(--mm); }
 	/* Tres columnas: la altura sola, las medidas de cuerpo juntas, el resto
 	   aparte. Etiqueta y valor comparten tamaño y van pegados — se separan
 	   por color, no por escala. */
@@ -243,7 +245,7 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 	.mfoot{ display:flex; flex-direction:column; align-items:center; gap:1rem; text-align:center;
 		padding:clamp(2rem,5vw,3rem) clamp(1.2rem,4vw,3rem) clamp(3rem,6vw,4rem); border-top:1px solid var(--ml); }
 	.mfoot h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
-		font-size:1.3rem; margin:0; color:var(--mm); }
+		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11; margin:0; color:var(--mm); }
 	.mfoot .region{ font-size:.85rem; letter-spacing:.05em; color:var(--mm); margin:0; }
 	.contact-links{ display:flex; gap:1.5rem; flex-wrap:wrap; justify-content:center; }
 	.contact-links a{ color:var(--mi); text-decoration:none; font-size:.9rem; border-bottom:1px solid var(--mm); }
