@@ -3,12 +3,25 @@ export const prerender = true;
 
 import { Image, getImage } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
-import modelo from '../../data/modelo.json';
+// Cada sección de la página es un archivo propio, y en el panel es una
+// entrada propia dentro de "Modelo". Antes era un solo modelo.json con todo
+// adentro, que en el panel se veía como un formulario interminable.
+import portada from '../../data/modelo/portada.json';
+import galeriaData from '../../data/modelo/galeria.json';
+import identityData from '../../data/modelo/identity.json';
+import selectedWorkData from '../../data/modelo/selected-work.json';
+import motion from '../../data/modelo/motion.json';
+import polaroidsData from '../../data/modelo/polaroids.json';
+import details from '../../data/modelo/details.json';
+import booking from '../../data/modelo/booking.json';
 import contacto from '../../data/contacto.json';
 
-const { heroFoto, heroCaption, galeria, identity, selectedWork,
-	reelUrl, videoFondoUrl, motionPoster, motionTitulo,
-	polaroids, details, booking } = modelo;
+const { heroFoto, heroCaption } = portada;
+const galeria = galeriaData.fotos;
+const identity = identityData.texto;
+const selectedWork = selectedWorkData.trabajos;
+const polaroids = polaroidsData.fotos;
+const { titulo: motionTitulo, reelUrl, videoFondoUrl, poster: motionPoster } = motion;
 
 // Ni el reel ni el loop de fondo se suben al repo: Git no es lugar para video
 // pesado. El reel vive en YouTube/Vimeo; el loop de fondo es un mp4 alojado

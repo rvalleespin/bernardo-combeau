@@ -1,0 +1,20 @@
+{
+  "fotos": [
+    {
+      "src": "/uploads/modelo-polaroid-elite-01.jpg",
+      "alt": "Bernardo Combeau — polaroid"
+    },
+    {
+      "src": "/uploads/modelo-polaroid-elite-02.jpg",
+      "alt": "Bernardo Combeau — polaroid"
+    },
+    {
+      "src": "/uploads/modelo-polaroid-elite-03.jpg",
+      "alt": "Bernardo Combeau — polaroid"
+    },
+    {
+      "src": "/uploads/modelo-polaroid-elite-04.jpg",
+      "alt": "Bernardo Combeau — polaroid"
+    }
+  ]
+}

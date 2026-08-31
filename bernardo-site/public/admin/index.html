@@ -826,11 +826,14 @@ img{max-width:100%;}
             {
               name: "modelo",
               label: "Modelo",
+              // Una entrada por sección de la página, en el mismo orden en que
+              // se ven en el sitio. Antes era un solo formulario con todo
+              // adentro y había que bajar mucho para llegar a lo de abajo.
               files: [
                 {
-                  file: "bernardo-site/src/data/modelo.json",
-                  label: "Página de Modelo",
-                  name: "modelo",
+                  file: "bernardo-site/src/data/modelo/portada.json",
+                  label: "1. Portada",
+                  name: "modelo_portada",
                   preview_path: "modelo",
                   fields: [
                     {
@@ -847,28 +850,52 @@ img{max-width:100%;}
                       required: false,
                       hint: "Ej. Santiago, Chile · 46 · 185 cm · Grey Hair · Blue Eyes — se muestra tal cual la escribas, en una sola línea.",
                     },
+                  ],
+                },
+                {
+                  file: "bernardo-site/src/data/modelo/galeria.json",
+                  label: "2. Galería",
+                  name: "modelo_galeria",
+                  preview_path: "modelo",
+                  fields: [
                     {
-                      label: "Galería (Home) — hasta 12 fotos",
-                      name: "galeria",
+                      label: "Galería — hasta 12 fotos",
+                      name: "fotos",
                       widget: "list",
                       required: false,
                       max: 12,
                       summary: "{{fields.alt}}",
-                      hint: "Tus 12 mejores fotos, se muestran en una grilla de 4 columnas debajo de la portada.",
+                      hint: "Tus 12 mejores fotos, se muestran en una grilla debajo de la portada.",
                       fields: [
                         { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
                         { label: "Descripción para lectores de pantalla", name: "alt", widget: "string" },
                       ],
                     },
+                  ],
+                },
+                {
+                  file: "bernardo-site/src/data/modelo/identity.json",
+                  label: "3. Identity",
+                  name: "modelo_identity",
+                  preview_path: "modelo",
+                  fields: [
                     {
                       label: "Identity (texto de presentación, en inglés)",
-                      name: "identity",
+                      name: "texto",
                       widget: "text",
                       required: false,
                     },
+                  ],
+                },
+                {
+                  file: "bernardo-site/src/data/modelo/selected-work.json",
+                  label: "4. Selected Work",
+                  name: "modelo_selected_work",
+                  preview_path: "modelo",
+                  fields: [
                     {
                       label: "Selected Work (campañas y trabajos)",
-                      name: "selectedWork",
+                      name: "trabajos",
                       widget: "list",
                       required: false,
                       summary: "{{fields.nombre}}",
@@ -890,39 +917,55 @@ img{max-width:100%;}
                         },
                       ],
                     },
+                  ],
+                },
+                {
+                  file: "bernardo-site/src/data/modelo/motion.json",
+                  label: "5. Motion / Commercials",
+                  name: "modelo_motion",
+                  preview_path: "modelo",
+                  fields: [
                     {
-                      label: "Motion / Commercials — título de la franja",
-                      name: "motionTitulo",
+                      label: "Título de la franja",
+                      name: "titulo",
                       widget: "string",
                       required: false,
                       default: "Motion / Commercials",
                       hint: "El texto grande que va encima del video. Si lo dejas vacío dice \"Motion / Commercials\".",
                     },
                     {
-                      label: "Motion / Commercials — link del reel (YouTube o Vimeo)",
+                      label: "Link del reel (YouTube o Vimeo)",
                       name: "reelUrl",
                       widget: "string",
                       required: false,
                       hint: "Pega el link normal del video, como lo copias del navegador (sirve youtube.com, youtu.be y vimeo.com, con o sin el código de video privado). Este es el reel que se ve completo, con sonido y controles, cuando alguien toca el botón MOTION. No subas el archivo acá: el panel es para fotos y texto, no para video pesado.",
                     },
                     {
-                      label: "Motion / Commercials — video de fondo de la franja (URL de un .mp4)",
+                      label: "Video de fondo de la franja (URL de un .mp4)",
                       name: "videoFondoUrl",
                       widget: "string",
                       required: false,
                       hint: "OPCIONAL y distinto del reel. Es el loop corto (10-15 s, sin sonido) que corre de fondo en la franja ancha. Tiene que ser un enlace directo a un archivo .mp4 alojado fuera del sitio — pídeselo a Ramón, él lo sube y te pasa la URL. Ojo: la franja es mucho más apaisada que un video normal, así que recorta bastante arriba y abajo; no sirve un plano donde salgas de cuerpo entero. Si lo dejas vacío se usa el reel de arriba como fondo, con dos advertencias: si el reel está en Vimeo, el fondo SÓLO funciona con cuenta de pago (en cuenta gratis la franja queda en negro y ahí salva la imagen de respaldo), y si el reel es un plano de cuerpo entero, el recorte te va a cortar cabeza y pies.",
                     },
                     {
-                      label: "Motion / Commercials — imagen de respaldo de la franja",
-                      name: "motionPoster",
+                      label: "Imagen de respaldo de la franja",
+                      name: "poster",
                       widget: "image",
                       required: false,
                       ...UPLOAD_LIMIT,
                       hint: "Muy recomendable. Es lo que se ve mientras el video carga, en celulares (ahí no se reproduce video a propósito, para no gastarle datos a quien te visita) y si el teléfono está en modo de bajo consumo. Elige un fotograma representativo del video: para mucha gente ESTA imagen es la franja. Si no cargas ninguna, la franja se ve negra detrás del texto.",
                     },
+                  ],
+                },
+                {
+                  file: "bernardo-site/src/data/modelo/polaroids.json",
+                  label: "6. Polaroids",
+                  name: "modelo_polaroids",
+                  preview_path: "modelo",
+                  fields: [
                     {
                       label: "Polaroids — hasta 4 fotos (1 fila)",
-                      name: "polaroids",
+                      name: "fotos",
                       widget: "list",
                       required: false,
                       max: 4,
@@ -933,33 +976,31 @@ img{max-width:100%;}
                         { label: "Descripción para lectores de pantalla", name: "alt", widget: "string", required: false },
                       ],
                     },
-                    {
-                      label: "Details (medidas)",
-                      name: "details",
-                      widget: "object",
-                      required: false,
-                      hint: "Deja vacío lo que no quieras mostrar — cada dato solo aparece en el sitio si lo completas. Escribe el valor tal como quieres que se vea (puedes incluir ambas unidades, ej. \"185 cm (6'1\\\")\").",
-                      fields: [
-                        { label: "Height", name: "height", widget: "string", required: false, hint: "Ej. 185 cm (6'1\")" },
-                        { label: "Chest", name: "chest", widget: "string", required: false, hint: "Ej. 102 cm" },
-                        { label: "Waist", name: "waist", widget: "string", required: false, hint: "Ej. 85 cm" },
-                        { label: "Hips", name: "hips", widget: "string", required: false, hint: "Ej. 102 cm" },
-                        { label: "Shoes", name: "shoes", widget: "string", required: false, hint: "Ej. 43 (10 US / 9 UK)" },
-                        { label: "Hair", name: "hair", widget: "string", required: false, hint: "Ej. Grey" },
-                        { label: "Eyes", name: "eyes", widget: "string", required: false, hint: "Ej. Blue" },
-                      ],
-                    },
-                    {
-                      label: "Booking",
-                      name: "booking",
-                      widget: "object",
-                      required: false,
-                      hint: "Email y WhatsApp se toman de los mismos datos de Contacto del sitio de fotógrafo — no hace falta repetirlos acá.",
-                      fields: [
-                        { label: "Región", name: "region", widget: "string", required: false, hint: "Ej. Chile & International" },
-                        { label: "Instagram de modelo (con @, puede ser distinto al de fotógrafo)", name: "instagram", widget: "string", required: false },
-                      ],
-                    },
+                  ],
+                },
+                {
+                  file: "bernardo-site/src/data/modelo/details.json",
+                  label: "7. Details (medidas)",
+                  name: "modelo_details",
+                  preview_path: "modelo",
+                  fields: [
+                    { label: "Height", name: "height", widget: "string", required: false, hint: "Ej. 185 cm (6'1\")" },
+                    { label: "Chest", name: "chest", widget: "string", required: false, hint: "Ej. 102 cm" },
+                    { label: "Waist", name: "waist", widget: "string", required: false, hint: "Ej. 85 cm" },
+                    { label: "Hips", name: "hips", widget: "string", required: false, hint: "Ej. 102 cm" },
+                    { label: "Shoes", name: "shoes", widget: "string", required: false, hint: "Ej. 43 (10 US / 9 UK)" },
+                    { label: "Hair", name: "hair", widget: "string", required: false, hint: "Ej. Grey" },
+                    { label: "Eyes", name: "eyes", widget: "string", required: false, hint: "Ej. Blue" },
+                  ],
+                },
+                {
+                  file: "bernardo-site/src/data/modelo/booking.json",
+                  label: "8. Booking",
+                  name: "modelo_booking",
+                  preview_path: "modelo",
+                  fields: [
+                    { label: "Región", name: "region", widget: "string", required: false, hint: "Ej. Chile & International" },
+                    { label: "Instagram de modelo (con @, puede ser distinto al de fotógrafo)", name: "instagram", widget: "string", required: false },
                   ],
                 },
               ],
