@@ -177,17 +177,24 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 	   el wordmark, el link de volver y el nombre comparten retícula. Y va
 	   bajo el centro: la cara pesa arriba a la izquierda, el nombre abajo a
 	   la derecha, y la composición queda en diagonal en vez de enfrentada. */
-	.mhero-overlay{ position:absolute; z-index:2; top:58%; transform:translateY(-50%);
-		right:clamp(1.2rem,4vw,3rem); max-width:min(46%,30rem); text-align:right; }
+	/* El borde izquierdo del bloque se fija en 58%: Bernardo termina cerca del
+	   56% del encuadre, así que el nombre no puede alcanzarlo por más que
+	   crezca la tipografía. Si no cabe, parte de línea dentro de su caja en
+	   vez de invadirlo. */
+	.mhero-overlay{ position:absolute; z-index:2; top:50%; transform:translateY(-50%);
+		left:60%; right:clamp(1.2rem,4vw,3rem); text-align:right; }
 	/* La referencia trackea los titulares en negativo (-0.02em) y aprieta el
 	   interlineado a ~1.06 cuanto mas grande es el titular. */
 	.mhero-overlay .word{ display:block; font-family:Georgia,'Times New Roman',serif; font-weight:400;
-		font-size:clamp(1.6rem,3.5vw,3.2rem); line-height:1.06; letter-spacing:-.02em; color:#fff;
+		font-size:clamp(1.9rem,4.2vw,3.85rem); line-height:1.06; letter-spacing:-.02em; color:#fff;
 		text-shadow:0 1px 14px rgba(0,0,0,.35); }
-	.mhero-overlay .word em{ font-style:italic; color:rgba(255,255,255,.72); }
+	/* En bloque para que "Model" caiga siempre a su propia línea: si no, en
+	   pantallas muy anchas el nombre entero entra en una sola y cambia la
+	   composición. */
+	.mhero-overlay .word em{ display:block; font-style:italic; color:rgba(255,255,255,.72); }
 
-	.hero-caption{ text-align:center; font-family:Georgia,'Times New Roman',serif; font-weight:300;
-		font-size:.86rem; letter-spacing:.08em; color:var(--mm);
+	.hero-caption{ text-align:center; font-family:Georgia,'Times New Roman',serif; font-weight:400;
+		font-size:clamp(1rem,1.35vw,1.2rem); letter-spacing:.06em; color:var(--mi);
 		margin:0; padding:clamp(1.3rem,3vw,2rem) clamp(1.2rem,4vw,3rem) 0; }
 
 	/* En vertical no hay lugar para poner el nombre al lado sin pisarlo:
