@@ -904,11 +904,12 @@ img{max-width:100%;}
                         { label: "Nombre del proyecto", name: "nombre", widget: "string", hint: "Ej. ALTOCONCEPTO" },
                         { label: "Detalle", name: "detalle", widget: "string", required: false, hint: "Ej. Menswear · Santiago · 2026" },
                         {
-                          label: "Fotos (2 a 4)",
+                          label: "Fotos de la campaña (hasta 12)",
                           name: "fotos",
                           widget: "list",
-                          min: 2,
-                          max: 4,
+                          min: 1,
+                          max: 12,
+                          hint: "Se muestran en una tira que se recorre hacia el lado, así que podés poner varias sin que la página se haga eterna. Van en vertical: elegí tomas verticales u horizontales sabiendo que se recortan a formato retrato.",
                           summary: "{{fields.alt}}",
                           fields: [
                             { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
@@ -974,6 +975,21 @@ img{max-width:100%;}
                       fields: [
                         { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
                         { label: "Descripción para lectores de pantalla", name: "alt", widget: "string", required: false },
+                        {
+                          label: "Encuadre dentro del cuadrado",
+                          name: "posicion",
+                          widget: "select",
+                          required: false,
+                          default: "50%",
+                          options: [
+                            { label: "Centrado (por defecto)", value: "50%" },
+                            { label: "Todo arriba — si te corta la cabeza", value: "0%" },
+                            { label: "Un poco más arriba", value: "25%" },
+                            { label: "Un poco más abajo", value: "75%" },
+                            { label: "Todo abajo", value: "100%" },
+                          ],
+                          hint: "Las polaroids se muestran en un cuadrado, así que a una foto vertical se le recorta arriba y abajo. Si te queda cortada la cabeza, elegí una opción más arriba.",
+                        },
                       ],
                     },
                   ],

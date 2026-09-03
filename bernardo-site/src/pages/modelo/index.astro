@@ -110,24 +110,37 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 // anuncia en el sitio y tampoco se ofrece a buscadores. Sacarla del menu no
 // alcanza, porque igual entra al sitemap y se indexa.
 const enObra = !(nav.modelo && nav.modelo.trim());
+
+// Menú de la portada. Solo se listan las secciones que de verdad existen: si
+// Bernardo todavía no cargó polaroids, ese enlace no aparece y no lleva a un
+// ancla vacía.
+const secciones = [
+	galeria?.length && { href: '#book', label: 'Book' },
+	selectedWork?.length && { href: '#work', label: 'Work' },
+	(hayFranja || reelEmbed) && { href: '#motion', label: 'Motion' },
+	polaroids?.length && { href: '#polaroids', label: 'Polaroids' },
+	detailGroups.length && { href: '#details', label: 'Details' },
+	{ href: '#booking', label: 'Booking' },
+].filter(Boolean);
 ---
 
 <Layout title="Bernardo Combeau — Model" description="Bernardo Combeau, model based in Santiago, Chile — fashion, commercial, e-commerce and advertising." image={heroFoto || undefined} noindex={enObra}>
 	<div class="modelo">
 		<header class="mhead">
-			<span class="wordmark">Bernardo Combeau</span>
-			<a class="back" href="/">← Volver a fotografía</a>
+			<div class="mhead-marca">
+				<span class="wordmark">Bernardo Combeau <i aria-hidden="true">|</i> <em>Model</em></span>
+				<nav class="mnav" aria-label="Sections">
+					{secciones.map((s) => <a href={s.href}>{s.label}</a>)}
+				</nav>
+			</div>
+			<a class="back" href="/">← Photography</a>
 		</header>
 
+		{/* El nombre ya vive en el encabezado: repetirlo encima de la foto la
+		    tapaba sin agregar nada. */}
 		{heroFoto && (
-			<div class="mhero-wrap">
-				<div class="mhero">
-					<Image src={heroFoto} alt="Bernardo Combeau" width={1800} quality={82} loading="eager" fetchpriority="high" />
-					<div class="mhero-scrim"></div>
-				</div>
-				<div class="mhero-overlay">
-					<span class="word">Bernardo Combeau <em>Model</em></span>
-				</div>
+			<div class="mhero">
+				<Image src={heroFoto} alt="Bernardo Combeau" width={1800} quality={82} loading="eager" fetchpriority="high" />
 			</div>
 		)}
 
@@ -147,17 +160,22 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 		)}
 
 		{galeria && galeria.length > 0 && (
-			<section class="mgallery" id="galeria">
-				<div class="grid-12" data-visor-grupo>
-					{galeriaV.slice(0, 12).map((img) => (
-						<button class="photo" type="button" aria-haspopup="dialog"
+			<section class="mgallery mgallery-book" id="book">
+				{/* Se muestran 4 y el resto queda plegado detrás de "Full book". El
+				    recorte lo pone el script, así que sin JavaScript se ven todas en
+				    vez de quedar inalcanzables. */}
+				<div class="grid-12" data-visor-grupo data-plegable={galeriaV.length > 4 ? '' : undefined}>
+					{galeriaV.slice(0, 12).map((img, n) => (
+						<button class="photo" type="button" aria-haspopup="dialog" data-extra={n >= 4 ? '' : undefined}
 							data-lb={JSON.stringify(img.lb)} data-alt={img.alt || 'Bernardo Combeau'}>
 							<Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={1200} quality={80} />
 						</button>
 					))}
 				</div>
-				{selectedWork && selectedWork.length > 0 && (
-					<div class="book-cta"><a href="#selected-work">Ver book completo →</a></div>
+				{galeriaV.length > 4 && (
+					<div class="book-cta">
+						<button class="btn-book" type="button" aria-expanded="false" hidden>Full book</button>
+					</div>
 				)}
 			</section>
 		)}
@@ -167,16 +185,19 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 		)}
 
 		{selectedWork && selectedWork.length > 0 && (
-			<section class="mgallery" id="selected-work">
+			<section class="work" id="work">
 				<h2>Selected Work</h2>
 				<div class="work-list">
 					{selectedV.map((job) => (
-						<div class="work-item">
+						<article class="work-item">
 							<div class="work-head">
-								<span class="work-name">{job.nombre}</span>
-								{job.detalle && <span class="work-detalle">{job.detalle}</span>}
+								<h3 class="work-name">{job.nombre}</h3>
+								{job.detalle && <p class="work-detalle">{job.detalle}</p>}
 							</div>
-							<div class="grid-work" data-visor-grupo>
+							{/* Tira horizontal, no grilla: es lo que separa esta sección del
+							    book de arriba y lo que permite meter muchas fotos por campaña
+							    sin estirar la página. */}
+							<div class="work-tira" data-visor-grupo>
 								{(job.fotos || []).map((img) => (
 									<button class="photo" type="button" aria-haspopup="dialog"
 										data-lb={JSON.stringify(img.lb)} data-alt={img.alt || job.nombre}>
@@ -184,7 +205,7 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 									</button>
 								))}
 							</div>
-						</div>
+						</article>
 					))}
 				</div>
 			</section>
@@ -210,7 +231,7 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 				<div class="motion-contenido">
 					<h2 id="motion-titulo">{motionTitulo || 'Motion / Commercials'}</h2>
 					<div class="motion-acciones">
-						<a class="btn" href="#galeria">Stills</a>
+						<a class="btn" href="#book">Stills</a>
 						{reelEmbed && <a class="btn" href="#reel">Motion</a>}
 					</div>
 				</div>
@@ -228,19 +249,22 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 						allow="fullscreen; picture-in-picture" allowfullscreen></iframe>
 				</div>
 				<noscript>
-					<p class="reel-alt"><a href={reelUrl} target="_blank" rel="noopener">Ver el reel completo →</a></p>
+					<p class="reel-alt"><a href={reelUrl} target="_blank" rel="noopener">Watch the full reel →</a></p>
 				</noscript>
 			</section>
 		)}
 
 		{polaroids && polaroids.length > 0 && (
-			<section class="mgallery">
+			<section class="mgallery" id="polaroids">
 				<h2>Polaroids</h2>
 				<div class="grid-polaroids" data-visor-grupo>
 					{polaroidsV.slice(0, 4).map((img) => (
 						<button class="photo" type="button" aria-haspopup="dialog"
 							data-lb={JSON.stringify(img.lb)} data-alt={img.alt || 'Bernardo Combeau'}>
-							<Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={600} quality={80} />
+							{/* El cuadrado recorta arriba y abajo. Con "posicion" se elige qué
+							    parte se conserva, para que no quede cortada la cabeza. */}
+							<Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={600} quality={80}
+								style={img.posicion ? `object-position:50% ${img.posicion}` : undefined} />
 						</button>
 					))}
 				</div>
@@ -248,7 +272,7 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 		)}
 
 		{detailGroups.length > 0 && (
-			<section class="stats">
+			<section class="stats" id="details">
 				<h2>Details</h2>
 				<div class="stat-cols">
 					{detailGroups.map((group) => (
@@ -265,7 +289,7 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 			</section>
 		)}
 
-		<footer class="mfoot">
+		<footer class="mfoot" id="booking">
 			<h2>Booking</h2>
 			{booking?.region && <p class="region">{booking.region}</p>}
 			<div class="contact-links">
@@ -273,18 +297,18 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 				{whatsappDigits && <a href={`https://wa.me/${whatsappDigits}`} target="_blank" rel="noopener">{contacto.whatsapp}</a>}
 				{booking?.instagram && <a href={`https://instagram.com/${booking.instagram.replace(/^@/, '')}`} target="_blank" rel="noopener">{booking.instagram}</a>}
 			</div>
-			<a class="back" href="/">← Volver a fotografía</a>
+			<a class="back" href="/">← Photography</a>
 		</footer>
 
-		<dialog class="visor" aria-label="Foto a tamaño completo">
+		<dialog class="visor" aria-label="Full size photo">
 			<figure class="visor-fig">
 				<img class="visor-img" alt="" decoding="async" />
 			</figure>
 			{/* autofocus va en Cerrar a proposito: sin el, showModal() manda el foco
 			    al primer focusable del DOM, que aca seria "Foto anterior". */}
-			<button class="visor-btn visor-cerrar" type="button" autofocus aria-label="Cerrar visor">✕</button>
-			<button class="visor-btn visor-prev" type="button" aria-label="Foto anterior">‹</button>
-			<button class="visor-btn visor-next" type="button" aria-label="Foto siguiente">›</button>
+			<button class="visor-btn visor-cerrar" type="button" autofocus aria-label="Close">✕</button>
+			<button class="visor-btn visor-prev" type="button" aria-label="Previous photo">‹</button>
+			<button class="visor-btn visor-next" type="button" aria-label="Next photo">›</button>
 			<p class="visor-pie" aria-hidden="true"></p>
 			{/* Al navegar con las flechas cambia la imagen pero no se mueve el foco:
 			    sin esta region viva un lector de pantalla no anuncia nada. */}
@@ -294,6 +318,34 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 </Layout>
 
 <script>
+	// ---- Book: se muestran 4 y el resto se despliega ------------------------
+	// El recorte lo aplica el script, no el HTML: si el JavaScript no corre, la
+	// grilla queda completa en vez de dejar fotos inalcanzables detrás de un
+	// botón muerto.
+	const grillaBook = document.querySelector('.grid-12[data-plegable]');
+	const btnBook = document.querySelector('.btn-book');
+	if (grillaBook && btnBook) {
+		const extras = grillaBook.querySelectorAll('.photo[data-extra]');
+		grillaBook.setAttribute('data-recortado', '');
+		btnBook.hidden = false;
+		btnBook.addEventListener('click', () => {
+			const plegado = grillaBook.hasAttribute('data-recortado');
+			if (plegado) {
+				grillaBook.removeAttribute('data-recortado');
+				btnBook.textContent = 'Show less';
+				btnBook.setAttribute('aria-expanded', 'true');
+				// El foco salta a la primera foto recién revelada para que quien
+				// navega con teclado no quede parado antes de ellas.
+				if (extras[0]) extras[0].focus({ preventScroll: true });
+			} else {
+				grillaBook.setAttribute('data-recortado', '');
+				btnBook.textContent = 'Full book';
+				btnBook.setAttribute('aria-expanded', 'false');
+				btnBook.scrollIntoView({ block: 'center' });
+			}
+		});
+	}
+
 	// ---- Franja de Motion ----------------------------------------------------
 	// El fondo se monta desde aca y no desde el HTML: si el visitante pidio menos
 	// movimiento no se carga nunca (un iframe de plataforma ignora esa preferencia
@@ -499,51 +551,34 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 <style>
 	.modelo{ --mp: #ffffff; --mi: #111110; --mm: #84817a; --ml: #e7e4dd;
 		background:var(--mp); color:var(--mi); font-family:-apple-system,BlinkMacSystemFont,sans-serif; }
-	/* Barra superior fija, como la referencia: el nombre vive acá arriba
-	   además de ir sobre la foto. */
+	/* Barra superior fija: acá viven el nombre y el menú de secciones, así
+	   que el nombre ya no se repite encima de la foto. */
 	.mhead{ position:sticky; top:0; z-index:10; background:var(--mp);
-		display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.4rem 1.2rem;
-		padding:1.1rem clamp(1.2rem,4vw,3rem); border-bottom:1px solid var(--ml); }
-	.mhead .wordmark{ font-size:.9rem; font-weight:600; letter-spacing:.18em; text-transform:uppercase;
-		color:var(--mi); }
-	.mhead .back{ color:var(--mm); text-decoration:none; font-size:.8rem; }
+		display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:.5rem 1.2rem;
+		padding:.9rem clamp(1.2rem,4vw,3rem); border-bottom:1px solid var(--ml); }
+	.mhead .wordmark{ display:block; font-size:.9rem; font-weight:600; letter-spacing:.18em;
+		text-transform:uppercase; color:var(--mi); }
+	.mhead .wordmark i{ font-style:normal; color:var(--ml); margin:0 .35em; }
+	.mhead .wordmark em{ font-style:normal; color:var(--mm); }
+	.mhead .back{ color:var(--mm); text-decoration:none; font-size:.72rem; letter-spacing:.14em;
+		text-transform:uppercase; padding-top:.15rem; white-space:nowrap; }
 
-	/* El hero es una banda apaisada recortada, no la foto entera a ancho
-	   completo (así deja de salir gigante). El sujeto queda a la izquierda
-	   del encuadre y el nombre cae sobre el fondo desenfocado de la derecha,
-	   sin taparlo. */
-	.mhero-wrap{ position:relative; }
-	/* La referencia fija el hero en min-height:100vh. Acá se usa 16/9 con
-	   tope de viewport: en pantallas anchas el tope evita que vuelva a
-	   crecer de más, y como el recorte es más apaisado que la foto, el
-	   ajuste siempre recorta arriba y abajo, nunca a los lados (que es
-	   donde viven Bernardo y el nombre). */
+	/* Menú de anclas a las secciones de la página. */
+	.mnav{ display:flex; flex-wrap:wrap; gap:.35rem 1.1rem; margin-top:.45rem; }
+	.mnav a{ color:var(--mm); text-decoration:none; font-size:.68rem; letter-spacing:.16em;
+		text-transform:uppercase; padding:.15rem 0; border-bottom:1px solid transparent; }
+	.mnav a:hover, .mnav a:focus-visible{ color:var(--mi); border-bottom-color:var(--mi); }
+
+	/* El encabezado es fijo, así que al saltar a una sección hay que dejarle
+	   su alto libre o el título queda tapado detrás de la barra. */
+	:target{ scroll-margin-top:6.5rem; }
+	.modelo section, .modelo footer{ scroll-margin-top:6.5rem; }
+
 	.mhero{ position:relative; width:100%; aspect-ratio:16/9; max-height:100vh; overflow:hidden; }
 	/* Fuente 855x641 (4:3). Como el marco es más apaisado que la foto, el
 	   ajuste recorta arriba y abajo: el 25% deja los ojos sobre la línea de
 	   tercios superior en vez de al medio. */
 	.mhero img{ width:100%; height:100%; object-fit:cover; object-position:50% 25%; display:block; }
-	.mhero-scrim{ position:absolute; inset:0; z-index:1;
-		background:linear-gradient(270deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.26) 32%, rgba(0,0,0,0) 60%); }
-	/* El borde derecho del nombre cae en el mismo margen que el header, así
-	   el wordmark, el link de volver y el nombre comparten retícula. Y va
-	   bajo el centro: la cara pesa arriba a la izquierda, el nombre abajo a
-	   la derecha, y la composición queda en diagonal en vez de enfrentada. */
-	/* El borde izquierdo del bloque se fija en 58%: Bernardo termina cerca del
-	   56% del encuadre, así que el nombre no puede alcanzarlo por más que
-	   crezca la tipografía. Si no cabe, parte de línea dentro de su caja en
-	   vez de invadirlo. */
-	.mhero-overlay{ position:absolute; z-index:2; top:50%; transform:translateY(-50%);
-		left:60%; right:clamp(1.2rem,4vw,3rem); text-align:right; }
-	/* La referencia trackea los titulares en negativo (-0.02em) y aprieta el
-	   interlineado a ~1.06 cuanto mas grande es el titular. */
-	.mhero-overlay .word{ display:block; font-family:Georgia,'Times New Roman',serif; font-weight:400;
-		font-size:clamp(1.9rem,4.2vw,3.85rem); line-height:1.06; letter-spacing:-.02em; color:#fff;
-		text-shadow:0 1px 14px rgba(0,0,0,.35); }
-	/* En bloque para que "Model" caiga siempre a su propia línea: si no, en
-	   pantallas muy anchas el nombre entero entra en una sola y cambia la
-	   composición. */
-	.mhero-overlay .word em{ display:block; font-style:italic; color:rgba(255,255,255,.72); }
 
 	/* Linea meta. Los sitios de modelo reales la dejan entre 16 y 20px SIEMPRE,
 	   sin importar cuanto mida el nombre: por eso va en px absolutos y no como
@@ -560,24 +595,19 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 	.meta-item{ white-space:nowrap; }
 	.meta-sep{ font-style:normal; color:var(--mm); margin:0 .5em; }
 
-	/* En vertical no hay lugar para poner el nombre al lado sin pisarlo:
-	   la foto se queda con él y el nombre pasa a la línea de abajo. */
 	@media (max-width:760px){
 		.mhero{ aspect-ratio:4/5; }
 		/* En vertical el recorte pasa a ser lateral: el 15% mantiene a
 		   Bernardo completo, de hombro a manos. */
 		.mhero img{ object-position:15% 40%; }
-		.mhero-scrim{ display:none; }
-		.mhero-overlay{ position:static; transform:none; max-width:none; text-align:center;
-			padding:clamp(1.2rem,4vw,2rem) clamp(1.2rem,4vw,3rem) 0; }
-		.mhero-overlay .word{ color:var(--mi); text-shadow:none; }
-		.mhero-overlay .word em{ color:var(--mm); }
-		.hero-caption{ padding-top:.5rem; }
+		.hero-caption{ padding-top:1rem; }
+		:target, .modelo section, .modelo footer{ scroll-margin-top:8.5rem; }
 	}
 
 	/* Aire generoso entre fotos y entre secciones: es lo que da la lectura
 	   de revista que pidió Bernardo. */
 	.mgallery{ padding:clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem); }
+	.mgallery-book{ padding-bottom:clamp(1.3rem,3.5vw,2.5rem); }
 	.mgallery h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
 		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11; margin:0 0 clamp(1.4rem,3vw,2.2rem); color:var(--mm); }
 
@@ -586,74 +616,52 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 	.grid-12 .photo{ aspect-ratio:4/5; overflow:hidden; }
 	.grid-12 .photo img{ width:100%; height:100%; object-fit:cover; display:block; }
 
+	/* Sin JavaScript no se pone data-recortado y se ven todas: el boton solo
+	   aparece si el script pudo tomar el control. */
+	.grid-12[data-recortado] .photo[data-extra]{ display:none; }
 	.book-cta{ text-align:center; padding-top:clamp(1.4rem,3vw,2rem); }
+	.btn-book{ display:inline-block; background:none; cursor:pointer;
+		color:var(--mi); font:inherit; font-size:.72rem; letter-spacing:.16em;
+		text-transform:uppercase; border:1px solid var(--mi); padding:.8rem 2rem;
+		transition:background-color .2s ease, color .2s ease; }
+	.btn-book:hover, .btn-book:focus-visible{ background:var(--mi); color:var(--mp); }
 	.book-cta a{ display:inline-block; color:var(--mi); text-decoration:none; font-size:.8rem;
 		letter-spacing:.08em; text-transform:uppercase; border:1px solid var(--ml); padding:.75rem 1.6rem; }
 
-	.identity{ max-width:62ch; margin:0 auto; padding:clamp(2.4rem,6vw,4rem) clamp(1.2rem,4vw,3rem); }
+	/* Bernardo pidio la mitad del aire entre Full book, este texto y Selected
+	   Work. El hueco lo forman dos paddings que se suman, asi que se reducen
+	   los dos: este y el de arriba de la seccion siguiente. */
+	.identity{ max-width:62ch; margin:0 auto; padding:clamp(1.2rem,3vw,2rem) clamp(1.2rem,4vw,3rem); }
 	.identity p{ font-size:1.1rem; line-height:1.8; }
 
-	.work-list{ display:flex; flex-direction:column; gap:clamp(2.2rem,5vw,3.2rem); }
-	.work-head{ display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:.4rem 1rem;
-		margin-bottom:1rem; border-bottom:1px solid var(--ml); padding-bottom:.6rem; }
-	.work-name{ font-family:Georgia,'Times New Roman',serif; font-size:1.15rem; letter-spacing:.03em; }
-	.work-detalle{ font-size:.75rem; letter-spacing:.05em; color:var(--mm); text-transform:uppercase; }
-	.grid-work{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(1.2rem,3.5vw,2.4rem); }
-	@media (min-width:820px){ .grid-work{ grid-template-columns:repeat(4,1fr); } }
-	.grid-work .photo{ aspect-ratio:3/4; overflow:hidden; }
-	.grid-work .photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+	/* Selected Work tiene que leerse distinto del book: cambia el fondo, la
+	   proporcion de la foto (2:3 en vez de 4:5) y sobre todo el gesto, que pasa
+	   de grilla a recorrido horizontal. */
+	.work{ background:#faf8f4; border-block:1px solid var(--ml);
+		padding:clamp(2.6rem,6vw,4.5rem) 0; }
+	.work > h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
+		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11; color:var(--mm);
+		margin:0 clamp(1.4rem,5vw,4rem) clamp(1.6rem,3.5vw,2.4rem); }
+	.work-list{ display:flex; flex-direction:column; gap:clamp(2.4rem,5vw,3.6rem); }
+	.work-head{ padding:0 clamp(1.4rem,5vw,4rem); margin-bottom:clamp(.9rem,2vw,1.3rem); }
+	.work-name{ font-family:Georgia,'Times New Roman',serif; font-weight:400;
+		font-size:clamp(1.5rem,3vw,2.2rem); letter-spacing:-.02em; line-height:1.1;
+		color:var(--mi); margin:0; }
+	.work-detalle{ font-size:.72rem; letter-spacing:.16em; color:var(--mm);
+		text-transform:uppercase; margin:.45rem 0 0; }
 
-	/* Franja de Motion: el video corre de fondo, en silencio y en bucle, y
-	   encima van el titulo y los dos accesos. El poster va tambien como fondo
-	   de la seccion: si el video no arranca (bajo consumo, movil, autoplay
-	   denegado) igual se ve una imagen y no un rectangulo negro. */
-	.motion{ position:relative; width:100%; aspect-ratio:21/9;
-		min-height:clamp(320px,52vh,420px); max-height:76vh;
-		overflow:hidden; background:#0b0b0a center 35%/cover no-repeat;
-		display:grid; place-items:center; }
-	.motion-media{ position:absolute; inset:0; overflow:hidden; }
-	/* Con mp4 propio el recorte lo resuelve object-fit: sin matematica, sin JS
-	   y sin numeros magicos. */
-	.motion-video{ width:100%; height:100%; object-fit:cover; object-position:center 35%;
-		display:block; }
-	/* Respaldo con iframe: sobredimensionar y centrar. Las medidas van contra el
-	   CONTENEDOR (min-width/min-height 100% + aspect-ratio), no contra el
-	   viewport: la franja tiene max-height, asi que 100vw/56.25vw se despega del
-	   marco real y deja barras. El scale tapa la UI residual de la plataforma. */
-	.motion-embed{ position:absolute; top:50%; left:50%;
-		transform:translate(-50%,-50%) scale(1.04);
-		width:auto; height:auto; min-width:100%; min-height:100%; aspect-ratio:16/9;
-		border:0; pointer-events:none; }
-	/* Velo FIJO: el fotograma cambia todo el tiempo, asi que el contraste no
-	   puede depender de que el video sea oscuro. Mas denso al centro, que es
-	   donde caen el titulo y los botones. */
-	.motion-scrim{ position:absolute; inset:0;
-		background:linear-gradient(180deg, rgba(0,0,0,.34) 0%, rgba(0,0,0,.54) 50%, rgba(0,0,0,.34) 100%); }
-	.motion-contenido{ position:relative; z-index:2; text-align:center;
-		padding:clamp(1.4rem,4vw,3rem); }
-	.motion-contenido h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
-		font-size:clamp(1.5rem,3vw,2.4rem); letter-spacing:-.02em; line-height:1.1;
-		margin:0 0 clamp(1.2rem,2.5vw,1.8rem); color:#fff; text-shadow:0 1px 14px rgba(0,0,0,.45); }
-	.motion-acciones{ display:flex; gap:clamp(.8rem,2vw,1.25rem); justify-content:center; flex-wrap:wrap; }
-	/* Ancho minimo igual en los dos (140px, medido en la referencia): es lo que
-	   hace que el par se lea como un juego apareado y no como dos enlaces
-	   sueltos. Borde 2px que adelgaza a 1px en pantallas chicas. El velo oscuro
-	   no es decorativo: un boton de solo borde se pierde cuando pasa un
-	   fotograma claro. 14px con .1em — a 16px ese mismo tracking los deja
-	   demasiado anchos. */
-	.btn{ display:inline-flex; align-items:center; justify-content:center;
-		min-width:8.75rem; min-height:2.9375rem; padding:.75rem 1.25rem;
-		border:2px solid #fff; border-radius:0; background:rgba(0,0,0,.2);
-		color:#fff; text-decoration:none; font-size:.875rem; font-weight:600;
-		letter-spacing:.1em; text-transform:uppercase; text-align:center;
-		transition:background-color .25s ease, color .25s ease; }
-	.btn:hover, .btn:focus-visible{ background:#fff; color:#111110; }
-	.btn:focus-visible{ outline:2px solid #fff; outline-offset:3px; }
-	@media (max-width:786px){ .btn{ border-width:1px; min-width:7.5rem; padding:.7rem .9rem; } }
+	/* La tira sangra hasta el borde derecho a proposito: que la ultima foto
+	   quede cortada es lo que avisa que hay mas para el lado. */
+	.work-tira{ display:flex; gap:clamp(.7rem,1.8vw,1.1rem);
+		overflow-x:auto; scroll-snap-type:x proximity;
+		padding:0 clamp(1.4rem,5vw,4rem) .6rem;
+		scrollbar-width:thin; scrollbar-color:var(--ml) transparent; }
+	.work-tira .photo{ flex:0 0 clamp(190px,26vw,300px); aspect-ratio:2/3;
+		overflow:hidden; scroll-snap-align:start; }
+	.work-tira .photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+	.work-tira::-webkit-scrollbar{ height:3px; }
+	.work-tira::-webkit-scrollbar-thumb{ background:var(--ml); }
 
-	/* El reel de verdad: proporcion nativa, con controles y con sonido. Es una
-	   pieza distinta de la franja y no comparte recorte con ella — llevar un
-	   reel 16/9 a 21/9 corta 15,6% arriba y 15,6% abajo, o sea cabeza y pies. */
 	.reel{ padding:clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem); }
 	.reel h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
 		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11;
