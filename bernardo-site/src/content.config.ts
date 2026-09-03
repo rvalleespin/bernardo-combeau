@@ -13,6 +13,10 @@ const image = () =>
     // siempre). Lo llena el panel /admin (encuadre visual en cover, selector de
     // posición en las fotos de la galería) — 3-sep-2026, a pedido de Ramón.
     focus: z.string().optional(),
+    // Multiplicador de escala (ej. "1.6") aplicado sobre el punto de "focus" —
+    // para cuando el encuadre no alcanza porque la foto es de cuerpo completo y
+    // el sujeto se ve chico. Mismo campo/mecanismo que ya usa Modelo.
+    zoom: z.string().optional(),
   });
 
 // Esquema compartido: ambas colecciones aceptan opcionalmente cliente y

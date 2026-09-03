@@ -56,7 +56,7 @@ const imageObjects = images.map((img) => ({
 	<div class="gallery">
 		{images.map((img, i) => (
 			<a class="card" href={`#foto-${i}`}>
-				<div class="photo" style={img.focus ? `--focus:${img.focus}` : undefined}><Image src={img.src} alt={img.alt} width={828} quality={80} /></div>
+				<div class="photo" style={[img.focus && `--focus:${img.focus}`, img.zoom && `--zoom:${img.zoom}`].filter(Boolean).join(';') || undefined}><Image src={img.src} alt={img.alt} width={828} quality={80} /></div>
 				{(img.place || img.year || img.credit) && (
 					<div class="cap">
 						<span>{img.place}</span>

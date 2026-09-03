@@ -271,13 +271,17 @@ img{max-width:100%;}
           return typeof v.toJS === "function" ? v.toJS() : v;
         }
 
-        function photoBox(getAsset, path, alt, className, focus) {
+        function photoBox(getAsset, path, alt, className, focus, zoom) {
           var cls = "photo" + (className ? " " + className : "");
           if (!path) {
             return h("div", { className: cls + " placeholder" }, h("span", {}, "[ sin foto ]"));
           }
           var asset = getAsset(path);
-          var style = focus ? { "--focus": focus } : undefined;
+          var style = focus || zoom ? {} : undefined;
+          if (style) {
+            if (focus) style["--focus"] = focus;
+            if (zoom) style["--zoom"] = zoom;
+          }
           return h("div", { className: cls, style: style }, h("img", { src: asset ? asset.toString() : "", alt: alt || "" }));
         }
 
@@ -508,7 +512,7 @@ img{max-width:100%;}
                               h("span", {}, [img.year, img.credit].filter(Boolean).join(" · "))
                             )
                           : null;
-                      return h("div", { key: i, className: "card" }, photoBox(getAsset, img.src, img.alt, null, img.focus), cap);
+                      return h("div", { key: i, className: "card" }, photoBox(getAsset, img.src, img.alt, null, img.focus, img.zoom), cap);
                     })
                   ),
                   hasRealPublication
@@ -800,9 +804,26 @@ img{max-width:100%;}
           return { x: isNaN(x) ? 50 : Math.max(0, Math.min(100, x)), y: isNaN(y) ? 50 : Math.max(0, Math.min(100, y)) };
         }
 
+        // Mismo look que los botones nativos de Decap junto al campo Imagen ("Elige una
+        // imagen diferente", etc.) — para que "Editar foto" se sienta parte del mismo
+        // grupo de acciones y no un widget aparte. Color y forma tomados a ojo del CSS
+        // real de esos botones (Emotion, sin clase estable que targetear desde afuera).
+        var EDIT_BUTTON_STYLE = {
+          display: "inline-block",
+          background: "#eaf1fb",
+          color: "#3271d9",
+          border: "none",
+          borderRadius: "3px",
+          padding: ".5rem .9rem",
+          fontSize: ".84rem",
+          fontWeight: "500",
+          cursor: "pointer",
+          marginTop: ".6rem",
+        };
+
         var FocusPointControl = createClass({
           getInitialState: function () {
-            return { naturalW: null, naturalH: null };
+            return { naturalW: null, naturalH: null, editing: false };
           },
           handleImgLoad: function (e) {
             this.setState({ naturalW: e.target.naturalWidth, naturalH: e.target.naturalHeight });
@@ -814,6 +835,9 @@ img{max-width:100%;}
             x = Math.max(0, Math.min(100, x));
             y = Math.max(0, Math.min(100, y));
             this.props.onChange(x + "% " + y + "%");
+          },
+          toggleEditing: function () {
+            this.setState({ editing: !this.state.editing });
           },
           render: function () {
             var focus = parseFocus(this.props.value);
@@ -832,7 +856,14 @@ img{max-width:100%;}
               return h(
                 "div",
                 { style: { padding: ".9rem", background: "#f0efe9", color: "#84817a", fontSize: ".82rem", border: "1px solid #e7e4dd" } },
-                "Sube la foto de Portada primero (campo de arriba) — el selector de encuadre aparece acá una vez que la elijas."
+                "Sube la foto de Portada primero (campo de arriba) — el botón para editar el encuadre aparece acá una vez que la elijas."
+              );
+            }
+            if (!this.state.editing) {
+              return h(
+                "button",
+                { type: "button", style: EDIT_BUTTON_STYLE, onClick: this.toggleEditing },
+                "Editar foto (encuadre y zoom)"
               );
             }
             // El recuadro punteado que muestra el recorte final: un cuadrado cuyo lado
@@ -866,6 +897,11 @@ img{max-width:100%;}
               "div",
               {},
               h(
+                "button",
+                { type: "button", style: Object.assign({}, EDIT_BUTTON_STYLE, { marginTop: 0, marginBottom: ".6rem" }), onClick: this.toggleEditing },
+                "Listo — cerrar editor de foto"
+              ),
+              h(
                 "div",
                 { style: { position: "relative", display: "inline-block", maxWidth: "100%", overflow: "hidden", cursor: "crosshair" }, onClick: this.handleClick },
                 h("img", {
@@ -893,7 +929,7 @@ img{max-width:100%;}
               h(
                 "div",
                 { style: { fontSize: ".78rem", color: "#84817a", marginTop: ".5rem", maxWidth: "420px" } },
-                "Toca o haz clic sobre la foto para mover el punto. Lo que queda DENTRO del recuadro punteado es lo que se ve en la portada y en las grillas cuadradas — lo de afuera se recorta."
+                "Toca o haz clic sobre la foto para mover el punto. Lo que queda DENTRO del recuadro punteado es lo que se ve en la portada y en las grillas cuadradas — lo de afuera se recorta. El campo \"Zoom de la miniatura\" (abajo) acerca la toma sobre este mismo punto."
               ),
               h(
                 "div",
@@ -1350,6 +1386,7 @@ img{max-width:100%;}
                       required: false,
                       hint: "La portada se recorta a un cuadrado en la home y en los listados. Toca la foto de arriba para marcar qué parte no se debe cortar.",
                     },
+                    zoomField(),
                     {
                       label: "Descripción para lectores de pantalla",
                       name: "alt",
@@ -1386,6 +1423,7 @@ img{max-width:100%;}
                       ],
                       hint: "La grilla y la home recortan esta foto a un cuadrado. Si el recorte centrado corta algo importante, elegí hacia qué lado mover el recorte — se ve reflejado al instante en la vista previa.",
                     },
+                    zoomField(),
                     {
                       label: "Descripción para lectores de pantalla",
                       name: "alt",
@@ -1446,6 +1484,7 @@ img{max-width:100%;}
                       required: false,
                       hint: "La portada se recorta a un cuadrado en la home y en los listados. Toca la foto de arriba para marcar qué parte no se debe cortar.",
                     },
+                    zoomField(),
                     {
                       label: "Descripción para lectores de pantalla",
                       name: "alt",
@@ -1482,6 +1521,7 @@ img{max-width:100%;}
                       ],
                       hint: "La grilla y la home recortan esta foto a un cuadrado. Si el recorte centrado corta algo importante, elegí hacia qué lado mover el recorte — se ve reflejado al instante en la vista previa.",
                     },
+                    zoomField(),
                     {
                       label: "Descripción para lectores de pantalla",
                       name: "alt",
