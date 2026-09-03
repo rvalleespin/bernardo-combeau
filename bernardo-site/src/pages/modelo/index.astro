@@ -191,20 +191,24 @@ const secciones = [
 					{selectedV.map((job) => (
 						<article class="work-item">
 							<div class="work-head">
-								<h3 class="work-name">{job.nombre}</h3>
+								<p class="work-name">{job.nombre}</p>
 								{job.detalle && <p class="work-detalle">{job.detalle}</p>}
 							</div>
-							{/* Tira horizontal, no grilla: es lo que separa esta sección del
-							    book de arriba y lo que permite meter muchas fotos por campaña
-							    sin estirar la página. */}
-							<div class="work-tira" data-visor-grupo>
-								{(job.fotos || []).map((img) => (
-									<button class="photo" type="button" aria-haspopup="dialog"
+							{/* Se ve una sola foto por campaña; el resto vive en el DOM sin
+							    mostrarse, para que el visor las recorra al abrir. Asi el nombre
+							    de la campaña se lee como titulo y no como una foto mas, y el
+							    book de arriba sigue siendo la unica grilla de la pagina. */}
+							<div class="work-fotos" data-visor-grupo>
+								{(job.fotos || []).map((img, n) => (
+									<button class="photo" type="button" aria-haspopup="dialog" data-oculta={n > 0 ? '' : undefined}
 										data-lb={JSON.stringify(img.lb)} data-alt={img.alt || job.nombre}>
-										<Image src={img.src} alt={img.alt || job.nombre} width={800} quality={80} />
+										<Image src={img.src} alt={img.alt || job.nombre} width={1600} quality={82} />
 									</button>
 								))}
 							</div>
+							{(job.fotos || []).length > 1 && (
+								<p class="work-cuenta">{job.fotos.length} photos</p>
+							)}
 						</article>
 					))}
 				</div>
@@ -235,7 +239,7 @@ const secciones = [
 						{reelEmbed && <a class="btn" href="#reel">Motion</a>}
 					</div>
 				</div>
-				<button class="motion-pausa" type="button" hidden>Pausar</button>
+				<button class="motion-pausa" type="button" hidden>Pause</button>
 			</section>
 		)}
 
@@ -366,7 +370,7 @@ const secciones = [
 		const ahorroDatos = navigator.connection && navigator.connection.saveData;
 		let corriendo = false;
 
-		const rotular = () => { btn.textContent = corriendo ? 'Pausar' : 'Reproducir'; };
+		const rotular = () => { btn.textContent = corriendo ? 'Pause' : 'Play'; };
 
 		const encender = () => {
 			if (corriendo || !fuente) return;
@@ -461,7 +465,7 @@ const secciones = [
 			if (img.decode) img.decode().catch(() => {}).then(() => img.classList.add('lista'));
 			else img.classList.add('lista');
 			pie.textContent = f.dataset.alt || '';
-			aviso.textContent = 'Foto ' + (i + 1) + ' de ' + grupo.length + '. ' + (f.dataset.alt || '');
+			aviso.textContent = 'Photo ' + (i + 1) + ' of ' + grupo.length + '. ' + (f.dataset.alt || '');
 			const varias = grupo.length > 1;
 			prev.hidden = !varias;
 			next.hidden = !varias;
@@ -634,33 +638,35 @@ const secciones = [
 	.identity{ max-width:62ch; margin:0 auto; padding:clamp(1.2rem,3vw,2rem) clamp(1.2rem,4vw,3rem); }
 	.identity p{ font-size:1.1rem; line-height:1.8; }
 
-	/* Selected Work tiene que leerse distinto del book: cambia el fondo, la
-	   proporcion de la foto (2:3 en vez de 4:5) y sobre todo el gesto, que pasa
-	   de grilla a recorrido horizontal. */
-	.work{ background:#faf8f4; border-block:1px solid var(--ml);
-		padding:clamp(2.6rem,6vw,4.5rem) 0; }
+	/* Selected Work se separa del book por GEOMETRIA, no por color: las
+	   agencias reales (IMG, Next, Premier, Ford, Viva) mantienen el fondo
+	   blanco y cambian ancho y gutter. El book va contenido y con aire; la
+	   campaña va a sangre completa y sin gutter. */
+	.work{ padding:clamp(2.6rem,6vw,4.5rem) 0; }
 	.work > h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
 		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11; color:var(--mm);
-		margin:0 clamp(1.4rem,5vw,4rem) clamp(1.6rem,3.5vw,2.4rem); }
-	.work-list{ display:flex; flex-direction:column; gap:clamp(2.4rem,5vw,3.6rem); }
-	.work-head{ padding:0 clamp(1.4rem,5vw,4rem); margin-bottom:clamp(.9rem,2vw,1.3rem); }
-	.work-name{ font-family:Georgia,'Times New Roman',serif; font-weight:400;
-		font-size:clamp(1.5rem,3vw,2.2rem); letter-spacing:-.02em; line-height:1.1;
-		color:var(--mi); margin:0; }
-	.work-detalle{ font-size:.72rem; letter-spacing:.16em; color:var(--mm);
-		text-transform:uppercase; margin:.45rem 0 0; }
+		margin:0 clamp(1.4rem,5vw,4rem) clamp(1.8rem,4vw,2.6rem); }
+	.work-list{ display:flex; flex-direction:column; gap:clamp(2.6rem,6vw,4.5rem); }
 
-	/* La tira sangra hasta el borde derecho a proposito: que la ultima foto
-	   quede cortada es lo que avisa que hay mas para el lado. */
-	.work-tira{ display:flex; gap:clamp(.7rem,1.8vw,1.1rem);
-		overflow-x:auto; scroll-snap-type:x proximity;
-		padding:0 clamp(1.4rem,5vw,4rem) .6rem;
-		scrollbar-width:thin; scrollbar-color:var(--ml) transparent; }
-	.work-tira .photo{ flex:0 0 clamp(190px,26vw,300px); aspect-ratio:2/3;
-		overflow:hidden; scroll-snap-align:start; }
-	.work-tira .photo img{ width:100%; height:100%; object-fit:cover; display:block; }
-	.work-tira::-webkit-scrollbar{ height:3px; }
-	.work-tira::-webkit-scrollbar-thumb{ background:var(--ml); }
+	/* El nombre de campaña va chico, en mayusculas y centrado sobre la foto.
+	   Es lo que hacen todas las fichas revisadas: nunca un titular grande, y
+	   con tracking neutro o positivo, no el negativo de los titulares serif.
+	   La jerarquia con la bajada se hace por peso, no por tamaño. */
+	.work-head{ text-align:center; padding:0 clamp(1.4rem,5vw,4rem);
+		margin-bottom:clamp(.9rem,2vw,1.4rem); }
+	.work-name{ font-size:.78rem; font-weight:600; letter-spacing:.16em; text-transform:uppercase;
+		color:var(--mi); margin:0; }
+	.work-detalle{ font-size:.78rem; font-weight:400; letter-spacing:.14em; text-transform:uppercase;
+		color:var(--mm); margin:.4rem 0 0; }
+
+	/* Una sola foto, a sangre completa. Las demas quedan en el DOM para que el
+	   visor las recorra, pero no se muestran. */
+	.work-fotos .photo[data-oculta]{ display:none; }
+	.work-fotos .photo{ width:100%; aspect-ratio:16/10; overflow:hidden; cursor:zoom-in; }
+	.work-fotos .photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+	.work-cuenta{ text-align:center; font-size:.68rem; letter-spacing:.16em; text-transform:uppercase;
+		color:var(--mm); margin:.7rem 0 0; }
+	@media (max-width:640px){ .work-fotos .photo{ aspect-ratio:4/5; } }
 
 	.reel{ padding:clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem); }
 	.reel h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
