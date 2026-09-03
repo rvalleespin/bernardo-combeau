@@ -62,6 +62,20 @@ const reelFondo = !reel
 // La franja aparece solo si hay algo que mostrar: mp4 propio o reel.
 const hayFranja = Boolean(videoFondoUrl || reelFondo);
 
+// Comerciales: un cuadrito por video, que redirige a YouTube (no se
+// embebe). La miniatura sale del thumbnail público de YouTube — no hace
+// falta que Bernardo suba una imagen aparte. Vimeo no tiene una miniatura
+// pública así de simple, así que esos quedan sin imagen (se ve el ícono de
+// play solo) en vez de inventar una.
+const comerciales = (motion.comerciales || [])
+	.map((c) => ({ ...c, parsed: parseReel(c.url) }))
+	.filter((c) => c.nombre && c.parsed)
+	.map((c) => ({
+		nombre: c.nombre,
+		url: c.url,
+		thumb: c.parsed.tipo === 'youtube' ? `https://img.youtube.com/vi/${c.parsed.id}/hqdefault.jpg` : null,
+	}));
+
 const motionPosterSrc = motionPoster
 	? (await getImage({ src: motionPoster, width: 1920, quality: 70 })).src
 	: null;
@@ -133,7 +147,12 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 const secciones = [
 	galeria?.length && { href: '#book', label: 'Book' },
 	selectedWork?.length && { href: '#work', label: 'Work' },
-	(hayFranja || reelEmbed) && { href: '#motion', label: 'Motion' },
+	// El ancla apunta a lo primero que exista de verdad: si no hay franja de
+	// video, "#motion" no existe en el DOM y el enlace del menú quedaría muerto.
+	(hayFranja || reelEmbed || comerciales.length) && {
+		href: hayFranja ? '#motion' : comerciales.length ? '#commercials' : '#reel',
+		label: 'Motion',
+	},
 	polaroids?.length && { href: '#polaroids', label: 'Polaroids' },
 	detailGroups.length && { href: '#details', label: 'Details' },
 	{ href: '#booking', label: 'Booking' },
@@ -259,10 +278,31 @@ const secciones = [
 					<h2 id="motion-titulo">{motionTitulo || 'Motion / Commercials'}</h2>
 					<div class="motion-acciones">
 						<a class="btn" href="#book">Stills</a>
-						{reelEmbed && <a class="btn" href="#reel">Motion</a>}
+						{/* "Motion" apunta a los comerciales si ya hay alguno cargado;
+						    si todavia no, cae al reel unico como antes. */}
+						{comerciales.length > 0
+							? <a class="btn" href="#commercials">Motion</a>
+							: reelEmbed && <a class="btn" href="#reel">Motion</a>}
 					</div>
 				</div>
 				<button class="motion-pausa" type="button" hidden>Pause</button>
+			</section>
+		)}
+
+		{comerciales.length > 0 && (
+			<section class="commercials" id="commercials">
+				<h2>Commercials</h2>
+				<div class="commercials-grid">
+					{comerciales.map((c) => (
+						<a class="commercial-tile" href={c.url} target="_blank" rel="noopener">
+							<div class="thumb">
+								{c.thumb && <img src={c.thumb} alt="" loading="lazy" width="480" height="270" />}
+								<div class="play" aria-hidden="true"></div>
+							</div>
+							<p class="nombre">{c.nombre}</p>
+						</a>
+					))}
+				</div>
 			</section>
 		)}
 
@@ -695,14 +735,75 @@ const secciones = [
 		color:var(--mm); margin:.7rem 0 0; }
 	@media (max-width:640px){ .work-fotos .photo{ aspect-ratio:4/5; } }
 
-	.reel{ padding:clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem); }
-	.reel h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
+	/* Franja de Motion: recuperada del historial (se perdió como daño colateral
+	   en un commit ajeno — "Comentarios de Bernardo" del 31 ago — que nunca
+	   tocó esta sección; por eso nunca se vio, porque motion.json siempre
+	   estuvo vacío desde entonces). El video corre de fondo, en silencio y en
+	   bucle, y encima van el título y los dos accesos. El poster va también
+	   como fondo de la sección: si el video no arranca (bajo consumo, móvil,
+	   autoplay denegado) igual se ve una imagen y no un rectángulo negro. */
+	.motion{ position:relative; width:100%; aspect-ratio:21/9;
+		min-height:clamp(320px,52vh,420px); max-height:76vh;
+		overflow:hidden; background:#0b0b0a center 35%/cover no-repeat;
+		display:grid; place-items:center; }
+	.motion-media{ position:absolute; inset:0; overflow:hidden; }
+	.motion-video{ width:100%; height:100%; object-fit:cover; object-position:center 35%;
+		display:block; }
+	/* Respaldo con iframe: sobredimensionar y centrar. Las medidas van contra el
+	   CONTENEDOR (min-width/min-height 100% + aspect-ratio), no contra el
+	   viewport: la franja tiene max-height, así que 100vw/56.25vw se despega
+	   del marco real y deja barras. El scale tapa la UI residual de la
+	   plataforma. */
+	.motion-embed{ position:absolute; top:50%; left:50%;
+		transform:translate(-50%,-50%) scale(1.04);
+		width:auto; height:auto; min-width:100%; min-height:100%; aspect-ratio:16/9;
+		border:0; pointer-events:none; }
+	/* Velo fijo: el fotograma cambia todo el tiempo, así que el contraste no
+	   puede depender de que el video sea oscuro. Más denso al centro, que es
+	   donde caen el título y los botones. */
+	.motion-scrim{ position:absolute; inset:0;
+		background:linear-gradient(180deg, rgba(0,0,0,.34) 0%, rgba(0,0,0,.54) 50%, rgba(0,0,0,.34) 100%); }
+	.motion-contenido{ position:relative; z-index:2; text-align:center;
+		padding:clamp(1.4rem,4vw,3rem); }
+	.motion-contenido h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
+		font-size:clamp(1.5rem,3vw,2.4rem); letter-spacing:-.02em; line-height:1.1;
+		margin:0 0 clamp(1.2rem,2.5vw,1.8rem); color:#fff; text-shadow:0 1px 14px rgba(0,0,0,.45); }
+	.motion-acciones{ display:flex; gap:clamp(.8rem,2vw,1.25rem); justify-content:center; flex-wrap:wrap; }
+	/* Ancho mínimo igual en los dos (140px, medido en jason-mcalister.com): es
+	   lo que hace que el par se lea como un juego apareado y no como dos
+	   enlaces sueltos. Borde 2px que adelgaza a 1px en pantallas chicas. */
+	.btn{ display:inline-flex; align-items:center; justify-content:center;
+		min-width:8.75rem; min-height:2.9375rem; padding:.75rem 1.25rem;
+		border:2px solid #fff; border-radius:0; background:rgba(0,0,0,.2);
+		color:#fff; text-decoration:none; font-size:.875rem; font-weight:600;
+		letter-spacing:.1em; text-transform:uppercase; text-align:center;
+		transition:background-color .25s ease, color .25s ease; }
+	.btn:hover, .btn:focus-visible{ background:#fff; color:#111110; }
+	.btn:focus-visible{ outline:2px solid #fff; outline-offset:3px; }
+	@media (max-width:786px){ .btn{ border-width:1px; min-width:7.5rem; padding:.7rem .9rem; } }
+
+	/* Comerciales: cuadritos que redirigen a YouTube, uno por comercial. La
+	   miniatura sale directo del thumbnail público de YouTube — no hace falta
+	   subir una imagen aparte. */
+	.commercials{ padding:clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem); }
+	.commercials h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
 		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11;
 		margin:0 0 clamp(1.4rem,3vw,2.2rem); color:var(--mm); }
-	.reel-marco{ position:relative; width:100%; max-width:72rem; margin:0 auto;
-		aspect-ratio:16/9; background:#0b0b0a; overflow:hidden; }
-	.reel-marco iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
-	.reel-alt{ text-align:center; margin:1rem 0 0; }
+	.commercials-grid{ display:grid; grid-template-columns:1fr; gap:clamp(1.4rem,3.5vw,2.2rem); }
+	@media (min-width:640px){ .commercials-grid{ grid-template-columns:repeat(3,1fr); } }
+	.commercial-tile{ display:block; text-decoration:none; color:inherit; }
+	.commercial-tile .thumb{ position:relative; aspect-ratio:16/9; overflow:hidden; background:var(--ml); }
+	.commercial-tile .thumb img{ width:100%; height:100%; object-fit:cover; display:block;
+		transition:transform .3s ease; }
+	.commercial-tile:hover .thumb img, .commercial-tile:focus-visible .thumb img{ transform:scale(1.05); }
+	/* Triángulo de play centrado, dibujado con CSS (sin ícono/SVG externo). */
+	.commercial-tile .play{ position:absolute; inset:0; display:grid; place-items:center; }
+	.commercial-tile .play::after{ content:""; width:0; height:0; margin-left:.2em;
+		border-style:solid; border-width:.65em 0 .65em 1.05em;
+		border-color:transparent transparent transparent #fff;
+		filter:drop-shadow(0 1px 6px rgba(0,0,0,.5)); }
+	.commercial-tile .nombre{ margin:.7rem 0 0; font-size:.82rem; letter-spacing:.04em; color:var(--mi); }
+	.commercial-tile:focus-visible .thumb{ outline:2px solid var(--mi); outline-offset:2px; }
 
 	/* Control de pausa: cualquier cosa que se mueva sola y dure más de cinco
 	   segundos necesita una forma visible de detenerla (WCAG 2.2.2). La
