@@ -42,7 +42,7 @@ const nextEntry = allEntries[currentIndex + 1];
 	<div class="gallery">
 		{images.map((img, i) => (
 			<a class="card" href={`#foto-${i}`}>
-				<div class="photo"><Image src={img.src} alt={img.alt} width={800} quality={80} /></div>
+				<div class="photo"><Image src={img.src} alt={img.alt} width={828} quality={80} /></div>
 				{(img.place || img.year || img.credit) && (
 					<div class="cap">
 						<span>{img.place}</span>
@@ -62,7 +62,7 @@ const nextEntry = allEntries[currentIndex + 1];
 			<a href="#" class="lightbox-close" aria-label="Cerrar">✕</a>
 			{i > 0 && <a href={`#foto-${i - 1}`} class="lightbox-prev" aria-label="Foto anterior">←</a>}
 			<figure class="lightbox-media">
-				<Image src={img.src} alt={img.alt} width={1600} quality={80} />
+				<Image src={img.src} alt={img.alt} width={1920} quality={80} />
 				{(img.place || img.year || img.credit) && (
 					<figcaption class="lightbox-cap">
 						<span>{img.place}</span>

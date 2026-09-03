@@ -29,14 +29,21 @@ export default defineConfig({
     '/series': '/retratos',
     '/encargos': '/proyectos',
     '/series/serie-luz-lateral': '/retratos/serie-luz-lateral',
-    '/series/nombre-de-la-serie': '/retratos/nombre-de-la-serie',
+    '/series/nombre-de-la-serie': '/retratos/actores',
     '/series/la-septima': '/retratos/la-septima',
     '/series/serie-campo-de-flores': '/retratos/serie-campo-de-flores',
     '/series/serie-grafiti-urbano': '/proyectos/serie-grafiti-urbano',
-    '/series/aquí-estoy-creando-algo-nuevo': '/proyectos/aquí-estoy-creando-algo-nuevo',
+    '/series/aquí-estoy-creando-algo-nuevo': '/proyectos/la-caida',
     '/series/serie-orejas-de-conejo': '/proyectos/serie-orejas-de-conejo',
     '/encargos/encargo-auto-binoculares': '/retratos/encargo-auto-binoculares',
     '/encargos/encargo-taburete-estudio': '/retratos/encargo-taburete-estudio',
     '/encargos/encargo-piscina-corbata': '/proyectos/encargo-piscina-corbata',
+    // 3 sep 2026: el slug de estas dos entradas quedó pegado al nombre por
+    // defecto que traían al crearlas en el panel — el título real ya no
+    // calzaba (revisión del sitio, corrección #2). Al renombrar el archivo
+    // (y por tanto la URL) para que el slug refleje el título real, cualquier
+    // link ya compartido a la URL vieja se redirige en vez de quedar muerto.
+    '/retratos/nombre-de-la-serie': '/retratos/actores',
+    '/proyectos/aquí-estoy-creando-algo-nuevo': '/proyectos/la-caida',
   },
 });

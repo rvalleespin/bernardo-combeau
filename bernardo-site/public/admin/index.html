@@ -252,7 +252,7 @@ img{max-width:100%;}
             var direccion = entry.getIn(["data", "direccion"]) || "";
             var fotos = listField(entry, ["data", "fotos"]);
             var slots = [0, 1, 2, 3].map(function (i) {
-              return fotos[i] ? fotos[i].src : null;
+              return fotos[i] || null;
             });
             return h(
               "div",

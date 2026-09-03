@@ -6,26 +6,26 @@ excerpt: Secuencia en color de la clásica escena del crimen de Marion Crane en
 order: 3
 cover:
   src: /uploads/img_9967.jpg
-  alt: .
+  alt: Primer plano con reflejo y luz roja intensa, escena inspirada en Psycho
 images:
   - src: /uploads/img_9736.jpg
-    alt: "1"
+    alt: Retrato en penumbra con luz verde y capucha, mirada fija a cámara
   - src: /uploads/img_0116.jpg
-    alt: "2"
+    alt: Pasillo en penumbra con letrero de neón MOTEL y escalera al fondo
   - src: /uploads/img_9799.jpg
-    alt: "3"
+    alt: Hombre con capucha mirándose en un espejo, luz azul de baño
   - src: /uploads/img_9820.jpg
-    alt: "4"
+    alt: Piernas de pie junto al inodoro, impermeable verde sobre el estanque
   - src: /uploads/img_9904.jpg
-    alt: "5"
+    alt: Hombre en la ducha con los ojos cerrados, agua y luz dorada sobre la piel
   - src: /uploads/proyecto_20251106_0002-copia.jpg
-    alt: "6"
+    alt: Silueta desenfocada tras la cortina de ducha, sosteniendo un cuchillo
   - src: /uploads/img_9933.jpg
-    alt: "7"
+    alt: Hombre gritando bajo la ducha mientras una mano lo sujeta
   - src: /uploads/img_9952.jpg
-    alt: "8"
+    alt: Cuchillo apuntando al pecho de un hombre aterrado, luz roja en la ducha
   - src: /uploads/img_9966.jpg
-    alt: "9"
+    alt: Hombre en la ducha con sangre en los azulejos, mirada perdida
   - src: /uploads/img_9967.jpg
-    alt: "10"
+    alt: Primer plano con reflejo y luz roja intensa, escena inspirada en Psycho
 ---

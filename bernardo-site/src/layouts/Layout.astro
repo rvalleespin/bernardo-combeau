@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 import home from '../data/home.json';
+import contacto from '../data/contacto.json';
+import estudio from '../data/estudio.json';
 
 interface Props {
   title?: string;
@@ -20,6 +22,65 @@ const {
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const ogImageURL = image ? new URL(image, Astro.site) : null;
+const heroImageURL = new URL(home.fotoHero, Astro.site).toString();
+
+// Entidad legible por máquinas del propio Bernardo — no de SpindleLab. Cada
+// campo sale de datos ya reales y editables desde /admin (contacto.json,
+// estudio.json); nada inventado. #persona-bernardo y #negocio se referencian
+// entre sí por @id, mismo patrón que #org/#autor-ramon en spindlelab.cl.
+const personId = `${Astro.site}#persona-bernardo`;
+const businessId = `${Astro.site}#negocio`;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': personId,
+      name: 'Bernardo Combeau',
+      jobTitle: 'Fotógrafo',
+      url: Astro.site,
+      image: heroImageURL,
+      ...(contacto.email && { email: `mailto:${contacto.email}` }),
+      ...(contacto.whatsapp && { telephone: contacto.whatsapp }),
+      ...(contacto.instagram && {
+        sameAs: [`https://instagram.com/${contacto.instagram.replace(/^@/, '')}`],
+      }),
+      workLocation: {
+        '@type': 'Place',
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: 'Las Condes',
+          addressRegion: 'Región Metropolitana',
+          addressCountry: 'CL',
+        },
+      },
+    },
+    {
+      '@type': 'ProfessionalService',
+      '@id': businessId,
+      name: 'Bernardo Combeau — Fotografía',
+      image: heroImageURL,
+      url: Astro.site,
+      founder: { '@id': personId },
+      areaServed: 'Santiago, Chile',
+      ...(contacto.email && { email: contacto.email }),
+      ...(contacto.whatsapp && { telephone: contacto.whatsapp }),
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Las Condes',
+        addressRegion: 'Región Metropolitana',
+        addressCountry: 'CL',
+      },
+      ...(estudio.direccion && {
+        additionalProperty: {
+          '@type': 'PropertyValue',
+          name: 'Barrio del estudio',
+          value: estudio.direccion,
+        },
+      }),
+    },
+  ],
+};
 ---
 
 <html lang="es">
@@ -46,6 +107,8 @@ const ogImageURL = image ? new URL(image, Astro.site) : null;
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
 		{ogImageURL && <meta name="twitter:image" content={ogImageURL} />}
+
+		<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 	</head>
 	<body>
 		<svg width="0" height="0" style="position:absolute">

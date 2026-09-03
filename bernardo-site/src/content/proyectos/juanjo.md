@@ -9,15 +9,12 @@ excerpt: "Una exploración sobre fuerza y vulnerabilidad a través del color.
 order: 0
 cover:
   src: /uploads/bernardo-portafolio-11-estudio-taburete.jpg
-  alt: .
+  alt: Retrato en estudio con luz azul, sentado en un taburete negro
 images:
   - src: /uploads/bernardo-portafolio-11-estudio-taburete.jpg
-    alt: "1"
+    alt: Retrato en estudio con luz azul, sentado en un taburete negro
   - src: /uploads/juanjo_mg_9643.jpg
-    alt: "2"
-  - alt: "3"
-    src: /uploads/juanjo_mg_9659.jpg
-publication:
-  name: .
-  url: https://bernardocombeau.cl
+    alt: Retrato en estudio con luz azul, mirando de perfil
+  - src: /uploads/juanjo_mg_9659.jpg
+    alt: Retrato en estudio con luz azul, mirando a cámara
 ---

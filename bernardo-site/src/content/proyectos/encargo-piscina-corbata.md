@@ -12,7 +12,7 @@ cover:
   alt: Retrato conceptual en piscina, camisa y corbata
 images:
   - src: /uploads/bc_mercurio_mg_0056.jpg
-    alt: "-"
+    alt: Leyendo el diario El Mercurio, sumergido en la piscina
   - src: /uploads/bernardo-portafolio-03-piscina-corbata.jpg
     alt: mirando a camara
   - src: /uploads/bc_mercurio_mg_0085.jpg

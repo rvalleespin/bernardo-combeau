@@ -1,6 +1,6 @@
 ---
 title: Erotic
-year: 2022-2026
+year: 2022–2026
 excerpt: Desnudos mas no porno
 order: 4
 cover:
@@ -15,7 +15,4 @@ images:
     alt: Ramon
   - src: /uploads/pascal_mg_9471-copia.jpg
     alt: Pascal
-publication:
-  url: https://bernardocombeau.cl
-  name: .
 ---
