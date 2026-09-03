@@ -757,8 +757,10 @@ const secciones = [
 	/* Tres columnas: la altura sola, las medidas de cuerpo juntas, el resto
 	   aparte. Etiqueta y valor comparten tamaño y van pegados — se separan
 	   por color, no por escala. */
-	.stat-cols{ display:grid; grid-template-columns:1fr; gap:1.6rem 3rem; max-width:56rem; }
-	@media (min-width:640px){ .stat-cols{ grid-template-columns:auto auto auto; justify-content:start; gap:1.6rem clamp(3rem,7vw,6rem); } }
+	/* Una sola columna a pedido de Ramón: las tres agrupaciones (altura /
+	   medidas de cuerpo / rasgos) caen una debajo de la otra en vez de
+	   ir lado a lado. */
+	.stat-cols{ display:grid; grid-template-columns:1fr; gap:1.1rem; max-width:26rem; }
 	.stat-col{ display:flex; flex-direction:column; gap:.35rem; margin:0; }
 	.stat{ display:flex; align-items:baseline; gap:.45rem; }
 	.stats dt, .stats dd{ font-size:.98rem; line-height:1.4; letter-spacing:.01em; margin:0; }
