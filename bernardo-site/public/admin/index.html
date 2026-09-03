@@ -4,6 +4,100 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Administración — Bernardo Combeau</title>
+    <style>
+      /* Dirección A (revision-panel-admin-bernardo.md, Parte 3) — vestir el chrome
+         de Decap con la identidad de Bernardo en vez de su magenta de fábrica.
+         El acento sale de un muestreo real de piel en una de sus fotos (beto3.jpg,
+         zona de frente, #dcb8b6), llevado a un tono utilizable como acento
+         (misma familia de matiz, más saturado/oscuro para que rinda como color
+         de UI) — no es un color inventado a ojo.
+         Selectors por [class*="..."]: Decap usa Emotion (CSS-in-JS); el hash de
+         cada clase cambia entre builds pero el nombre del componente queda
+         embebido en el propio className (ej. "css-39fnji-LoginButton-...") y
+         ESE nombre sí es estable. Verificado contra el DOM real del panel
+         corriendo local, no adivinado. */
+      :root {
+        --bc-accent: #98433e;
+        --bc-paper: #fbfaf8;
+        --bc-ink: #111110;
+        --bc-line: #e7e4dd;
+        --bc-stage: #f0efe9;
+      }
+
+      body { background: var(--bc-paper) !important; }
+
+      /* Login: fuera el logo de Decap, wordmark de Bernardo en su lugar */
+      [class*="StyledAuthenticationPage"] { background: var(--bc-paper) !important; }
+      [class*="DecapLogoIcon"] { display: none !important; }
+      [class*="StyledAuthenticationPage"]::before {
+        content: "Bernardo Combeau";
+        display: block;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--bc-ink);
+        margin-bottom: 1.6rem;
+        letter-spacing: 0.01em;
+      }
+      [class*="LoginButton"] { background: var(--bc-ink) !important; border-radius: 2px !important; }
+      [class*="LoginButton"]:hover { background: var(--bc-accent) !important; }
+
+      /* Sidebar: acento cálido en el ítem activo y en hover (antes azul default) */
+      [class*="SidebarNavLink"].sidebar-active { color: var(--bc-accent) !important; border-color: var(--bc-accent) !important; }
+      [class*="SidebarNavLink"]:hover { color: var(--bc-accent) !important; }
+
+      /* Header superior: mismo acento en la pestaña activa (Contenido / Medios) */
+      [class*="AppHeaderButton"].header-link-active { color: var(--bc-accent) !important; }
+
+      /* Dirección B — jerarquía visual en la sidebar. Decap no soporta agrupar
+         colecciones de forma nativa (confirmado) — nada de fingir una feature
+         que no existe. Lo que sí es 100% CSS, sin tocar el DOM que Decap genera:
+         una línea separadora entre "páginas" (Home..Modelo, todas de un solo
+         archivo o set fijo de archivos) y "galerías" (Retratos, Proyectos,
+         colecciones donde se crean entradas nuevas). Depende del orden fijo de
+         "collections" más abajo — Modelo vuelve a estar adentro (ya no aplica
+         la Dirección C), así que el 7º ítem es Retratos. */
+      [class*="CollectionContainer"] a[class*="SidebarNavLink"]:nth-of-type(7) {
+        margin-top: 1rem !important;
+        padding-top: 1rem !important;
+        border-top: 1px solid var(--bc-line) !important;
+      }
+
+      /* Dirección D — Medios: el fondo tipo "transparencia" (pensado para PNG
+         con alfa) detrás de cada miniatura no pinta nada en fotos JPG opacas;
+         tono papel/stage del sitio en su lugar. */
+      [class*="checkerboard"] { background-image: none !important; background-color: var(--bc-stage) !important; }
+
+      /* Parte 1 #3 del review — el editor de una entrada no se adaptaba a
+         celular: el layout de dos columnas (formulario + vista previa) trae
+         min-width:800px fijo en Decap y nunca se apilaba. Verificado contra el
+         DOM real en viewport de celular: el min-width vive en EditorContainer/
+         ToolbarContainer (CSS de Decap, no inline) y la dirección horizontal en
+         .SplitPane (inline, pero un !important en hoja de estilos sí le gana a
+         un inline sin !important). Debajo de 800px se apila en una columna; el
+         "Resizer" (para arrastrar el ancho de cada panel) no tiene función
+         apilado, se oculta. .SplitPane/.Pane1/.Pane2 son clases de
+         react-split-pane (la librería que usa Decap), no clases propias de
+         este archivo — estables mientras Decap no cambie de librería interna. */
+      @media (max-width: 800px) {
+        [class*="EditorContainer"],
+        [class*="ToolbarContainer"] { min-width: 0 !important; width: 100% !important; }
+        .SplitPane { flex-direction: column !important; position: relative !important; height: auto !important; }
+        .Pane1, .Pane2 { width: 100% !important; max-width: 100% !important; }
+        .Resizer { display: none !important; }
+        /* La barra superior (volver / estado+publicar / ver+usuario) traía sus 3
+           secciones en una sola fila sin wrap — a 390px se cortaban literalmente
+           fuera de pantalla (ej. el botón "Eliminar entrada"). Apilarlas. */
+        [class*="ToolbarContainer"] { flex-wrap: wrap !important; height: auto !important; }
+        [class*="ToolbarSectionBackLink"],
+        [class*="ToolbarSectionMain"],
+        [class*="ToolbarSectionMeta"] { width: 100% !important; min-width: 0 !important; flex: 1 1 100% !important; }
+        /* Los botones flotantes "ver vista previa" / "sincronizar scroll" están
+           pensados para la vista dividida de escritorio; apilado no aplican y
+           quedaban flotando encima del primer campo del formulario. */
+        [class*="EditorToggle"] { display: none !important; }
+      }
+    </style>
   </head>
   <body>
     <!-- Vercel en modo servidor no sirve bien archivos .yml sueltos en public/, así que
@@ -80,7 +174,7 @@ img{max-width:100%;}
 .contact-links a .pending{font-size:.68rem; letter-spacing:.05em; text-transform:uppercase; color:var(--mute);}
 
 .photo{ position:relative; overflow:hidden; background:var(--stage); }
-.photo img{ width:100%; height:100%; object-fit:cover; object-position:center; display:block; }
+.photo img{ width:100%; height:100%; object-fit:cover; object-position:var(--focus, center); display:block; }
 .cap{ display:flex; justify-content:space-between; gap:1rem; margin-top:.6rem; font-size:.8rem; font-style:italic; color:var(--mute); }
 
 .hero{position:relative; margin:0;}
@@ -177,13 +271,19 @@ img{max-width:100%;}
           return typeof v.toJS === "function" ? v.toJS() : v;
         }
 
-        function photoBox(getAsset, path, alt, className) {
+        function photoBox(getAsset, path, alt, className, focus, zoom, flip) {
           var cls = "photo" + (className ? " " + className : "");
           if (!path) {
             return h("div", { className: cls + " placeholder" }, h("span", {}, "[ sin foto ]"));
           }
           var asset = getAsset(path);
-          return h("div", { className: cls }, h("img", { src: asset ? asset.toString() : "", alt: alt || "" }));
+          var style = focus || zoom || flip ? {} : undefined;
+          if (style) {
+            if (focus) style["--focus"] = focus;
+            if (zoom) style["--zoom"] = zoom;
+            if (flip) style["--flip"] = -1;
+          }
+          return h("div", { className: cls, style: style }, h("img", { src: asset ? asset.toString() : "", alt: alt || "" }));
         }
 
         var HomePreview = createClass({
@@ -252,7 +352,7 @@ img{max-width:100%;}
             var direccion = entry.getIn(["data", "direccion"]) || "";
             var fotos = listField(entry, ["data", "fotos"]);
             var slots = [0, 1, 2, 3].map(function (i) {
-              return fotos[i] ? fotos[i].src : null;
+              return fotos[i] || null;
             });
             return h(
               "div",
@@ -413,7 +513,7 @@ img{max-width:100%;}
                               h("span", {}, [img.year, img.credit].filter(Boolean).join(" · "))
                             )
                           : null;
-                      return h("div", { key: i, className: "card" }, photoBox(getAsset, img.src, img.alt), cap);
+                      return h("div", { key: i, className: "card" }, photoBox(getAsset, img.src, img.alt, null, img.focus, img.zoom, img.flip), cap);
                     })
                   ),
                   hasRealPublication
@@ -684,6 +784,165 @@ img{max-width:100%;}
       };
       CMS.registerLocale("es", ES_LOCALE);
 
+      // Widget de encuadre — a pedido de Ramón (3-sep-2026, sin cobro): que Bernardo
+      // pueda marcar dónde va el centro del recorte cuadrado de la portada, en vez de
+      // que siempre se recorte centrado y a veces corte cabezas/detalles. Toca o haz
+      // clic sobre la foto completa para mover el punto; el recuadro punteado muestra
+      // exactamente qué va a quedar visible en el cuadrado.
+      // Guarda un string "X% Y%" — el mismo formato que espera `object-position` en
+      // CSS, así el sitio y esta vista previa lo consumen directo, sin traducir nada.
+      // Solo existe para "cover" (retratos/proyectos): es la única foto que se recorta
+      // a cuadrado en un lugar donde el widget puede ver la foto de forma confiable —
+      // ver la nota larga junto al campo "Encuadre" de la galería (images[]) sobre por
+      // qué esa lista usa un selector de posición en vez de este mismo control.
+      (function () {
+        var h = window.h, createClass = window.createClass;
+
+        function parseFocus(value) {
+          var parts = (value || "50% 50%").split(" ");
+          var x = parseInt(parts[0], 10);
+          var y = parseInt(parts[1], 10);
+          return { x: isNaN(x) ? 50 : Math.max(0, Math.min(100, x)), y: isNaN(y) ? 50 : Math.max(0, Math.min(100, y)) };
+        }
+
+        // Mismo look que los botones nativos de Decap junto al campo Imagen ("Elige una
+        // imagen diferente", etc.) — para que "Editar foto" se sienta parte del mismo
+        // grupo de acciones y no un widget aparte. Color y forma tomados a ojo del CSS
+        // real de esos botones (Emotion, sin clase estable que targetear desde afuera).
+        var EDIT_BUTTON_STYLE = {
+          display: "inline-block",
+          background: "#eaf1fb",
+          color: "#3271d9",
+          border: "none",
+          borderRadius: "3px",
+          padding: ".5rem .9rem",
+          fontSize: ".84rem",
+          fontWeight: "500",
+          cursor: "pointer",
+          marginTop: ".6rem",
+        };
+
+        var FocusPointControl = createClass({
+          getInitialState: function () {
+            return { naturalW: null, naturalH: null, editing: false };
+          },
+          handleImgLoad: function (e) {
+            this.setState({ naturalW: e.target.naturalWidth, naturalH: e.target.naturalHeight });
+          },
+          handleClick: function (e) {
+            var rect = e.currentTarget.getBoundingClientRect();
+            var x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+            var y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
+            x = Math.max(0, Math.min(100, x));
+            y = Math.max(0, Math.min(100, y));
+            this.props.onChange(x + "% " + y + "%");
+          },
+          toggleEditing: function () {
+            this.setState({ editing: !this.state.editing });
+          },
+          render: function () {
+            var focus = parseFocus(this.props.value);
+            var coverSrc = null;
+            try {
+              coverSrc = this.props.entry.getIn(["data", "cover", "src"]);
+            } catch (e) {}
+            var imgUrl = null;
+            if (coverSrc) {
+              try {
+                var asset = this.props.getAsset(coverSrc);
+                imgUrl = asset ? asset.toString() : null;
+              } catch (e) {}
+            }
+            if (!imgUrl) {
+              return h(
+                "div",
+                { style: { padding: ".9rem", background: "#f0efe9", color: "#84817a", fontSize: ".82rem", border: "1px solid #e7e4dd" } },
+                "Sube la foto de Portada primero (campo de arriba) — el botón para editar el encuadre aparece acá una vez que la elijas."
+              );
+            }
+            if (!this.state.editing) {
+              return h(
+                "button",
+                { type: "button", style: EDIT_BUTTON_STYLE, onClick: this.toggleEditing },
+                "Editar foto (encuadre y zoom)"
+              );
+            }
+            // El recuadro punteado que muestra el recorte final: un cuadrado cuyo lado
+            // es el lado más corto de la foto mostrada, centrado en el punto marcado y
+            // sujeto para no salirse del borde. Solo se puede calcular una vez que la
+            // imagen cargó y se conoce su proporción real.
+            var frameStyle = null;
+            if (this.state.naturalW && this.state.naturalH) {
+              var isLandscape = this.state.naturalW >= this.state.naturalH;
+              var sidePct = isLandscape ? (this.state.naturalH / this.state.naturalW) * 100 : 100;
+              var sidePctOther = isLandscape ? 100 : (this.state.naturalW / this.state.naturalH) * 100;
+              var halfW = (isLandscape ? sidePct : sidePctOther) / 2;
+              var halfH = (isLandscape ? sidePctOther : sidePct) / 2;
+              // en landscape el cuadrado se desliza en X según el punto marcado; en
+              // portrait se desliza en Y. En el otro eje siempre cubre el 100%.
+              var frameLeft = isLandscape ? Math.max(0, Math.min(100 - sidePct, focus.x - sidePct / 2)) : 0;
+              var frameTop = isLandscape ? 0 : Math.max(0, Math.min(100 - sidePct, focus.y - sidePct / 2));
+              frameStyle = {
+                position: "absolute",
+                left: frameLeft + "%",
+                top: frameTop + "%",
+                width: (isLandscape ? sidePct : 100) + "%",
+                height: (isLandscape ? 100 : sidePct) + "%",
+                border: "2px dashed #98433e",
+                boxShadow: "0 0 0 1000px rgba(0,0,0,.35)",
+                pointerEvents: "none",
+                boxSizing: "border-box",
+              };
+            }
+            return h(
+              "div",
+              {},
+              h(
+                "button",
+                { type: "button", style: Object.assign({}, EDIT_BUTTON_STYLE, { marginTop: 0, marginBottom: ".6rem" }), onClick: this.toggleEditing },
+                "Listo — cerrar editor de foto"
+              ),
+              h(
+                "div",
+                { style: { position: "relative", display: "inline-block", maxWidth: "100%", overflow: "hidden", cursor: "crosshair" }, onClick: this.handleClick },
+                h("img", {
+                  src: imgUrl,
+                  onLoad: this.handleImgLoad,
+                  style: { display: "block", maxWidth: "100%", maxHeight: "360px", pointerEvents: "none" },
+                }),
+                frameStyle && h("div", { style: frameStyle }),
+                h("div", {
+                  style: {
+                    position: "absolute",
+                    left: focus.x + "%",
+                    top: focus.y + "%",
+                    width: "18px",
+                    height: "18px",
+                    marginLeft: "-9px",
+                    marginTop: "-9px",
+                    borderRadius: "50%",
+                    border: "2px solid #fff",
+                    boxShadow: "0 0 0 2px #98433e, 0 1px 4px rgba(0,0,0,.5)",
+                    pointerEvents: "none",
+                  },
+                })
+              ),
+              h(
+                "div",
+                { style: { fontSize: ".78rem", color: "#84817a", marginTop: ".5rem", maxWidth: "420px" } },
+                "Toca o haz clic sobre la foto para mover el punto. Lo que queda DENTRO del recuadro punteado es lo que se ve en la portada y en las grillas cuadradas — lo de afuera se recorta. El campo \"Zoom de la miniatura\" (abajo) acerca la toma sobre este mismo punto."
+              ),
+              h(
+                "div",
+                { style: { fontSize: ".78rem", color: "#84817a", marginTop: ".25rem" } },
+                "Si acabas de cambiar la foto de portada, guarda, sal de esta ficha y vuelve a entrar — así el encuadre carga la foto nueva."
+              )
+            );
+          },
+        });
+        CMS.registerWidget("focuspoint", FocusPointControl);
+      })();
+
       // Tope de 10MB por archivo — generoso para una foto profesional bien exportada,
       // pero bloquea con un aviso claro los excesos tipo TIFF/RAW-casi-sin-comprimir que
       // encontramos en uploads reales (hasta 12,6MB). Pedido de Bernardo (24 jul 2026):
@@ -712,6 +971,21 @@ img{max-width:100%;}
             { label: "Mucho más cerca", value: "2" },
           ],
           hint: "Para cuando el \"Encuadre\" no alcanza porque la foto fue tomada de lejos (cuerpo completo) y el sujeto se ve chico contra el fondo. Acerca la miniatura sobre el punto elegido en \"Encuadre\" — la foto completa (al abrirla en grande) no cambia.",
+        };
+      }
+
+      // A pedido de Ramón (3-sep-2026): volteo horizontal de la miniatura, para cuando
+      // la persona queda "mirando hacia afuera" de la grilla en vez de hacia el
+      // contenido. Mismo criterio que Zoom: solo afecta la miniatura recortada, la
+      // foto que abre el visor a tamaño completo sigue siendo la original sin voltear.
+      function flipField() {
+        return {
+          label: "Voltear en espejo (horizontal)",
+          name: "flip",
+          widget: "boolean",
+          required: false,
+          default: false,
+          hint: "Solo cambia cómo se ve en la miniatura (home y grillas) — la foto original, y la que se abre en grande, no se voltea.",
         };
       }
 
@@ -846,6 +1120,13 @@ img{max-width:100%;}
                 },
               ],
             },
+            // Dirección C (revision-panel-admin-bernardo.md, 3-sep-2026) la sacó de la
+            // sidebar mientras estuvo sin contenido real y sin publicar. Ya no aplica:
+            // nav.json trae "modelo": "Modelo" (publicada) y la sección se ha seguido
+            // desarrollando activamente en main desde entonces (encuadre, zoom, Motion).
+            // Ocultarla la escondería del propio Bernardo. Sigue siendo la única colección
+            // sin CMS.registerPreviewTemplate — ese gap del diagnóstico original sigue
+            // real y sin resolver, es trabajo aparte.
             {
               name: "modelo",
               label: "Modelo",
@@ -1127,6 +1408,15 @@ img{max-width:100%;}
                   fields: [
                     { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
                     {
+                      label: "Encuadre del recorte cuadrado",
+                      name: "focus",
+                      widget: "focuspoint",
+                      required: false,
+                      hint: "La portada se recorta a un cuadrado en la home y en los listados. Toca la foto de arriba para marcar qué parte no se debe cortar.",
+                    },
+                    zoomField(),
+                    flipField(),
+                    {
                       label: "Descripción para lectores de pantalla",
                       name: "alt",
                       widget: "string",
@@ -1148,6 +1438,23 @@ img{max-width:100%;}
                   fields: [
                     { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
                     {
+                      label: "Encuadre en la grilla (recorte cuadrado)",
+                      name: "focus",
+                      widget: "select",
+                      required: false,
+                      default: "50% 50%",
+                      options: [
+                        { label: "Centrado (por defecto)", value: "50% 50%" },
+                        { label: "Arriba — si se corta la cabeza", value: "50% 0%" },
+                        { label: "Abajo", value: "50% 100%" },
+                        { label: "Izquierda", value: "0% 50%" },
+                        { label: "Derecha", value: "100% 50%" },
+                      ],
+                      hint: "La grilla y la home recortan esta foto a un cuadrado. Si el recorte centrado corta algo importante, elegí hacia qué lado mover el recorte — se ve reflejado al instante en la vista previa.",
+                    },
+                    zoomField(),
+                    flipField(),
+                    {
                       label: "Descripción para lectores de pantalla",
                       name: "alt",
                       widget: "string",
@@ -1165,11 +1472,12 @@ img{max-width:100%;}
                   required: false,
                   hint: "Es para un medio EXTERNO (una revista, un sitio de noticias, etc.) — no para el propio sitio. Si este retrato todavía no ha sido publicado en ningún medio, deja los dos campos de abajo completamente vacíos: no escribas un guion, un punto ni ningún otro texto de relleno, porque igual se mostraría en la página.",
                   fields: [
-                    { label: "Nombre del medio", name: "name", widget: "string" },
+                    { label: "Nombre del medio", name: "name", widget: "string", required: false },
                     {
                       label: "URL",
                       name: "url",
                       widget: "string",
+                      required: false,
                       pattern: ["^https?://.+", "Debe ser un link completo, empezando con http:// o https:// — o deja este bloque sin completar si todavía no hay publicación."],
                       hint: "Si no tienes el link todavía, deja \"Publicación externa\" sin completar en vez de poner un guion o un texto de prueba.",
                     },
@@ -1200,6 +1508,15 @@ img{max-width:100%;}
                   fields: [
                     { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
                     {
+                      label: "Encuadre del recorte cuadrado",
+                      name: "focus",
+                      widget: "focuspoint",
+                      required: false,
+                      hint: "La portada se recorta a un cuadrado en la home y en los listados. Toca la foto de arriba para marcar qué parte no se debe cortar.",
+                    },
+                    zoomField(),
+                    flipField(),
+                    {
                       label: "Descripción para lectores de pantalla",
                       name: "alt",
                       widget: "string",
@@ -1221,6 +1538,23 @@ img{max-width:100%;}
                   fields: [
                     { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
                     {
+                      label: "Encuadre en la grilla (recorte cuadrado)",
+                      name: "focus",
+                      widget: "select",
+                      required: false,
+                      default: "50% 50%",
+                      options: [
+                        { label: "Centrado (por defecto)", value: "50% 50%" },
+                        { label: "Arriba — si se corta la cabeza", value: "50% 0%" },
+                        { label: "Abajo", value: "50% 100%" },
+                        { label: "Izquierda", value: "0% 50%" },
+                        { label: "Derecha", value: "100% 50%" },
+                      ],
+                      hint: "La grilla y la home recortan esta foto a un cuadrado. Si el recorte centrado corta algo importante, elegí hacia qué lado mover el recorte — se ve reflejado al instante en la vista previa.",
+                    },
+                    zoomField(),
+                    flipField(),
+                    {
                       label: "Descripción para lectores de pantalla",
                       name: "alt",
                       widget: "string",
@@ -1238,11 +1572,12 @@ img{max-width:100%;}
                   required: false,
                   hint: "Es para un medio EXTERNO (una revista, un sitio de noticias, etc.) — no para el propio sitio. Si este proyecto todavía no ha sido publicado en ningún medio, deja los dos campos de abajo completamente vacíos: no escribas un guion, un punto ni ningún otro texto de relleno, porque igual se mostraría en la página.",
                   fields: [
-                    { label: "Nombre del medio", name: "name", widget: "string" },
+                    { label: "Nombre del medio", name: "name", widget: "string", required: false },
                     {
                       label: "URL",
                       name: "url",
                       widget: "string",
+                      required: false,
                       pattern: ["^https?://.+", "Debe ser un link completo, empezando con http:// o https:// — o deja este bloque sin completar si todavía no hay publicación."],
                       hint: "Si no tienes el link todavía, deja \"Publicación externa\" sin completar en vez de poner un guion o un texto de prueba.",
                     },

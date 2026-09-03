@@ -8,6 +8,18 @@ const image = () =>
     credit: z.string().optional(),
     place: z.string().optional(),
     year: z.string().optional(),
+    // "X% Y%" en formato CSS object-position — dónde centrar el recorte cuadrado
+    // de esta foto en la home/grillas. Sin valor = centrado (comportamiento de
+    // siempre). Lo llena el panel /admin (encuadre visual en cover, selector de
+    // posición en las fotos de la galería) — 3-sep-2026, a pedido de Ramón.
+    focus: z.string().optional(),
+    // Multiplicador de escala (ej. "1.6") aplicado sobre el punto de "focus" —
+    // para cuando el encuadre no alcanza porque la foto es de cuerpo completo y
+    // el sujeto se ve chico. Mismo campo/mecanismo que ya usa Modelo.
+    zoom: z.string().optional(),
+    // Voltea la miniatura en espejo (horizontal) — la foto original y la del
+    // visor de tamaño completo no cambian. A pedido de Ramón (3-sep-2026).
+    flip: z.boolean().optional(),
   });
 
 // Esquema compartido: ambas colecciones aceptan opcionalmente cliente y

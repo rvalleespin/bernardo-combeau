@@ -43,7 +43,11 @@ export default defineConfig({
     '/encargos/encargo-auto-binoculares': '/retratos/encargo-auto-binoculares',
     '/encargos/encargo-taburete-estudio': '/retratos/encargo-taburete-estudio',
     '/encargos/encargo-piscina-corbata': '/proyectos/encargo-piscina-corbata',
-
+    // 3 sep 2026: el slug de estas dos entradas quedó pegado al nombre por
+    // defecto que traían al crearlas en el panel — el título real ya no
+    // calzaba (revisión del sitio, corrección #2). Al renombrar el archivo
+    // (y por tanto la URL) para que el slug refleje el título real, cualquier
+    // link ya compartido a la URL vieja se redirige en vez de quedar muerto.
     '/retratos/nombre-de-la-serie': '/retratos/actores',
     '/proyectos/aquí-estoy-creando-algo-nuevo': '/proyectos/la-caida',
 

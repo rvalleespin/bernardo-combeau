@@ -30,7 +30,4 @@ images:
     alt: Santi
   - src: /uploads/florian_2897.jpg
     alt: Florian
-publication:
-  name: .
-  url: https://www.bernardocombeau.cl
 ---

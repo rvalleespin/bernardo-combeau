@@ -15,7 +15,4 @@ images:
     alt: Ramon
   - src: /uploads/pascal_mg_9471-copia.jpg
     alt: Pascal
-publication:
-  url: https://bernardocombeau.cl
-  name: .
 ---

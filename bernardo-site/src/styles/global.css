@@ -67,7 +67,13 @@ h1,h2,h3{text-wrap:balance; margin:0; font-weight:300;}
 /* Contenedor de foto: SIEMPRE llena el recuadro, sin franjas del fondo del stage.
    object-fit:cover recorta lo necesario para no dejar ningún borde visible. */
 .photo{ position:relative; overflow:hidden; background:var(--stage); }
-.photo img{ width:100%; height:100%; object-fit:cover; object-position:center; display:block; }
+/* --focus (variable inline por foto, "X% Y%") deja elegir el centro del recorte
+   cuadrado desde el panel — sin ella, sigue centrado como siempre. --zoom (número,
+   ej. 1.6) acerca la toma sobre ese mismo punto para cuando "Encuadre" no alcanza
+   (foto de cuerpo completo, sujeto chico) — mismo mecanismo que ya usa Modelo,
+   reusando el valor de --focus como transform-origin. --flip (-1 o 1) voltea la
+   miniatura en espejo — solo afecta este recorte, no la foto original. */
+.photo img{ width:100%; height:100%; object-fit:cover; object-position:var(--focus, center); transform:scale(var(--zoom, 1)) scaleX(var(--flip, 1)); transform-origin:var(--focus, center); display:block; }
 .photo::after{ content:""; position:absolute; inset:0; filter:url(#grain); opacity:.35; mix-blend-mode:overlay; pointer-events:none; }
 .cap{ display:flex; justify-content:space-between; gap:1rem; margin-top:.6rem; font-size:.8rem; font-style:italic; color:var(--mute); }
 
