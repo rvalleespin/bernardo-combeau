@@ -6,7 +6,7 @@ excerpt: Secuencia en color de la clásica escena del crimen de Marion Crane en
 order: 3
 cover:
   src: /uploads/img_9967.jpg
-  alt: .
+  alt: Matías Massu recreando la escena del crimen de Psycho (1960), bajo luz roja
 images:
   - src: /uploads/img_9736.jpg
     alt: "1"

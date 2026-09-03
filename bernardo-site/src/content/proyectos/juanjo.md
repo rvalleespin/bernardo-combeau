@@ -9,7 +9,7 @@ excerpt: "Una exploración sobre fuerza y vulnerabilidad a través del color.
 order: 0
 cover:
   src: /uploads/bernardo-portafolio-11-estudio-taburete.jpg
-  alt: .
+  alt: Juanjo apoyado en un taburete de estudio, iluminación monocromática azul
 images:
   - src: /uploads/bernardo-portafolio-11-estudio-taburete.jpg
     alt: "1"

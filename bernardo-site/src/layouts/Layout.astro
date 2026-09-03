@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import home from '../data/home.json';
+import contacto from '../data/contacto.json';
 
 interface Props {
   title?: string;
@@ -20,6 +21,30 @@ const {
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const ogImageURL = image ? new URL(image, Astro.site) : null;
+
+// Person, en todas las páginas: es la entidad que faltaba declarar (revisión
+// del 3 sep 2026). Solo datos reales ya publicados en el sitio — nada inventado.
+const personJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': 'https://bernardocombeau.cl/#bernardo',
+  name: 'Bernardo Combeau',
+  url: 'https://bernardocombeau.cl',
+  image: String(new URL(home.fotoHero, Astro.site)),
+  jobTitle: 'Fotógrafo de retratos',
+  knowsAbout: ['Fotografía de retrato', 'Personal branding', 'Fotografía corporativa', 'Retrato editorial'],
+  alumniOf: { '@type': 'CollegeOrUniversity', name: 'Pontificia Universidad Católica de Chile' },
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'El Golf',
+    addressLocality: 'Las Condes',
+    addressRegion: 'Región Metropolitana',
+    addressCountry: 'CL',
+  },
+  email: contacto.email,
+  telephone: contacto.whatsapp,
+  sameAs: contacto.instagram ? [`https://instagram.com/${contacto.instagram.replace(/^@/, '')}`] : [],
+};
 ---
 
 <html lang="es">
@@ -46,6 +71,8 @@ const ogImageURL = image ? new URL(image, Astro.site) : null;
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
 		{ogImageURL && <meta name="twitter:image" content={ogImageURL} />}
+
+		<script type="application/ld+json" set:html={JSON.stringify(personJsonLd)} />
 	</head>
 	<body>
 		<svg width="0" height="0" style="position:absolute">

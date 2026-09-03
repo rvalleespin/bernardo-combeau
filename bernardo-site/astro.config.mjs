@@ -29,14 +29,26 @@ export default defineConfig({
     '/series': '/retratos',
     '/encargos': '/proyectos',
     '/series/serie-luz-lateral': '/retratos/serie-luz-lateral',
-    '/series/nombre-de-la-serie': '/retratos/nombre-de-la-serie',
+    '/series/nombre-de-la-serie': '/retratos/actores',
     '/series/la-septima': '/retratos/la-septima',
     '/series/serie-campo-de-flores': '/retratos/serie-campo-de-flores',
     '/series/serie-grafiti-urbano': '/proyectos/serie-grafiti-urbano',
-    '/series/aquí-estoy-creando-algo-nuevo': '/proyectos/aquí-estoy-creando-algo-nuevo',
+    '/series/aquí-estoy-creando-algo-nuevo': '/proyectos/la-caida',
     '/series/serie-orejas-de-conejo': '/proyectos/serie-orejas-de-conejo',
     '/encargos/encargo-auto-binoculares': '/retratos/encargo-auto-binoculares',
     '/encargos/encargo-taburete-estudio': '/retratos/encargo-taburete-estudio',
     '/encargos/encargo-piscina-corbata': '/proyectos/encargo-piscina-corbata',
+
+    // 3 sep 2026 (revisión Parte 1): "nombre-de-la-serie" y "aquí-estoy-creando-algo-nuevo"
+    // eran los slugs por defecto del CMS, nunca renombrados — contenido real y publicado,
+    // solo con una URL poco profesional. Se renombran los archivos y se redirige la URL
+    // vieja por si ya quedó indexada o compartida.
+    '/retratos/nombre-de-la-serie': '/retratos/actores',
+    '/proyectos/aquí-estoy-creando-algo-nuevo': '/proyectos/la-caida',
+
+    // El sitemap real vive en /sitemap-index.xml (así lo genera @astrojs/sitemap, y así
+    // está declarado en robots.txt). Este alias es solo para herramientas que asumen la
+    // ruta convencional /sitemap.xml sin leer robots.txt.
+    '/sitemap.xml': '/sitemap-index.xml',
   },
 });
