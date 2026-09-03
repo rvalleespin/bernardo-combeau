@@ -42,6 +42,13 @@ const instagramURL = contacto.instagram
 // "El Golf, Las Condes" → calle/barrio + comuna, tal como lo escribió Bernardo
 // en el panel — no se inventa un número si no lo dio.
 const [direccionCalle, direccionComuna] = estudio.direccion.split(',').map((s) => s.trim());
+const direccion = {
+  '@type': 'PostalAddress',
+  streetAddress: direccionCalle,
+  addressLocality: direccionComuna,
+  addressRegion: 'Región Metropolitana',
+  addressCountry: 'CL',
+};
 
 const siteGraph = {
   '@context': 'https://schema.org',
@@ -55,6 +62,11 @@ const siteGraph = {
       image: new URL(sobremi.foto, Astro.site).toString(),
       email: contacto.email,
       telephone: contacto.whatsapp,
+      // Misma dirección profesional que declara el nodo LocalBusiness de más abajo
+      // (el estudio en El Golf) — no es un dato nuevo, solo que Person también la
+      // necesita: un motor de IA que solo lee el primer nodo del grafo debe poder
+      // confirmar la entidad sin tener que cruzar a LocalBusiness.
+      address: direccion,
       sameAs: instagramURL ? [instagramURL] : undefined,
       worksFor: { '@id': businessId },
       knowsAbout: ['Retrato', 'Fotografía editorial', 'Personal branding', 'Fotografía corporativa'],
@@ -68,13 +80,7 @@ const siteGraph = {
       url: Astro.site?.toString(),
       email: contacto.email,
       telephone: contacto.whatsapp,
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: direccionCalle,
-        addressLocality: direccionComuna,
-        addressRegion: 'Región Metropolitana',
-        addressCountry: 'CL',
-      },
+      address: direccion,
       areaServed: 'Santiago, Chile',
       founder: { '@id': personId },
       sameAs: instagramURL ? [instagramURL] : undefined,
