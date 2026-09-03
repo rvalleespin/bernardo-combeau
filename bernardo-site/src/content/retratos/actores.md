@@ -6,7 +6,7 @@ order: 4
 cover:
   src: /uploads/catherine.jpg
   alt: Catherine Mazoyer
-  focus: 49% 39%
+  focus: 50% 38%
 images:
   - src: /uploads/cata-guerra_mg_3007.jpg
     alt: Catalina Guerra
