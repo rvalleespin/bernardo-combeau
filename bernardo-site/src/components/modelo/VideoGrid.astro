@@ -1,0 +1,44 @@
+---
+// Grilla de video compartida por las páginas Motion y Commercials: un
+// cuadrito por video que redirige a YouTube (no se embebe). La miniatura sale
+// del thumbnail público de YouTube — no hace falta que Bernardo suba una
+// imagen aparte.
+const { titulo, videos = [] } = Astro.props;
+---
+
+<section class="commercials">
+	<h1>{titulo}</h1>
+	<div class="commercials-grid">
+		{videos.map((c) => (
+			<a class="commercial-tile" href={c.url} target="_blank" rel="noopener">
+				<div class="thumb">
+					{c.thumb && <img src={c.thumb} alt="" loading="lazy" width="480" height="270" />}
+					<div class="play" aria-hidden="true"></div>
+				</div>
+				<p class="nombre">{c.nombre}</p>
+			</a>
+		))}
+	</div>
+</section>
+
+<style>
+	.commercials{ padding:clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem); }
+	.commercials h1{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
+		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11;
+		margin:0 0 clamp(1.4rem,3vw,2.2rem); color:var(--mm); }
+	.commercials-grid{ display:grid; grid-template-columns:1fr; gap:clamp(1.4rem,3.5vw,2.2rem); }
+	@media (min-width:640px){ .commercials-grid{ grid-template-columns:repeat(3,1fr); } }
+	.commercial-tile{ display:block; text-decoration:none; color:inherit; }
+	.commercial-tile .thumb{ position:relative; aspect-ratio:16/9; overflow:hidden; background:var(--ml); }
+	.commercial-tile .thumb img{ width:100%; height:100%; object-fit:cover; display:block;
+		transition:transform .3s ease; }
+	.commercial-tile:hover .thumb img, .commercial-tile:focus-visible .thumb img{ transform:scale(1.05); }
+	/* Triángulo de play centrado, dibujado con CSS (sin ícono/SVG externo). */
+	.commercial-tile .play{ position:absolute; inset:0; display:grid; place-items:center; }
+	.commercial-tile .play::after{ content:""; width:0; height:0; margin-left:.2em;
+		border-style:solid; border-width:.65em 0 .65em 1.05em;
+		border-color:transparent transparent transparent #fff;
+		filter:drop-shadow(0 1px 6px rgba(0,0,0,.5)); }
+	.commercial-tile .nombre{ margin:.7rem 0 0; font-size:.82rem; letter-spacing:.04em; color:var(--mi); }
+	.commercial-tile:focus-visible .thumb{ outline:2px solid var(--mi); outline-offset:2px; }
+</style>

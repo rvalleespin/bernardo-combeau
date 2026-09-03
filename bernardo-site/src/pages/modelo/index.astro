@@ -3,6 +3,7 @@ export const prerender = true;
 
 import { Image, getImage } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
+import ModeloHeader from '../../components/modelo/ModeloHeader.astro';
 // Cada sección de la página es un archivo propio, y en el panel es una
 // entrada propia dentro de "Modelo". Antes era un solo modelo.json con todo
 // adentro, que en el panel se veía como un formulario interminable.
@@ -12,10 +13,13 @@ import identityData from '../../data/modelo/identity.json';
 import selectedWorkData from '../../data/modelo/selected-work.json';
 import motion from '../../data/modelo/motion.json';
 import polaroidsData from '../../data/modelo/polaroids.json';
-import details from '../../data/modelo/details.json';
 import booking from '../../data/modelo/booking.json';
 import contacto from '../../data/contacto.json';
 import nav from '../../data/nav.json';
+// Motion y Commercials son páginas propias (/modelo/motion, /modelo/commercials),
+// no secciones de esta portada — la lógica y el menú compartido viven en
+// src/lib/modelo.js para no duplicarlos entre las tres páginas.
+import { parseReel, motionVideos, comerciales, detailGroups, secciones } from '../../lib/modelo.js';
 
 const { heroFoto, heroCaption } = portada;
 const galeria = galeriaData.fotos;
@@ -23,23 +27,6 @@ const identity = identityData.texto;
 const selectedWork = selectedWorkData.trabajos;
 const polaroids = polaroidsData.fotos;
 const { titulo: motionTitulo, reelUrl, videoFondoUrl, poster: motionPoster } = motion;
-
-// Ni el reel ni el loop de fondo se suben al repo: Git no es lugar para video
-// pesado. El reel vive en YouTube/Vimeo; el loop de fondo es un mp4 alojado
-// fuera (Vercel Blob, R2, Bunny) y referenciado por URL.
-function parseReel(url) {
-	if (!url) return null;
-	const yt = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([\w-]+)/);
-	if (yt) return { tipo: 'youtube', id: yt[1] };
-	// El hash de privacidad de Vimeo es parte del identificador: sin el, un
-	// video no listado (lo normal en este rubro) responde "does not exist".
-	const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)(?:\/([0-9a-zA-Z]+))?/);
-	if (vimeo) {
-		const h = url.match(/[?&]h=([0-9a-zA-Z]+)/);
-		return { tipo: 'vimeo', id: vimeo[1], hash: vimeo[2] || (h ? h[1] : null) };
-	}
-	return null;
-}
 
 const reel = parseReel(reelUrl);
 
@@ -61,26 +48,6 @@ const reelFondo = !reel
 
 // La franja aparece solo si hay algo que mostrar: mp4 propio o reel.
 const hayFranja = Boolean(videoFondoUrl || reelFondo);
-
-// Grilla de video: un cuadrito por video, que redirige a YouTube (no se
-// embebe). La miniatura sale del thumbnail público de YouTube — no hace
-// falta que Bernardo suba una imagen aparte. Vimeo no tiene una miniatura
-// pública así de simple, así que esos quedan sin imagen (se ve el ícono de
-// play solo) en vez de inventar una. Mismo mecanismo para "Motion" y para
-// "Commercials" — son dos listas de video separadas, no una sola.
-function gridDeVideos(lista) {
-	return (lista || [])
-		.map((c) => ({ ...c, parsed: parseReel(c.url) }))
-		.filter((c) => c.nombre && c.parsed)
-		.map((c) => ({
-			nombre: c.nombre,
-			url: c.url,
-			thumb: c.parsed.tipo === 'youtube' ? `https://img.youtube.com/vi/${c.parsed.id}/hqdefault.jpg` : null,
-		}));
-}
-
-const motionVideos = gridDeVideos(motion.videos);
-const comerciales = gridDeVideos(motion.comerciales);
 
 const motionPosterSrc = motionPoster
 	? (await getImage({ src: motionPoster, width: 1920, quality: 70 })).src
@@ -129,17 +96,6 @@ const selectedV = await Promise.all((selectedWork || []).map(async (job) => ({
 // siempre en un separador y nunca dentro de "185 cm" o "Grey Hair".
 const metaItems = (heroCaption || '').split('\u00b7').map((t) => t.trim()).filter(Boolean);
 
-// Tres columnas, como pidio Bernardo: la altura sola, las tres medidas de
-// cuerpo siempre juntas, y el resto de los rasgos aparte. Cada columna se
-// cae sola si no tiene ningun dato cargado.
-const detailGroups = [
-	[['Height', details?.height]],
-	[['Chest', details?.chest], ['Waist', details?.waist], ['Hips', details?.hips]],
-	[['Shoes', details?.shoes], ['Hair', details?.hair], ['Eyes', details?.eyes]],
-]
-	.map((group) => group.filter(([, v]) => v))
-	.filter((group) => group.length > 0);
-
 const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 
 // Mientras el titulo del menu este vacio la pagina esta "en obra": no se
@@ -147,33 +103,11 @@ const whatsappDigits = (contacto.whatsapp || '').replace(/\D/g, '');
 // alcanza, porque igual entra al sitemap y se indexa.
 const enObra = !(nav.modelo && nav.modelo.trim());
 
-// Menú de la portada. Solo se listan las secciones que de verdad existen: si
-// Bernardo todavía no cargó polaroids, ese enlace no aparece y no lleva a un
-// ancla vacía.
-const secciones = [
-	galeria?.length && { href: '#book', label: 'Book' },
-	selectedWork?.length && { href: '#work', label: 'Work' },
-	// Motion y Commercials son dos secciones y dos botones separados — cada
-	// uno solo aparece si esa grilla tiene contenido de verdad.
-	motionVideos.length > 0 && { href: '#motion-videos', label: 'Motion' },
-	comerciales.length > 0 && { href: '#commercials', label: 'Commercials' },
-	polaroids?.length && { href: '#polaroids', label: 'Polaroids' },
-	detailGroups.length && { href: '#details', label: 'Details' },
-	{ href: '#booking', label: 'Booking' },
-].filter(Boolean);
 ---
 
 <Layout title="Bernardo Combeau — Model" description="Bernardo Combeau, model based in Santiago, Chile — fashion, commercial, e-commerce and advertising." image={heroFoto || undefined} noindex={enObra}>
 	<div class="modelo">
-		<header class="mhead">
-			<div class="mhead-marca">
-				<span class="wordmark">Bernardo Combeau <i aria-hidden="true">|</i> <em>Model</em></span>
-				<nav class="mnav" aria-label="Sections">
-					{secciones.map((s) => <a href={s.href}>{s.label}</a>)}
-				</nav>
-			</div>
-			<a class="back" href="/">← Photography</a>
-		</header>
+		<ModeloHeader secciones={secciones} />
 
 		{/* El nombre ya vive en el encabezado: repetirlo encima de la foto la
 		    tapaba sin agregar nada. */}
@@ -284,49 +218,16 @@ const secciones = [
 					    en el DOM (oculto, mismo truco que .visor-sr) para que un lector
 					    de pantalla anuncie de qué trata la sección. */}
 					<h2 id="motion-titulo" class="sr-only">{motionTitulo || 'Motion / Commercials'}</h2>
-					{/* Dos accesos separados, cada uno solo si tiene contenido real
-					    abajo — nunca a un ancla muerta. "Stills" se sacó: ya no hace
+					{/* Dos accesos separados, cada uno solo si tiene contenido real —
+					    ahora a páginas propias (/modelo/motion, /modelo/commercials),
+					    no a anclas de esta misma página. "Stills" se sacó: ya no hace
 					    falta, Book y Work tienen su propio link en el menú de arriba. */}
 					<div class="motion-acciones">
-						{motionVideos.length > 0 && <a class="btn" href="#motion-videos">Motion</a>}
-						{comerciales.length > 0 && <a class="btn" href="#commercials">Commercials</a>}
+						{motionVideos.length > 0 && <a class="btn" href="/modelo/motion">Motion</a>}
+						{comerciales.length > 0 && <a class="btn" href="/modelo/commercials">Commercials</a>}
 					</div>
 				</div>
 				<button class="motion-pausa" type="button" hidden>Pause</button>
-			</section>
-		)}
-
-		{motionVideos.length > 0 && (
-			<section class="commercials" id="motion-videos">
-				<h2>Motion</h2>
-				<div class="commercials-grid">
-					{motionVideos.map((c) => (
-						<a class="commercial-tile" href={c.url} target="_blank" rel="noopener">
-							<div class="thumb">
-								{c.thumb && <img src={c.thumb} alt="" loading="lazy" width="480" height="270" />}
-								<div class="play" aria-hidden="true"></div>
-							</div>
-							<p class="nombre">{c.nombre}</p>
-						</a>
-					))}
-				</div>
-			</section>
-		)}
-
-		{comerciales.length > 0 && (
-			<section class="commercials" id="commercials">
-				<h2>Commercials</h2>
-				<div class="commercials-grid">
-					{comerciales.map((c) => (
-						<a class="commercial-tile" href={c.url} target="_blank" rel="noopener">
-							<div class="thumb">
-								{c.thumb && <img src={c.thumb} alt="" loading="lazy" width="480" height="270" />}
-								<div class="play" aria-hidden="true"></div>
-							</div>
-							<p class="nombre">{c.nombre}</p>
-						</a>
-					))}
-				</div>
 			</section>
 		)}
 
@@ -646,25 +547,9 @@ const secciones = [
 <style>
 	.modelo{ --mp: #ffffff; --mi: #111110; --mm: #84817a; --ml: #e7e4dd;
 		background:var(--mp); color:var(--mi); font-family:-apple-system,BlinkMacSystemFont,sans-serif; }
-	/* Barra superior fija: acá viven el nombre y el menú de secciones, así
-	   que el nombre ya no se repite encima de la foto. */
-	.mhead{ position:sticky; top:0; z-index:10; background:var(--mp);
-		display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:.5rem 1.2rem;
-		padding:.9rem clamp(1.2rem,4vw,3rem); border-bottom:1px solid var(--ml); }
-	.mhead .wordmark{ display:block; font-size:.9rem; font-weight:600; letter-spacing:.18em;
-		text-transform:uppercase; color:var(--mi); }
-	.mhead .wordmark i{ font-style:normal; color:var(--ml); margin:0 .35em; }
-	.mhead .wordmark em{ font-style:normal; color:var(--mm); }
-	.mhead .back{ color:var(--mm); text-decoration:none; font-size:.72rem; letter-spacing:.14em;
-		text-transform:uppercase; padding-top:.15rem; white-space:nowrap; }
 
-	/* Menú de anclas a las secciones de la página. */
-	.mnav{ display:flex; flex-wrap:wrap; gap:.35rem 1.1rem; margin-top:.45rem; }
-	.mnav a{ color:var(--mm); text-decoration:none; font-size:.68rem; letter-spacing:.16em;
-		text-transform:uppercase; padding:.15rem 0; border-bottom:1px solid transparent; }
-	.mnav a:hover, .mnav a:focus-visible{ color:var(--mi); border-bottom-color:var(--mi); }
-
-	/* El encabezado es fijo, así que al saltar a una sección hay que dejarle
+	/* El encabezado es fijo (ver ModeloHeader.astro), así que al saltar a una
+	   sección hay que dejarle
 	   su alto libre o el título queda tapado detrás de la barra. */
 	:target{ scroll-margin-top:6.5rem; }
 	.modelo section, .modelo footer{ scroll-margin-top:6.5rem; }
@@ -809,28 +694,9 @@ const secciones = [
 	.btn:focus-visible{ outline:2px solid #fff; outline-offset:3px; }
 	@media (max-width:786px){ .btn{ border-width:1px; min-width:7.5rem; padding:.7rem .9rem; } }
 
-	/* Comerciales: cuadritos que redirigen a YouTube, uno por comercial. La
-	   miniatura sale directo del thumbnail público de YouTube — no hace falta
-	   subir una imagen aparte. */
-	.commercials{ padding:clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem); }
-	.commercials h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
-		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11;
-		margin:0 0 clamp(1.4rem,3vw,2.2rem); color:var(--mm); }
-	.commercials-grid{ display:grid; grid-template-columns:1fr; gap:clamp(1.4rem,3.5vw,2.2rem); }
-	@media (min-width:640px){ .commercials-grid{ grid-template-columns:repeat(3,1fr); } }
-	.commercial-tile{ display:block; text-decoration:none; color:inherit; }
-	.commercial-tile .thumb{ position:relative; aspect-ratio:16/9; overflow:hidden; background:var(--ml); }
-	.commercial-tile .thumb img{ width:100%; height:100%; object-fit:cover; display:block;
-		transition:transform .3s ease; }
-	.commercial-tile:hover .thumb img, .commercial-tile:focus-visible .thumb img{ transform:scale(1.05); }
-	/* Triángulo de play centrado, dibujado con CSS (sin ícono/SVG externo). */
-	.commercial-tile .play{ position:absolute; inset:0; display:grid; place-items:center; }
-	.commercial-tile .play::after{ content:""; width:0; height:0; margin-left:.2em;
-		border-style:solid; border-width:.65em 0 .65em 1.05em;
-		border-color:transparent transparent transparent #fff;
-		filter:drop-shadow(0 1px 6px rgba(0,0,0,.5)); }
-	.commercial-tile .nombre{ margin:.7rem 0 0; font-size:.82rem; letter-spacing:.04em; color:var(--mi); }
-	.commercial-tile:focus-visible .thumb{ outline:2px solid var(--mi); outline-offset:2px; }
+	/* Comerciales: cuadritos que redirigen a YouTube — grilla y estilos viven
+	   en components/modelo/VideoGrid.astro (usada en /modelo/motion y
+	   /modelo/commercials, ya no aquí). */
 
 	/* Control de pausa: cualquier cosa que se mueva sola y dure más de cinco
 	   segundos necesita una forma visible de detenerla (WCAG 2.2.2). La
