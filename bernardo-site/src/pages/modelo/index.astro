@@ -147,7 +147,12 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 const secciones = [
 	galeria?.length && { href: '#book', label: 'Book' },
 	selectedWork?.length && { href: '#work', label: 'Work' },
-	(hayFranja || reelEmbed || comerciales.length) && { href: '#motion', label: 'Motion' },
+	// El ancla apunta a lo primero que exista de verdad: si no hay franja de
+	// video, "#motion" no existe en el DOM y el enlace del menú quedaría muerto.
+	(hayFranja || reelEmbed || comerciales.length) && {
+		href: hayFranja ? '#motion' : comerciales.length ? '#commercials' : '#reel',
+		label: 'Motion',
+	},
 	polaroids?.length && { href: '#polaroids', label: 'Polaroids' },
 	detailGroups.length && { href: '#details', label: 'Details' },
 	{ href: '#booking', label: 'Booking' },

@@ -2,10 +2,5 @@
   "titulo": "Motion / Commercials",
   "reelUrl": "",
   "videoFondoUrl": "",
-  "poster": "",
-  "comerciales": [
-    { "nombre": "PRUEBA — Comercial 1", "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-    { "nombre": "PRUEBA — Comercial 2", "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw" },
-    { "nombre": "PRUEBA — Comercial 3", "url": "https://youtu.be/9bZkp7q19f0" }
-  ]
+  "poster": ""
 }
