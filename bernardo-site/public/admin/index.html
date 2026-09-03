@@ -4,6 +4,98 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Administración — Bernardo Combeau</title>
+    <style>
+      /* Dirección A (revision-panel-admin-bernardo.md, Parte 3) — vestir el chrome
+         de Decap con la identidad de Bernardo en vez de su magenta de fábrica.
+         El acento sale de un muestreo real de piel en una de sus fotos (beto3.jpg,
+         zona de frente, #dcb8b6), llevado a un tono utilizable como acento
+         (misma familia de matiz, más saturado/oscuro para que rinda como color
+         de UI) — no es un color inventado a ojo.
+         Selectors por [class*="..."]: Decap usa Emotion (CSS-in-JS); el hash de
+         cada clase cambia entre builds pero el nombre del componente queda
+         embebido en el propio className (ej. "css-39fnji-LoginButton-...") y
+         ESE nombre sí es estable. Verificado contra el DOM real del panel
+         corriendo local, no adivinado. */
+      :root {
+        --bc-accent: #98433e;
+        --bc-paper: #fbfaf8;
+        --bc-ink: #111110;
+        --bc-line: #e7e4dd;
+        --bc-stage: #f0efe9;
+      }
+
+      body { background: var(--bc-paper) !important; }
+
+      /* Login: fuera el logo de Decap, wordmark de Bernardo en su lugar */
+      [class*="StyledAuthenticationPage"] { background: var(--bc-paper) !important; }
+      [class*="DecapLogoIcon"] { display: none !important; }
+      [class*="StyledAuthenticationPage"]::before {
+        content: "Bernardo Combeau";
+        display: block;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--bc-ink);
+        margin-bottom: 1.6rem;
+        letter-spacing: 0.01em;
+      }
+      [class*="LoginButton"] { background: var(--bc-ink) !important; border-radius: 2px !important; }
+      [class*="LoginButton"]:hover { background: var(--bc-accent) !important; }
+
+      /* Sidebar: acento cálido en el ítem activo y en hover (antes azul default) */
+      [class*="SidebarNavLink"].sidebar-active { color: var(--bc-accent) !important; border-color: var(--bc-accent) !important; }
+      [class*="SidebarNavLink"]:hover { color: var(--bc-accent) !important; }
+
+      /* Header superior: mismo acento en la pestaña activa (Contenido / Medios) */
+      [class*="AppHeaderButton"].header-link-active { color: var(--bc-accent) !important; }
+
+      /* Dirección B — jerarquía visual en la sidebar. Decap no soporta agrupar
+         colecciones de forma nativa (confirmado) — nada de fingir una feature
+         que no existe. Lo que sí es 100% CSS, sin tocar el DOM que Decap genera:
+         una línea separadora entre "páginas" (Home..Contacto) y "galerías"
+         (Retratos, Proyectos). Depende del orden fijo de "collections" más abajo
+         — con "Modelo" ya afuera (Dirección C), el 6º ítem es Retratos. */
+      [class*="CollectionContainer"] a[class*="SidebarNavLink"]:nth-of-type(6) {
+        margin-top: 1rem !important;
+        padding-top: 1rem !important;
+        border-top: 1px solid var(--bc-line) !important;
+      }
+
+      /* Dirección D — Medios: el fondo tipo "transparencia" (pensado para PNG
+         con alfa) detrás de cada miniatura no pinta nada en fotos JPG opacas;
+         tono papel/stage del sitio en su lugar. */
+      [class*="checkerboard"] { background-image: none !important; background-color: var(--bc-stage) !important; }
+
+      /* Parte 1 #3 del review — el editor de una entrada no se adaptaba a
+         celular: el layout de dos columnas (formulario + vista previa) trae
+         min-width:800px fijo en Decap y nunca se apilaba. Verificado contra el
+         DOM real en viewport de celular: el min-width vive en EditorContainer/
+         ToolbarContainer (CSS de Decap, no inline) y la dirección horizontal en
+         .SplitPane (inline, pero un !important en hoja de estilos sí le gana a
+         un inline sin !important). Debajo de 800px se apila en una columna; el
+         "Resizer" (para arrastrar el ancho de cada panel) no tiene función
+         apilado, se oculta. .SplitPane/.Pane1/.Pane2 son clases de
+         react-split-pane (la librería que usa Decap), no clases propias de
+         este archivo — estables mientras Decap no cambie de librería interna. */
+      @media (max-width: 800px) {
+        [class*="EditorContainer"],
+        [class*="ToolbarContainer"] { min-width: 0 !important; width: 100% !important; }
+        .SplitPane { flex-direction: column !important; position: relative !important; height: auto !important; }
+        .Pane1, .Pane2 { width: 100% !important; max-width: 100% !important; }
+        .Resizer { display: none !important; }
+        /* La barra superior (volver / estado+publicar / ver+usuario) traía sus 3
+           secciones en una sola fila sin wrap — a 390px se cortaban literalmente
+           fuera de pantalla (ej. el botón "Eliminar entrada"). Apilarlas. */
+        [class*="ToolbarContainer"] { flex-wrap: wrap !important; height: auto !important; }
+        [class*="ToolbarSectionBackLink"],
+        [class*="ToolbarSectionMain"],
+        [class*="ToolbarSectionMeta"] { width: 100% !important; min-width: 0 !important; flex: 1 1 100% !important; }
+        /* Los botones flotantes "ver vista previa" / "sincronizar scroll" están
+           pensados para la vista dividida de escritorio; apilado no aplican y
+           quedaban flotando encima del primer campo del formulario. */
+        [class*="EditorToggle"] { display: none !important; }
+      }
+    </style>
   </head>
   <body>
     <!-- Vercel en modo servidor no sirve bien archivos .yml sueltos en public/, así que
@@ -823,6 +915,13 @@ img{max-width:100%;}
                 },
               ],
             },
+            /* Dirección C (revision-panel-admin-bernardo.md, 3-sep-2026): "Modelo" se saca
+               de la sidebar mientras siga sin contenido real y sin publicar en el sitio
+               (nav.json trae "modelo": "" a propósito). Mejor 7 colecciones que funcionan
+               que 8 con una en blanco y sin vista previa. Los archivos de datos siguen
+               intactos en el repo — para reactivarla, solo hay que descomentar este bloque
+               (y, si se decide construirle vista previa en ese momento, agregar sus
+               CMS.registerPreviewTemplate — hoy "modelo" es la única colección sin una).
             {
               name: "modelo",
               label: "Modelo",
@@ -1021,6 +1120,7 @@ img{max-width:100%;}
                 },
               ],
             },
+            */
             {
               name: "retratos",
               label: "Retratos",
