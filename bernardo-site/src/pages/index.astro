@@ -40,7 +40,7 @@ const proyectosEntries = (await getCollection('proyectos')).sort((a, b) => a.dat
 				{navLinks.map((link) => <a href={link.href}>{link.label}</a>)}
 			</span>
 		</nav>
-		<div class="photo"><Image src={home.fotoHero} alt="Retrato — Bernardo Combeau" width={1920} quality={80} /></div>
+		<div class="photo"><Image src={home.fotoHero} alt="Retrato — Bernardo Combeau" width={1920} quality={80} loading="eager" fetchpriority="high" /></div>
 		<div class="overlay">
 			<h1>{heroLines.map((line, i) => <>{i > 0 && <br />}{line}</>)}</h1>
 			<a class="cta-pill" href="/retratos">Ver retratos →</a>

@@ -5,7 +5,7 @@ excerpt: Mujeres que inspiran
 order: 6
 cover:
   src: /uploads/pazi.jpg
-  alt: .
+  alt: Retrato femenino a contraluz, cabello suelto
 images:
   - src: /uploads/emilia-vial-3.jpg
     alt: Emilia

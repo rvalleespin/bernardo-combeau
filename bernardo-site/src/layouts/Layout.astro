@@ -1,6 +1,9 @@
 ---
 import '../styles/global.css';
 import home from '../data/home.json';
+import contacto from '../data/contacto.json';
+import estudio from '../data/estudio.json';
+import sobremi from '../data/sobremi.json';
 
 interface Props {
   title?: string;
@@ -9,6 +12,10 @@ interface Props {
   /** Para páginas que ya existen pero todavía no se quieren mostrar en
    *  buscadores. Sacarlas del menú no basta: Google igual las encuentra. */
   noindex?: boolean;
+  /** JSON-LD adicional específico de la página (ej. ImageObject de una
+   *  galería), que se suma al grafo Person + LocalBusiness de más abajo —
+   *  ese grafo va en todas las páginas porque es la identidad del sitio. */
+  jsonLd?: Record<string, unknown>[];
 }
 
 const {
@@ -16,10 +23,64 @@ const {
   description = 'Bernardo Combeau, fotógrafo en Santiago, Chile. Retratos, personal branding y fotografía por encargo.',
   image = home.fotoHero,
   noindex = false,
+  jsonLd = [],
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const ogImageURL = image ? new URL(image, Astro.site) : null;
+
+// Identidad del sitio (Parte 1 del encargo SPL-COT-2026-014: cero JSON-LD en
+// todo el sitio). Solo datos que ya viven en src/data/*.json — nada
+// inventado. @id compartidos entre Person y LocalBusiness para que un motor
+// de IA los relacione como la misma entidad en cualquier página.
+const personId = new URL('/#persona', Astro.site).toString();
+const businessId = new URL('/#negocio', Astro.site).toString();
+const heroImageURL = new URL(home.fotoHero, Astro.site).toString();
+const instagramURL = contacto.instagram
+  ? `https://www.instagram.com/${contacto.instagram.replace(/^@/, '')}/`
+  : undefined;
+// "El Golf, Las Condes" → calle/barrio + comuna, tal como lo escribió Bernardo
+// en el panel — no se inventa un número si no lo dio.
+const [direccionCalle, direccionComuna] = estudio.direccion.split(',').map((s) => s.trim());
+
+const siteGraph = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': personId,
+      name: 'Bernardo Combeau',
+      jobTitle: 'Fotógrafo de retrato',
+      url: Astro.site?.toString(),
+      image: new URL(sobremi.foto, Astro.site).toString(),
+      email: contacto.email,
+      telephone: contacto.whatsapp,
+      sameAs: instagramURL ? [instagramURL] : undefined,
+      worksFor: { '@id': businessId },
+      knowsAbout: ['Retrato', 'Fotografía editorial', 'Personal branding', 'Fotografía corporativa'],
+    },
+    {
+      '@type': 'LocalBusiness',
+      '@id': businessId,
+      name: 'Bernardo Combeau — Fotografía',
+      image: heroImageURL,
+      url: Astro.site?.toString(),
+      email: contacto.email,
+      telephone: contacto.whatsapp,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: direccionCalle,
+        addressLocality: direccionComuna,
+        addressRegion: 'Región Metropolitana',
+        addressCountry: 'CL',
+      },
+      areaServed: 'Santiago, Chile',
+      founder: { '@id': personId },
+      sameAs: instagramURL ? [instagramURL] : undefined,
+      priceRange: '$200.000 - $300.000',
+    },
+  ],
+};
 ---
 
 <html lang="es">
@@ -46,6 +107,11 @@ const ogImageURL = image ? new URL(image, Astro.site) : null;
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
 		{ogImageURL && <meta name="twitter:image" content={ogImageURL} />}
+
+		<script type="application/ld+json" set:html={JSON.stringify(siteGraph)} />
+		{jsonLd.map((entry) => (
+			<script type="application/ld+json" set:html={JSON.stringify(entry)} />
+		))}
 	</head>
 	<body>
 		<svg width="0" height="0" style="position:absolute">

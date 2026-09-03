@@ -23,7 +23,9 @@ import sobremi from '../data/sobremi.json';
 		)}
 		<div class="bio">
 			<p>{sobremi.parrafo1}</p>
-			<p style="margin-top:1.1rem;">{sobremi.parrafo2}</p>
+			{sobremi.parrafo2 && sobremi.parrafo2.trim().length > 1 && (
+				<p style="margin-top:1.1rem;">{sobremi.parrafo2}</p>
+			)}
 		</div>
 	</div>
 	<Footer />
