@@ -912,6 +912,29 @@ img{max-width:100%;}
       // existe una opción global) — se agrega `media_library` en cada widget de imagen.
       var UPLOAD_LIMIT = { media_library: { config: { max_file_size: 10485760 } } };
 
+      // "Encuadre" (posicion) elige QUÉ franja de la foto se ve; no ayuda cuando
+      // el problema es que el sujeto se ve chico (foto de cuerpo completo tomada
+      // de lejos, en un espacio pensado para un plano cerrado). "Zoom" acerca la
+      // foto sobre ese mismo punto — mismo mecanismo que un recorte de miniatura,
+      // sin tocar el archivo original (el visor de tamaño completo sigue
+      // mostrando la foto tal cual se subió, sin este zoom).
+      function zoomField() {
+        return {
+          label: "Zoom de la miniatura",
+          name: "zoom",
+          widget: "select",
+          required: false,
+          default: "1",
+          options: [
+            { label: "Sin zoom (foto normal)", value: "1" },
+            { label: "Un poco más cerca", value: "1.3" },
+            { label: "Bastante más cerca — sujeto chico en el cuadro", value: "1.6" },
+            { label: "Mucho más cerca", value: "2" },
+          ],
+          hint: "Para cuando el \"Encuadre\" no alcanza porque la foto fue tomada de lejos (cuerpo completo) y el sujeto se ve chico contra el fondo. Acerca la miniatura sobre el punto elegido en \"Encuadre\" — la foto completa (al abrirla en grande) no cambia.",
+        };
+      }
+
       CMS.init({
         config: {
           locale: "es",
@@ -1096,6 +1119,22 @@ img{max-width:100%;}
                       fields: [
                         { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
                         { label: "Descripción para lectores de pantalla", name: "alt", widget: "string" },
+                        {
+                          label: "Encuadre en la grilla",
+                          name: "posicion",
+                          widget: "select",
+                          required: false,
+                          default: "50%",
+                          options: [
+                            { label: "Centrado (por defecto)", value: "50%" },
+                            { label: "Todo arriba — si te corta la cabeza", value: "0%" },
+                            { label: "Un poco más arriba", value: "25%" },
+                            { label: "Un poco más abajo", value: "75%" },
+                            { label: "Todo abajo", value: "100%" },
+                          ],
+                          hint: "La grilla recorta un poco arriba y abajo de una foto vertical. Si te queda cortada la cabeza, elegí una opción más arriba.",
+                        },
+                        zoomField(),
                       ],
                     },
                   ],
@@ -1136,11 +1175,27 @@ img{max-width:100%;}
                           widget: "list",
                           min: 1,
                           max: 12,
-                          hint: "Se muestran en una tira que se recorre hacia el lado, así que podés poner varias sin que la página se haga eterna. Van en vertical: elegí tomas verticales u horizontales sabiendo que se recortan a formato retrato.",
+                          hint: "La primera foto es la portada de la campaña y se muestra a ancho completo, recortada en franja horizontal (bastante arriba y abajo). El resto solo se ve al abrir el visor, sin recorte.",
                           summary: "{{fields.alt}}",
                           fields: [
                             { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
                             { label: "Descripción para lectores de pantalla", name: "alt", widget: "string", required: false },
+                            {
+                              label: "Encuadre de la portada (solo aplica a la primera foto)",
+                              name: "posicion",
+                              widget: "select",
+                              required: false,
+                              default: "50%",
+                              options: [
+                                { label: "Centrado (por defecto)", value: "50%" },
+                                { label: "Todo arriba — si te corta la cabeza", value: "0%" },
+                                { label: "Un poco más arriba", value: "25%" },
+                                { label: "Un poco más abajo", value: "75%" },
+                                { label: "Todo abajo", value: "100%" },
+                              ],
+                              hint: "La portada se recorta bastante (queda una franja horizontal angosta). Si te queda cortada la cabeza, elegí una opción más arriba.",
+                            },
+                            (function () { var f = zoomField(); f.label = "Zoom de la portada (solo aplica a la primera foto)"; return f; })(),
                           ],
                         },
                       ],
@@ -1217,6 +1272,7 @@ img{max-width:100%;}
                           ],
                           hint: "Las polaroids se muestran en un cuadrado, así que a una foto vertical se le recorta arriba y abajo. Si te queda cortada la cabeza, elegí una opción más arriba.",
                         },
+                        zoomField(),
                       ],
                     },
                   ],

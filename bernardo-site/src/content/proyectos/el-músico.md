@@ -14,11 +14,14 @@ images:
   - src: /uploads/beto3.jpg
     alt: Alberto Peña sonriendo con su acordeón, chaqueta de cuero
   - src: /uploads/beto4.jpg
-    alt: Alberto Peña tocando el acordeón, mirando hacia abajo
+    alt: Alberto Peña riendo mientras toca el acordeón
   - src: /uploads/beto6.jpg
-    alt: Alberto Peña de perfil junto a su acordeón
+    alt: Alberto Peña con el acordeón, mirando hacia un lado
   - src: /uploads/beto2.jpg
-    alt: Alberto Peña sentado en una escalera exterior, tocando el acordeón
+    alt: Alberto Peña tocando el acordeón sentado en una escalinata exterior
   - src: /uploads/beto7.jpg
-    alt: Alberto Peña tocando el acordeón sentado en los peldaños de un edificio
+    alt: Alberto Peña tocando el acordeón sentado en los peldaños de una casa
+publication:
+  name: .
+  url: https://bernardocombeau.cl
 ---

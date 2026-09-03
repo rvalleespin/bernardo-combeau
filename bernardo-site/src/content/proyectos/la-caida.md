@@ -7,16 +7,16 @@ excerpt: |-
 order: 1
 cover:
   src: /uploads/proyecto_20260712_0005.jpg
-  alt: Hombre furioso golpeando un vidrio empañado, luz roja y azul
+  alt: Retrato conceptual tras un vidrio con lluvia, grito y puño en alto, luz roja y azul
 images:
   - src: /uploads/proyecto_20260712_0001.jpg
-    alt: Retrato nocturno en la calle, luces de fondo desenfocadas
+    alt: Retrato nocturno en la calle, chaqueta oscura y luces de fondo desenfocadas
   - src: /uploads/proyecto_20260712_0002.jpg
-    alt: Retrato nocturno fumando, humo verde iluminado
+    alt: Retrato nocturno fumando, con humo iluminado en verde
   - src: /uploads/proyecto_20260712_0003.jpg
-    alt: Sirviendo un trago en penumbra, luz azul
+    alt: Retrato sirviendo agua en un vaso, iluminación azul de estudio
   - src: /uploads/proyecto_20260712_0004.jpg
-    alt: Triple exposición de un rostro gritando
+    alt: Triple exposición del mismo hombre gritando, en tonos azules
   - src: /uploads/proyecto_20260712_0005.jpg
-    alt: Hombre furioso golpeando un vidrio empañado, luz roja y azul
+    alt: Retrato conceptual tras un vidrio con lluvia, grito y puño en alto, luz roja y azul
 ---

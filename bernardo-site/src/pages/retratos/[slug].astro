@@ -27,9 +27,23 @@ const allEntries = (await getCollection('retratos')).sort((a, b) => a.data.order
 const currentIndex = allEntries.findIndex((e) => e.id === entry.id);
 const prevEntry = allEntries[currentIndex - 1];
 const nextEntry = allEntries[currentIndex + 1];
+
+// ImageObject por foto real de la galería — mismos datos ya presentes en el
+// frontmatter (alt, lugar, año, crédito), nada inventado.
+const imageObjects = images.map((img) => ({
+  '@context': 'https://schema.org',
+  '@type': 'ImageObject',
+  contentUrl: new URL(img.src, Astro.site).toString(),
+  name: img.alt,
+  description: img.alt,
+  ...(img.place && { contentLocation: img.place }),
+  ...(img.year && { datePublished: img.year }),
+  creator: { '@id': new URL('/#persona', Astro.site).toString() },
+  copyrightHolder: { '@id': new URL('/#persona', Astro.site).toString() },
+}));
 ---
 
-<Layout title={`${title} — Bernardo Combeau`} description={excerpt} image={cover.src}>
+<Layout title={`${title} — Bernardo Combeau`} description={excerpt} image={cover.src} jsonLd={imageObjects}>
 	<Nav active="/retratos" />
 
 	<p class="crumb"><a href="/retratos">Retratos /</a></p>

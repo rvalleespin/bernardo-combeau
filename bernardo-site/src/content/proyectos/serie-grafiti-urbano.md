@@ -6,26 +6,26 @@ excerpt: Secuencia en color de la clásica escena del crimen de Marion Crane en
 order: 3
 cover:
   src: /uploads/img_9967.jpg
-  alt: Primer plano con reflejo y luz roja intensa, escena inspirada en Psycho
+  alt: Matías Massu recreando la escena del crimen de Psycho (1960), bajo luz roja
 images:
   - src: /uploads/img_9736.jpg
-    alt: Retrato en penumbra con luz verde y capucha, mirada fija a cámara
+    alt: Retrato con capucha bajo luz verde, expresión tensa
   - src: /uploads/img_0116.jpg
-    alt: Pasillo en penumbra con letrero de neón MOTEL y escalera al fondo
+    alt: Pasillo de motel en penumbra, letrero de neón "Motel"
   - src: /uploads/img_9799.jpg
-    alt: Hombre con capucha mirándose en un espejo, luz azul de baño
+    alt: Reflejo en el espejo de un baño con azulejos, tocándose el rostro
   - src: /uploads/img_9820.jpg
-    alt: Piernas de pie junto al inodoro, impermeable verde sobre el estanque
+    alt: Piernas descalzas en un baño, chaqueta sobre el estanque del inodoro
   - src: /uploads/img_9904.jpg
-    alt: Hombre en la ducha con los ojos cerrados, agua y luz dorada sobre la piel
+    alt: En la ducha, cabeza hacia atrás bajo el agua
   - src: /uploads/proyecto_20251106_0002-copia.jpg
-    alt: Silueta desenfocada tras la cortina de ducha, sosteniendo un cuchillo
+    alt: Silueta encapuchada empuñando un cuchillo, imagen desenfocada
   - src: /uploads/img_9933.jpg
-    alt: Hombre gritando bajo la ducha mientras una mano lo sujeta
+    alt: Gritando en la ducha, con la mano extendida hacia la cámara
   - src: /uploads/img_9952.jpg
-    alt: Cuchillo apuntando al pecho de un hombre aterrado, luz roja en la ducha
+    alt: Cuchillo apuntando al hombro, expresión de terror bajo luz roja
   - src: /uploads/img_9966.jpg
-    alt: Hombre en la ducha con sangre en los azulejos, mirada perdida
+    alt: Contra un muro de azulejos con una mancha roja detrás, luz verde
   - src: /uploads/img_9967.jpg
-    alt: Primer plano con reflejo y luz roja intensa, escena inspirada en Psycho
+    alt: Primer plano tendido en el piso con reflejo, iluminación roja
 ---

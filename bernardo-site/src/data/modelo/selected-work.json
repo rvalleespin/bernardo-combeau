@@ -6,7 +6,8 @@
       "fotos": [
         {
           "src": "/uploads/modelo-selectedwork-elite-01.jpg",
-          "alt": "ALTOCONCEPTO — Bernardo Combeau 1"
+          "alt": "ALTOCONCEPTO — Bernardo Combeau 1",
+          "posicion": "0%"
         },
         {
           "src": "/uploads/modelo-selectedwork-elite-02.jpg",
