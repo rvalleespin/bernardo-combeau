@@ -997,6 +997,18 @@ img{max-width:100%;}
                       hint: "Pega el link normal del video, como lo copias del navegador (sirve youtube.com, youtu.be y vimeo.com, con o sin el código de video privado). Este es el reel que se ve completo, con sonido y controles, cuando alguien toca el botón MOTION. No subas el archivo acá: el panel es para fotos y texto, no para video pesado.",
                     },
                     {
+                      label: "Comerciales (cuadritos que llevan a YouTube)",
+                      name: "comerciales",
+                      widget: "list",
+                      required: false,
+                      summary: "{{fields.nombre}}",
+                      hint: "Un cuadro por comercial. Al tocarlo, se abre ese video en YouTube (no se reproduce adentro del sitio). La miniatura sale sola del video de YouTube — no hace falta subir imagen. Si cargás alguno acá, el botón MOTION de la franja lleva directo a esta grilla en vez de al reel único de arriba.",
+                      fields: [
+                        { label: "Nombre del comercial", name: "nombre", widget: "string", hint: "Ej. Falabella — Verano 2026" },
+                        { label: "Link de YouTube", name: "url", widget: "string", hint: "Pega el link normal del video de YouTube, como lo copiás del navegador." },
+                      ],
+                    },
+                    {
                       label: "Video de fondo de la franja (URL de un .mp4)",
                       name: "videoFondoUrl",
                       widget: "string",
