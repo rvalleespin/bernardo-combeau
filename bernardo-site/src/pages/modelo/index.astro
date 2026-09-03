@@ -83,6 +83,22 @@ async function conVisor(fotos) {
 	}));
 }
 
+// "Encuadre" (posicion) elige qué franja de la miniatura se ve — no alcanza
+// cuando el sujeto se ve chico porque la foto es de cuerpo completo, tomada
+// de lejos, en un espacio pensado para un plano cerrado (pasó con la
+// polaroid 3). "Zoom" acerca la miniatura sobre ese mismo punto con
+// transform:scale() + transform-origin — la foto que abre el visor no lleva
+// este estilo, así que sigue siendo la original sin recortar.
+function encuadreStyle(img) {
+	if (!img) return undefined;
+	const posY = img.posicion || '50%';
+	const zoom = img.zoom ? Number(img.zoom) : 1;
+	const props = [];
+	if (img.posicion) props.push(`object-position:50% ${posY}`);
+	if (zoom > 1) props.push(`transform:scale(${zoom})`, `transform-origin:50% ${posY}`);
+	return props.length ? props.join(';') : undefined;
+}
+
 const galeriaV = await conVisor(galeria);
 const polaroidsV = await conVisor(polaroids);
 const selectedV = await Promise.all((selectedWork || []).map(async (job) => ({
@@ -172,7 +188,7 @@ const secciones = [
 							    cabeza en una foto donde el sujeto queda muy arriba en el
 							    encuadre original. Mismo mecanismo que Polaroids. */}
 							<Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={1200} quality={80}
-								style={img.posicion ? `object-position:50% ${img.posicion}` : undefined} />
+								style={encuadreStyle(img)} />
 						</button>
 					))}
 				</div>
@@ -209,7 +225,7 @@ const secciones = [
 										{/* Solo la portada (n=0) se ve recortada — el resto vive oculta
 										    para el visor, que muestra la foto completa sin recorte. */}
 										<Image src={img.src} alt={img.alt || job.nombre} width={1920} quality={82}
-											style={img.posicion ? `object-position:50% ${img.posicion}` : undefined} />
+											style={encuadreStyle(img)} />
 									</button>
 								))}
 							</div>
@@ -275,7 +291,7 @@ const secciones = [
 							{/* El cuadrado recorta arriba y abajo. Con "posicion" se elige qué
 							    parte se conserva, para que no quede cortada la cabeza. */}
 							<Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={640} quality={80}
-								style={img.posicion ? `object-position:50% ${img.posicion}` : undefined} />
+								style={encuadreStyle(img)} />
 						</button>
 					))}
 				</div>
@@ -784,16 +800,17 @@ const secciones = [
 	.contact-links a:hover, .contact-links a:focus-visible{ background:var(--mi); color:var(--mp); }
 	.mfoot .back{ color:var(--mm); text-decoration:none; font-size:.82rem; margin-top:.6rem; }
 
-	/* Details no llena el ancho por sí solo (va left-aligned en 3 columnas
-	   compactas) y dejaba un vacío grande a la derecha. Desde tablet, Booking
-	   pasa a ocupar ese espacio al lado en vez de repetirse abajo. */
+	/* Details no llena el ancho por sí solo y Booking se repetía como bloque
+	   centrado abajo. Desde tablet van en la misma fila — y CENTRADOS como
+	   par (no "space-between": eso estiraba a Details y dejaba un vacío
+	   enorme en el medio), para que se lean como una sola composición. */
 	.details-booking{ display:flex; flex-direction:column; }
 	@media (min-width:760px){
-		.details-booking{ flex-direction:row; align-items:flex-start; justify-content:space-between; gap:clamp(2rem,5vw,4rem); }
-		.details-booking .stats{ flex:1 1 auto; padding-bottom:0; }
-		.details-booking .mfoot{ flex:0 0 auto; align-items:flex-start; text-align:left;
+		.details-booking{ flex-direction:row; align-items:flex-start; justify-content:center; gap:clamp(2.5rem,6vw,5rem); }
+		.details-booking .stats{ flex:0 1 auto; padding-bottom:0; }
+		.details-booking .mfoot{ flex:0 1 auto; align-items:flex-start; text-align:left;
 			border-top:0; border-left:1px solid var(--ml);
-			padding-top:clamp(1.4rem,3vw,2.2rem); padding-bottom:0; padding-left:clamp(2rem,5vw,4rem); }
+			padding-top:clamp(1.4rem,3vw,2.2rem); padding-bottom:0; padding-left:clamp(2.5rem,6vw,5rem); }
 		.details-booking .contact-links{ justify-content:flex-start; }
 	}
 </style>
