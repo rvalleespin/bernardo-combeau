@@ -172,7 +172,7 @@ img{max-width:100%;}
 .contact-links a .pending{font-size:.68rem; letter-spacing:.05em; text-transform:uppercase; color:var(--mute);}
 
 .photo{ position:relative; overflow:hidden; background:var(--stage); }
-.photo img{ width:100%; height:100%; object-fit:cover; object-position:center; display:block; }
+.photo img{ width:100%; height:100%; object-fit:cover; object-position:var(--focus, center); display:block; }
 .cap{ display:flex; justify-content:space-between; gap:1rem; margin-top:.6rem; font-size:.8rem; font-style:italic; color:var(--mute); }
 
 .hero{position:relative; margin:0;}
@@ -269,13 +269,14 @@ img{max-width:100%;}
           return typeof v.toJS === "function" ? v.toJS() : v;
         }
 
-        function photoBox(getAsset, path, alt, className) {
+        function photoBox(getAsset, path, alt, className, focus) {
           var cls = "photo" + (className ? " " + className : "");
           if (!path) {
             return h("div", { className: cls + " placeholder" }, h("span", {}, "[ sin foto ]"));
           }
           var asset = getAsset(path);
-          return h("div", { className: cls }, h("img", { src: asset ? asset.toString() : "", alt: alt || "" }));
+          var style = focus ? { "--focus": focus } : undefined;
+          return h("div", { className: cls, style: style }, h("img", { src: asset ? asset.toString() : "", alt: alt || "" }));
         }
 
         var HomePreview = createClass({
@@ -505,7 +506,7 @@ img{max-width:100%;}
                               h("span", {}, [img.year, img.credit].filter(Boolean).join(" · "))
                             )
                           : null;
-                      return h("div", { key: i, className: "card" }, photoBox(getAsset, img.src, img.alt), cap);
+                      return h("div", { key: i, className: "card" }, photoBox(getAsset, img.src, img.alt, null, img.focus), cap);
                     })
                   ),
                   hasRealPublication
@@ -775,6 +776,133 @@ img{max-width:100%;}
         },
       };
       CMS.registerLocale("es", ES_LOCALE);
+
+      // Widget de encuadre — a pedido de Ramón (3-sep-2026, sin cobro): que Bernardo
+      // pueda marcar dónde va el centro del recorte cuadrado de la portada, en vez de
+      // que siempre se recorte centrado y a veces corte cabezas/detalles. Toca o haz
+      // clic sobre la foto completa para mover el punto; el recuadro punteado muestra
+      // exactamente qué va a quedar visible en el cuadrado.
+      // Guarda un string "X% Y%" — el mismo formato que espera `object-position` en
+      // CSS, así el sitio y esta vista previa lo consumen directo, sin traducir nada.
+      // Solo existe para "cover" (retratos/proyectos): es la única foto que se recorta
+      // a cuadrado en un lugar donde el widget puede ver la foto de forma confiable —
+      // ver la nota larga junto al campo "Encuadre" de la galería (images[]) sobre por
+      // qué esa lista usa un selector de posición en vez de este mismo control.
+      (function () {
+        var h = window.h, createClass = window.createClass;
+
+        function parseFocus(value) {
+          var parts = (value || "50% 50%").split(" ");
+          var x = parseInt(parts[0], 10);
+          var y = parseInt(parts[1], 10);
+          return { x: isNaN(x) ? 50 : Math.max(0, Math.min(100, x)), y: isNaN(y) ? 50 : Math.max(0, Math.min(100, y)) };
+        }
+
+        var FocusPointControl = createClass({
+          getInitialState: function () {
+            return { naturalW: null, naturalH: null };
+          },
+          handleImgLoad: function (e) {
+            this.setState({ naturalW: e.target.naturalWidth, naturalH: e.target.naturalHeight });
+          },
+          handleClick: function (e) {
+            var rect = e.currentTarget.getBoundingClientRect();
+            var x = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+            var y = Math.round(((e.clientY - rect.top) / rect.height) * 100);
+            x = Math.max(0, Math.min(100, x));
+            y = Math.max(0, Math.min(100, y));
+            this.props.onChange(x + "% " + y + "%");
+          },
+          render: function () {
+            var focus = parseFocus(this.props.value);
+            var coverSrc = null;
+            try {
+              coverSrc = this.props.entry.getIn(["data", "cover", "src"]);
+            } catch (e) {}
+            var imgUrl = null;
+            if (coverSrc) {
+              try {
+                var asset = this.props.getAsset(coverSrc);
+                imgUrl = asset ? asset.toString() : null;
+              } catch (e) {}
+            }
+            if (!imgUrl) {
+              return h(
+                "div",
+                { style: { padding: ".9rem", background: "#f0efe9", color: "#84817a", fontSize: ".82rem", border: "1px solid #e7e4dd" } },
+                "Sube la foto de Portada primero (campo de arriba) — el selector de encuadre aparece acá una vez que la elijas."
+              );
+            }
+            // El recuadro punteado que muestra el recorte final: un cuadrado cuyo lado
+            // es el lado más corto de la foto mostrada, centrado en el punto marcado y
+            // sujeto para no salirse del borde. Solo se puede calcular una vez que la
+            // imagen cargó y se conoce su proporción real.
+            var frameStyle = null;
+            if (this.state.naturalW && this.state.naturalH) {
+              var isLandscape = this.state.naturalW >= this.state.naturalH;
+              var sidePct = isLandscape ? (this.state.naturalH / this.state.naturalW) * 100 : 100;
+              var sidePctOther = isLandscape ? 100 : (this.state.naturalW / this.state.naturalH) * 100;
+              var halfW = (isLandscape ? sidePct : sidePctOther) / 2;
+              var halfH = (isLandscape ? sidePctOther : sidePct) / 2;
+              // en landscape el cuadrado se desliza en X según el punto marcado; en
+              // portrait se desliza en Y. En el otro eje siempre cubre el 100%.
+              var frameLeft = isLandscape ? Math.max(0, Math.min(100 - sidePct, focus.x - sidePct / 2)) : 0;
+              var frameTop = isLandscape ? 0 : Math.max(0, Math.min(100 - sidePct, focus.y - sidePct / 2));
+              frameStyle = {
+                position: "absolute",
+                left: frameLeft + "%",
+                top: frameTop + "%",
+                width: (isLandscape ? sidePct : 100) + "%",
+                height: (isLandscape ? 100 : sidePct) + "%",
+                border: "2px dashed #98433e",
+                boxShadow: "0 0 0 1000px rgba(0,0,0,.35)",
+                pointerEvents: "none",
+                boxSizing: "border-box",
+              };
+            }
+            return h(
+              "div",
+              {},
+              h(
+                "div",
+                { style: { position: "relative", display: "inline-block", maxWidth: "100%", overflow: "hidden", cursor: "crosshair" }, onClick: this.handleClick },
+                h("img", {
+                  src: imgUrl,
+                  onLoad: this.handleImgLoad,
+                  style: { display: "block", maxWidth: "100%", maxHeight: "360px", pointerEvents: "none" },
+                }),
+                frameStyle && h("div", { style: frameStyle }),
+                h("div", {
+                  style: {
+                    position: "absolute",
+                    left: focus.x + "%",
+                    top: focus.y + "%",
+                    width: "18px",
+                    height: "18px",
+                    marginLeft: "-9px",
+                    marginTop: "-9px",
+                    borderRadius: "50%",
+                    border: "2px solid #fff",
+                    boxShadow: "0 0 0 2px #98433e, 0 1px 4px rgba(0,0,0,.5)",
+                    pointerEvents: "none",
+                  },
+                })
+              ),
+              h(
+                "div",
+                { style: { fontSize: ".78rem", color: "#84817a", marginTop: ".5rem", maxWidth: "420px" } },
+                "Toca o haz clic sobre la foto para mover el punto. Lo que queda DENTRO del recuadro punteado es lo que se ve en la portada y en las grillas cuadradas — lo de afuera se recorta."
+              ),
+              h(
+                "div",
+                { style: { fontSize: ".78rem", color: "#84817a", marginTop: ".25rem" } },
+                "Si acabas de cambiar la foto de portada, guarda, sal de esta ficha y vuelve a entrar — así el encuadre carga la foto nueva."
+              )
+            );
+          },
+        });
+        CMS.registerWidget("focuspoint", FocusPointControl);
+      })();
 
       // Tope de 10MB por archivo — generoso para una foto profesional bien exportada,
       // pero bloquea con un aviso claro los excesos tipo TIFF/RAW-casi-sin-comprimir que
@@ -1147,6 +1275,13 @@ img{max-width:100%;}
                   fields: [
                     { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
                     {
+                      label: "Encuadre del recorte cuadrado",
+                      name: "focus",
+                      widget: "focuspoint",
+                      required: false,
+                      hint: "La portada se recorta a un cuadrado en la home y en los listados. Toca la foto de arriba para marcar qué parte no se debe cortar.",
+                    },
+                    {
                       label: "Descripción para lectores de pantalla",
                       name: "alt",
                       widget: "string",
@@ -1167,6 +1302,21 @@ img{max-width:100%;}
                   hint: "Mínimo 1 foto. Formato JPG o PNG — no HEIC, no se ve en la mayoría de navegadores. Sube fotos verticales u horizontales de buena resolución (mínimo ~1500px de ancho) — evita capturas de pantalla o fotos muy comprimidas. No hace falta subir el archivo original de la cámara sin comprimir: unos pocos MB por foto está bien.",
                   fields: [
                     { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
+                    {
+                      label: "Encuadre en la grilla (recorte cuadrado)",
+                      name: "focus",
+                      widget: "select",
+                      required: false,
+                      default: "50% 50%",
+                      options: [
+                        { label: "Centrado (por defecto)", value: "50% 50%" },
+                        { label: "Arriba — si se corta la cabeza", value: "50% 0%" },
+                        { label: "Abajo", value: "50% 100%" },
+                        { label: "Izquierda", value: "0% 50%" },
+                        { label: "Derecha", value: "100% 50%" },
+                      ],
+                      hint: "La grilla y la home recortan esta foto a un cuadrado. Si el recorte centrado corta algo importante, elegí hacia qué lado mover el recorte — se ve reflejado al instante en la vista previa.",
+                    },
                     {
                       label: "Descripción para lectores de pantalla",
                       name: "alt",
@@ -1220,6 +1370,13 @@ img{max-width:100%;}
                   fields: [
                     { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
                     {
+                      label: "Encuadre del recorte cuadrado",
+                      name: "focus",
+                      widget: "focuspoint",
+                      required: false,
+                      hint: "La portada se recorta a un cuadrado en la home y en los listados. Toca la foto de arriba para marcar qué parte no se debe cortar.",
+                    },
+                    {
                       label: "Descripción para lectores de pantalla",
                       name: "alt",
                       widget: "string",
@@ -1240,6 +1397,21 @@ img{max-width:100%;}
                   hint: "Mínimo 1 foto. Formato JPG o PNG — no HEIC, no se ve en la mayoría de navegadores. Sube fotos verticales u horizontales de buena resolución (mínimo ~1500px de ancho) — evita capturas de pantalla o fotos muy comprimidas. No hace falta subir el archivo original de la cámara sin comprimir: unos pocos MB por foto está bien.",
                   fields: [
                     { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
+                    {
+                      label: "Encuadre en la grilla (recorte cuadrado)",
+                      name: "focus",
+                      widget: "select",
+                      required: false,
+                      default: "50% 50%",
+                      options: [
+                        { label: "Centrado (por defecto)", value: "50% 50%" },
+                        { label: "Arriba — si se corta la cabeza", value: "50% 0%" },
+                        { label: "Abajo", value: "50% 100%" },
+                        { label: "Izquierda", value: "0% 50%" },
+                        { label: "Derecha", value: "100% 50%" },
+                      ],
+                      hint: "La grilla y la home recortan esta foto a un cuadrado. Si el recorte centrado corta algo importante, elegí hacia qué lado mover el recorte — se ve reflejado al instante en la vista previa.",
+                    },
                     {
                       label: "Descripción para lectores de pantalla",
                       name: "alt",

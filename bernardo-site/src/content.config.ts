@@ -8,6 +8,11 @@ const image = () =>
     credit: z.string().optional(),
     place: z.string().optional(),
     year: z.string().optional(),
+    // "X% Y%" en formato CSS object-position — dónde centrar el recorte cuadrado
+    // de esta foto en la home/grillas. Sin valor = centrado (comportamiento de
+    // siempre). Lo llena el panel /admin (encuadre visual en cover, selector de
+    // posición en las fotos de la galería) — 3-sep-2026, a pedido de Ramón.
+    focus: z.string().optional(),
   });
 
 // Esquema compartido: ambas colecciones aceptan opcionalmente cliente y

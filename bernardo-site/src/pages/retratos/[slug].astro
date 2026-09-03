@@ -42,7 +42,7 @@ const nextEntry = allEntries[currentIndex + 1];
 	<div class="gallery">
 		{images.map((img, i) => (
 			<a class="card" href={`#foto-${i}`}>
-				<div class="photo"><Image src={img.src} alt={img.alt} width={828} quality={80} /></div>
+				<div class="photo" style={img.focus ? `--focus:${img.focus}` : undefined}><Image src={img.src} alt={img.alt} width={828} quality={80} /></div>
 				{(img.place || img.year || img.credit) && (
 					<div class="cap">
 						<span>{img.place}</span>
