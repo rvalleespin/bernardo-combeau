@@ -1,0 +1,33 @@
+---
+export const prerender = true;
+
+import Layout from '../../layouts/Layout.astro';
+import ModeloHeader from '../../components/modelo/ModeloHeader.astro';
+import VideoGrid from '../../components/modelo/VideoGrid.astro';
+import nav from '../../data/nav.json';
+import { comerciales, secciones } from '../../lib/modelo.js';
+
+// Mismo criterio que la portada: mientras "Modelo" no tenga título en el
+// menú, la sección está en obra y no se ofrece a buscadores.
+const enObra = !(nav.modelo && nav.modelo.trim());
+---
+
+<Layout title="Bernardo Combeau — Commercials" description="Commercial campaigns featuring Bernardo Combeau, model based in Santiago, Chile." noindex={enObra}>
+	<div class="modelo">
+		<ModeloHeader secciones={secciones} />
+
+		<VideoGrid titulo="Commercials" videos={comerciales} />
+
+		<p class="volver"><a href="/modelo/">← Model</a></p>
+	</div>
+</Layout>
+
+<style>
+	.modelo{ --mp: #ffffff; --mi: #111110; --mm: #84817a; --ml: #e7e4dd;
+		background:var(--mp); color:var(--mi); font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+		min-height:100vh; }
+	:target{ scroll-margin-top:6.5rem; }
+	.volver{ padding:0 clamp(1.4rem,5vw,4rem) clamp(2.6rem,6vw,4.5rem); }
+	.volver a{ color:var(--mm); text-decoration:none; font-size:.82rem; letter-spacing:.03em; }
+	.volver a:hover, .volver a:focus-visible{ color:var(--mi); }
+</style>

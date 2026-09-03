@@ -1,0 +1,33 @@
+---
+// Encabezado fijo compartido por las tres páginas de Modelo (portada, Motion,
+// Commercials): mismo nombre, mismo menú, mismo link de vuelta a Photography.
+// `secciones` ya trae las URLs correctas para cada ítem (ver src/lib/modelo.js).
+const { secciones = [] } = Astro.props;
+---
+
+<header class="mhead">
+	<div class="mhead-marca">
+		<span class="wordmark">Bernardo Combeau <i aria-hidden="true">|</i> <em>Model</em></span>
+		<nav class="mnav" aria-label="Sections">
+			{secciones.map((s) => <a href={s.href}>{s.label}</a>)}
+		</nav>
+	</div>
+	<a class="back" href="/">← Photography</a>
+</header>
+
+<style>
+	.mhead{ position:sticky; top:0; z-index:10; background:var(--mp);
+		display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:.5rem 1.2rem;
+		padding:.9rem clamp(1.2rem,4vw,3rem); border-bottom:1px solid var(--ml); }
+	.mhead .wordmark{ display:block; font-size:.9rem; font-weight:600; letter-spacing:.18em;
+		text-transform:uppercase; color:var(--mi); }
+	.mhead .wordmark i{ font-style:normal; color:var(--ml); margin:0 .35em; }
+	.mhead .wordmark em{ font-style:normal; color:var(--mm); }
+	.mhead .back{ color:var(--mm); text-decoration:none; font-size:.72rem; letter-spacing:.14em;
+		text-transform:uppercase; padding-top:.15rem; white-space:nowrap; }
+
+	.mnav{ display:flex; flex-wrap:wrap; gap:.35rem 1.1rem; margin-top:.45rem; }
+	.mnav a{ color:var(--mm); text-decoration:none; font-size:.68rem; letter-spacing:.16em;
+		text-transform:uppercase; padding:.15rem 0; border-bottom:1px solid transparent; }
+	.mnav a:hover, .mnav a:focus-visible{ color:var(--mi); border-bottom-color:var(--mi); }
+</style>
