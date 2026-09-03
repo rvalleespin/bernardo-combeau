@@ -1,6 +1,6 @@
 ---
 title: Modelos
-year: 2022-2026
+year: 2022–2026
 excerpt: Models and wannabe models
 order: 2
 cover:

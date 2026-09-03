@@ -1,6 +1,6 @@
 ---
 title: Retratos masculinos
-year: 2022-2026
+year: 2022–2026
 excerpt: Selección de retratos de hombre
 order: 5
 cover:

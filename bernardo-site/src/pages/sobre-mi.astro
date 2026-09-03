@@ -17,13 +17,15 @@ import sobremi from '../data/sobremi.json';
 	<div class="page-head"><h2>Sobre mí</h2></div>
 	<div class="bio-grid">
 		{sobremi.foto ? (
-			<div class="photo"><Image src={sobremi.foto} alt="Bernardo Combeau" width={800} quality={80} /></div>
+			<div class="photo"><Image src={sobremi.foto} alt="Bernardo Combeau" width={828} quality={80} /></div>
 		) : (
 			<div class="photo placeholder"><span>[ foto de Bernardo — la está gestionando junto con las de estudio ]</span></div>
 		)}
 		<div class="bio">
 			<p>{sobremi.parrafo1}</p>
-			<p style="margin-top:1.1rem;">{sobremi.parrafo2}</p>
+			{sobremi.parrafo2 && sobremi.parrafo2.trim().length > 1 && (
+				<p style="margin-top:1.1rem;">{sobremi.parrafo2}</p>
+			)}
 		</div>
 	</div>
 	<Footer />

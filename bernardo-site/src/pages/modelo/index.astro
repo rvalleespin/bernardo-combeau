@@ -140,7 +140,7 @@ const secciones = [
 		    tapaba sin agregar nada. */}
 		{heroFoto && (
 			<div class="mhero">
-				<Image src={heroFoto} alt="Bernardo Combeau" width={1800} quality={82} loading="eager" fetchpriority="high" />
+				<Image src={heroFoto} alt="Bernardo Combeau" width={1920} quality={82} loading="eager" fetchpriority="high" />
 			</div>
 		)}
 
@@ -202,7 +202,7 @@ const secciones = [
 								{(job.fotos || []).map((img, n) => (
 									<button class="photo" type="button" aria-haspopup="dialog" data-oculta={n > 0 ? '' : undefined}
 										data-lb={JSON.stringify(img.lb)} data-alt={img.alt || job.nombre}>
-										<Image src={img.src} alt={img.alt || job.nombre} width={1600} quality={82} />
+										<Image src={img.src} alt={img.alt || job.nombre} width={1920} quality={82} />
 									</button>
 								))}
 							</div>
@@ -267,7 +267,7 @@ const secciones = [
 							data-lb={JSON.stringify(img.lb)} data-alt={img.alt || 'Bernardo Combeau'}>
 							{/* El cuadrado recorta arriba y abajo. Con "posicion" se elige qué
 							    parte se conserva, para que no quede cortada la cabeza. */}
-							<Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={600} quality={80}
+							<Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={640} quality={80}
 								style={img.posicion ? `object-position:50% ${img.posicion}` : undefined} />
 						</button>
 					))}

@@ -1,6 +1,6 @@
 ---
 title: Erotic
-year: 2022-2026
+year: 2022–2026
 excerpt: Desnudos mas no porno
 order: 4
 cover:
