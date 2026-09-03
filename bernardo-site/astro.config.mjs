@@ -25,6 +25,11 @@ export default defineConfig({
   // 27 jul 2026: Series/Encargos se reestructuraron en Retratos/Proyectos (pedido de
   // Bernardo). Estas redirecciones evitan que un link ya compartido a las rutas viejas
   // quede muerto — cada entrada se redirige a la colección a la que se movió.
+  // 3 sep 2026: dos entradas tenían slug de placeholder ("nombre-de-la-serie",
+  // "aquí-estoy-creando-algo-nuevo") con contenido real detrás — se renombraron a
+  // "actores" y "la-caida" (SPL-COT-2026-014, Parte 1). Se agregan redirects desde
+  // ambas rutas viejas, y se actualiza el destino final de los redirects heredados de
+  // /series que ya apuntaban a esas dos.
   redirects: {
     '/series': '/retratos',
     '/encargos': '/proyectos',
@@ -39,10 +44,6 @@ export default defineConfig({
     '/encargos/encargo-taburete-estudio': '/retratos/encargo-taburete-estudio',
     '/encargos/encargo-piscina-corbata': '/proyectos/encargo-piscina-corbata',
 
-    // 3 sep 2026 (revisión Parte 1): "nombre-de-la-serie" y "aquí-estoy-creando-algo-nuevo"
-    // eran los slugs por defecto del CMS, nunca renombrados — contenido real y publicado,
-    // solo con una URL poco profesional. Se renombran los archivos y se redirige la URL
-    // vieja por si ya quedó indexada o compartida.
     '/retratos/nombre-de-la-serie': '/retratos/actores',
     '/proyectos/aquí-estoy-creando-algo-nuevo': '/proyectos/la-caida',
 

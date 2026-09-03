@@ -9,23 +9,23 @@ cover:
   alt: Matías Massu recreando la escena del crimen de Psycho (1960), bajo luz roja
 images:
   - src: /uploads/img_9736.jpg
-    alt: "1"
+    alt: Retrato con capucha bajo luz verde, expresión tensa
   - src: /uploads/img_0116.jpg
-    alt: "2"
+    alt: Pasillo de motel en penumbra, letrero de neón "Motel"
   - src: /uploads/img_9799.jpg
-    alt: "3"
+    alt: Reflejo en el espejo de un baño con azulejos, tocándose el rostro
   - src: /uploads/img_9820.jpg
-    alt: "4"
+    alt: Piernas descalzas en un baño, chaqueta sobre el estanque del inodoro
   - src: /uploads/img_9904.jpg
-    alt: "5"
+    alt: En la ducha, cabeza hacia atrás bajo el agua
   - src: /uploads/proyecto_20251106_0002-copia.jpg
-    alt: "6"
+    alt: Silueta encapuchada empuñando un cuchillo, imagen desenfocada
   - src: /uploads/img_9933.jpg
-    alt: "7"
+    alt: Gritando en la ducha, con la mano extendida hacia la cámara
   - src: /uploads/img_9952.jpg
-    alt: "8"
+    alt: Cuchillo apuntando al hombro, expresión de terror bajo luz roja
   - src: /uploads/img_9966.jpg
-    alt: "9"
+    alt: Contra un muro de azulejos con una mancha roja detrás, luz verde
   - src: /uploads/img_9967.jpg
-    alt: "10"
+    alt: Primer plano tendido en el piso con reflejo, iluminación roja
 ---

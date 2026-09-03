@@ -28,20 +28,22 @@ const currentIndex = allEntries.findIndex((e) => e.id === entry.id);
 const prevEntry = allEntries[currentIndex - 1];
 const nextEntry = allEntries[currentIndex + 1];
 
-// ImageObject por foto del proyecto: la entidad que faltaba (revisión del 3 sep 2026).
-const imagesJsonLd = {
+// ImageObject por foto real de la galería — mismos datos ya presentes en el
+// frontmatter (alt, lugar, año, crédito), nada inventado.
+const imageObjects = images.map((img) => ({
   '@context': 'https://schema.org',
-  '@graph': images.map((img) => ({
-    '@type': 'ImageObject',
-    contentUrl: String(new URL(img.src, Astro.site)),
-    description: img.alt,
-    creator: { '@id': 'https://bernardocombeau.cl/#bernardo' },
-  })),
-};
+  '@type': 'ImageObject',
+  contentUrl: new URL(img.src, Astro.site).toString(),
+  name: img.alt,
+  description: img.alt,
+  ...(img.place && { contentLocation: img.place }),
+  ...(img.year && { datePublished: img.year }),
+  creator: { '@id': new URL('/#persona', Astro.site).toString() },
+  copyrightHolder: { '@id': new URL('/#persona', Astro.site).toString() },
+}));
 ---
 
-<Layout title={`${title} — Bernardo Combeau`} description={excerpt} image={cover.src}>
-	<script type="application/ld+json" set:html={JSON.stringify(imagesJsonLd)} />
+<Layout title={`${title} — Bernardo Combeau`} description={excerpt} image={cover.src} jsonLd={imageObjects}>
 	<Nav active="/proyectos" />
 
 	<p class="crumb"><a href="/proyectos">Proyectos /</a></p>
