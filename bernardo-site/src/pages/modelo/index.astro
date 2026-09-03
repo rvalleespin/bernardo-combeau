@@ -62,19 +62,25 @@ const reelFondo = !reel
 // La franja aparece solo si hay algo que mostrar: mp4 propio o reel.
 const hayFranja = Boolean(videoFondoUrl || reelFondo);
 
-// Comerciales: un cuadrito por video, que redirige a YouTube (no se
+// Grilla de video: un cuadrito por video, que redirige a YouTube (no se
 // embebe). La miniatura sale del thumbnail público de YouTube — no hace
 // falta que Bernardo suba una imagen aparte. Vimeo no tiene una miniatura
 // pública así de simple, así que esos quedan sin imagen (se ve el ícono de
-// play solo) en vez de inventar una.
-const comerciales = (motion.comerciales || [])
-	.map((c) => ({ ...c, parsed: parseReel(c.url) }))
-	.filter((c) => c.nombre && c.parsed)
-	.map((c) => ({
-		nombre: c.nombre,
-		url: c.url,
-		thumb: c.parsed.tipo === 'youtube' ? `https://img.youtube.com/vi/${c.parsed.id}/hqdefault.jpg` : null,
-	}));
+// play solo) en vez de inventar una. Mismo mecanismo para "Motion" y para
+// "Commercials" — son dos listas de video separadas, no una sola.
+function gridDeVideos(lista) {
+	return (lista || [])
+		.map((c) => ({ ...c, parsed: parseReel(c.url) }))
+		.filter((c) => c.nombre && c.parsed)
+		.map((c) => ({
+			nombre: c.nombre,
+			url: c.url,
+			thumb: c.parsed.tipo === 'youtube' ? `https://img.youtube.com/vi/${c.parsed.id}/hqdefault.jpg` : null,
+		}));
+}
+
+const motionVideos = gridDeVideos(motion.videos);
+const comerciales = gridDeVideos(motion.comerciales);
 
 const motionPosterSrc = motionPoster
 	? (await getImage({ src: motionPoster, width: 1920, quality: 70 })).src
@@ -147,12 +153,10 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 const secciones = [
 	galeria?.length && { href: '#book', label: 'Book' },
 	selectedWork?.length && { href: '#work', label: 'Work' },
-	// El ancla apunta a lo primero que exista de verdad: si no hay franja de
-	// video, "#motion" no existe en el DOM y el enlace del menú quedaría muerto.
-	(hayFranja || reelEmbed || comerciales.length) && {
-		href: hayFranja ? '#motion' : comerciales.length ? '#commercials' : '#reel',
-		label: 'Motion',
-	},
+	// Motion y Commercials son dos secciones y dos botones separados — cada
+	// uno solo aparece si esa grilla tiene contenido de verdad.
+	motionVideos.length > 0 && { href: '#motion-videos', label: 'Motion' },
+	comerciales.length > 0 && { href: '#commercials', label: 'Commercials' },
 	polaroids?.length && { href: '#polaroids', label: 'Polaroids' },
 	detailGroups.length && { href: '#details', label: 'Details' },
 	{ href: '#booking', label: 'Booking' },
@@ -275,17 +279,37 @@ const secciones = [
 				</div>
 				<div class="motion-scrim"></div>
 				<div class="motion-contenido">
-					<h2 id="motion-titulo">{motionTitulo || 'Motion / Commercials'}</h2>
+					{/* El título repetía lo mismo que ya dicen los botones ("Motion",
+					    "Commercials") una línea más abajo — se saca visualmente. Sigue
+					    en el DOM (oculto, mismo truco que .visor-sr) para que un lector
+					    de pantalla anuncie de qué trata la sección. */}
+					<h2 id="motion-titulo" class="sr-only">{motionTitulo || 'Motion / Commercials'}</h2>
+					{/* Dos accesos separados, cada uno solo si tiene contenido real
+					    abajo — nunca a un ancla muerta. "Stills" se sacó: ya no hace
+					    falta, Book y Work tienen su propio link en el menú de arriba. */}
 					<div class="motion-acciones">
-						<a class="btn" href="#book">Stills</a>
-						{/* "Motion" apunta a los comerciales si ya hay alguno cargado;
-						    si todavia no, cae al reel unico como antes. */}
-						{comerciales.length > 0
-							? <a class="btn" href="#commercials">Motion</a>
-							: reelEmbed && <a class="btn" href="#reel">Motion</a>}
+						{motionVideos.length > 0 && <a class="btn" href="#motion-videos">Motion</a>}
+						{comerciales.length > 0 && <a class="btn" href="#commercials">Commercials</a>}
 					</div>
 				</div>
 				<button class="motion-pausa" type="button" hidden>Pause</button>
+			</section>
+		)}
+
+		{motionVideos.length > 0 && (
+			<section class="commercials" id="motion-videos">
+				<h2>Motion</h2>
+				<div class="commercials-grid">
+					{motionVideos.map((c) => (
+						<a class="commercial-tile" href={c.url} target="_blank" rel="noopener">
+							<div class="thumb">
+								{c.thumb && <img src={c.thumb} alt="" loading="lazy" width="480" height="270" />}
+								<div class="play" aria-hidden="true"></div>
+							</div>
+							<p class="nombre">{c.nombre}</p>
+						</a>
+					))}
+				</div>
 			</section>
 		)}
 
@@ -768,6 +792,9 @@ const secciones = [
 	.motion-contenido h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
 		font-size:clamp(1.5rem,3vw,2.4rem); letter-spacing:-.02em; line-height:1.1;
 		margin:0 0 clamp(1.2rem,2.5vw,1.8rem); color:#fff; text-shadow:0 1px 14px rgba(0,0,0,.45); }
+	/* Visible solo para lectores de pantalla — mismo truco que .visor-sr. */
+	.sr-only{ position:absolute; width:1px; height:1px; margin:-1px; padding:0; border:0;
+		overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
 	.motion-acciones{ display:flex; gap:clamp(.8rem,2vw,1.25rem); justify-content:center; flex-wrap:wrap; }
 	/* Ancho mínimo igual en los dos (140px, medido en jason-mcalister.com): es
 	   lo que hace que el par se lea como un juego apareado y no como dos
