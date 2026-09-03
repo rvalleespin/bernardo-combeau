@@ -6,6 +6,7 @@ order: 6
 cover:
   src: /uploads/pazi.jpg
   alt: Retrato femenino con luz lateral dramática, cabello suelto
+  focus: 47% 27%
 images:
   - src: /uploads/emilia-vial-3.jpg
     alt: Emilia
