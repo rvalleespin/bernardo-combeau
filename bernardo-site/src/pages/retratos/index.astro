@@ -16,7 +16,7 @@ const entries = (await getCollection('retratos')).sort((a, b) => a.data.order - 
 	<div class="grid">
 		{entries.map((entry) => (
 			<a class="card" href={`/retratos/${entry.id}`}>
-				<div class="photo" style={[entry.data.cover.focus && `--focus:${entry.data.cover.focus}`, entry.data.cover.zoom && `--zoom:${entry.data.cover.zoom}`].filter(Boolean).join(';') || undefined}><Image src={entry.data.cover.src} alt={entry.data.cover.alt} width={828} quality={80} /></div>
+				<div class="photo" style={[entry.data.cover.focus && `--focus:${entry.data.cover.focus}`, entry.data.cover.zoom && `--zoom:${entry.data.cover.zoom}`, entry.data.cover.flip && '--flip:-1'].filter(Boolean).join(';') || undefined}><Image src={entry.data.cover.src} alt={entry.data.cover.alt} width={828} quality={80} /></div>
 				<div class="cap2"><span class="t">{entry.data.title}</span><span class="y">{entry.data.year}</span></div>
 			</a>
 		))}

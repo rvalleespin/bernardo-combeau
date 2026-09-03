@@ -17,6 +17,9 @@ const image = () =>
     // para cuando el encuadre no alcanza porque la foto es de cuerpo completo y
     // el sujeto se ve chico. Mismo campo/mecanismo que ya usa Modelo.
     zoom: z.string().optional(),
+    // Voltea la miniatura en espejo (horizontal) — la foto original y la del
+    // visor de tamaño completo no cambian. A pedido de Ramón (3-sep-2026).
+    flip: z.boolean().optional(),
   });
 
 // Esquema compartido: ambas colecciones aceptan opcionalmente cliente y

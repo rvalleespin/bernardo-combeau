@@ -271,16 +271,17 @@ img{max-width:100%;}
           return typeof v.toJS === "function" ? v.toJS() : v;
         }
 
-        function photoBox(getAsset, path, alt, className, focus, zoom) {
+        function photoBox(getAsset, path, alt, className, focus, zoom, flip) {
           var cls = "photo" + (className ? " " + className : "");
           if (!path) {
             return h("div", { className: cls + " placeholder" }, h("span", {}, "[ sin foto ]"));
           }
           var asset = getAsset(path);
-          var style = focus || zoom ? {} : undefined;
+          var style = focus || zoom || flip ? {} : undefined;
           if (style) {
             if (focus) style["--focus"] = focus;
             if (zoom) style["--zoom"] = zoom;
+            if (flip) style["--flip"] = -1;
           }
           return h("div", { className: cls, style: style }, h("img", { src: asset ? asset.toString() : "", alt: alt || "" }));
         }
@@ -512,7 +513,7 @@ img{max-width:100%;}
                               h("span", {}, [img.year, img.credit].filter(Boolean).join(" · "))
                             )
                           : null;
-                      return h("div", { key: i, className: "card" }, photoBox(getAsset, img.src, img.alt, null, img.focus, img.zoom), cap);
+                      return h("div", { key: i, className: "card" }, photoBox(getAsset, img.src, img.alt, null, img.focus, img.zoom, img.flip), cap);
                     })
                   ),
                   hasRealPublication
@@ -973,6 +974,21 @@ img{max-width:100%;}
         };
       }
 
+      // A pedido de Ramón (3-sep-2026): volteo horizontal de la miniatura, para cuando
+      // la persona queda "mirando hacia afuera" de la grilla en vez de hacia el
+      // contenido. Mismo criterio que Zoom: solo afecta la miniatura recortada, la
+      // foto que abre el visor a tamaño completo sigue siendo la original sin voltear.
+      function flipField() {
+        return {
+          label: "Voltear en espejo (horizontal)",
+          name: "flip",
+          widget: "boolean",
+          required: false,
+          default: false,
+          hint: "Solo cambia cómo se ve en la miniatura (home y grillas) — la foto original, y la que se abre en grande, no se voltea.",
+        };
+      }
+
       CMS.init({
         config: {
           locale: "es",
@@ -1387,6 +1403,7 @@ img{max-width:100%;}
                       hint: "La portada se recorta a un cuadrado en la home y en los listados. Toca la foto de arriba para marcar qué parte no se debe cortar.",
                     },
                     zoomField(),
+                    flipField(),
                     {
                       label: "Descripción para lectores de pantalla",
                       name: "alt",
@@ -1424,6 +1441,7 @@ img{max-width:100%;}
                       hint: "La grilla y la home recortan esta foto a un cuadrado. Si el recorte centrado corta algo importante, elegí hacia qué lado mover el recorte — se ve reflejado al instante en la vista previa.",
                     },
                     zoomField(),
+                    flipField(),
                     {
                       label: "Descripción para lectores de pantalla",
                       name: "alt",
@@ -1485,6 +1503,7 @@ img{max-width:100%;}
                       hint: "La portada se recorta a un cuadrado en la home y en los listados. Toca la foto de arriba para marcar qué parte no se debe cortar.",
                     },
                     zoomField(),
+                    flipField(),
                     {
                       label: "Descripción para lectores de pantalla",
                       name: "alt",
@@ -1522,6 +1541,7 @@ img{max-width:100%;}
                       hint: "La grilla y la home recortan esta foto a un cuadrado. Si el recorte centrado corta algo importante, elegí hacia qué lado mover el recorte — se ve reflejado al instante en la vista previa.",
                     },
                     zoomField(),
+                    flipField(),
                     {
                       label: "Descripción para lectores de pantalla",
                       name: "alt",

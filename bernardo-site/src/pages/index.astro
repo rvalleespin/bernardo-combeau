@@ -53,7 +53,7 @@ const proyectosEntries = (await getCollection('proyectos')).sort((a, b) => a.dat
 		<div class="grid">
 			{retratosEntries.map((item) => (
 				<a class="card" href={item.href}>
-					<div class="photo" style={[item.cover.focus && `--focus:${item.cover.focus}`, item.cover.zoom && `--zoom:${item.cover.zoom}`].filter(Boolean).join(';') || undefined}><Image src={item.cover.src} alt={item.cover.alt} width={828} quality={80} /></div>
+					<div class="photo" style={[item.cover.focus && `--focus:${item.cover.focus}`, item.cover.zoom && `--zoom:${item.cover.zoom}`, item.cover.flip && '--flip:-1'].filter(Boolean).join(';') || undefined}><Image src={item.cover.src} alt={item.cover.alt} width={828} quality={80} /></div>
 					<div class="cap2"><span class="t">{item.title}</span><span class="y">{item.year}</span></div>
 				</a>
 			))}
@@ -65,7 +65,7 @@ const proyectosEntries = (await getCollection('proyectos')).sort((a, b) => a.dat
 		<div class="grid">
 			{proyectosEntries.map((item) => (
 				<a class="card" href={item.href}>
-					<div class="photo" style={[item.cover.focus && `--focus:${item.cover.focus}`, item.cover.zoom && `--zoom:${item.cover.zoom}`].filter(Boolean).join(';') || undefined}><Image src={item.cover.src} alt={item.cover.alt} width={828} quality={80} /></div>
+					<div class="photo" style={[item.cover.focus && `--focus:${item.cover.focus}`, item.cover.zoom && `--zoom:${item.cover.zoom}`, item.cover.flip && '--flip:-1'].filter(Boolean).join(';') || undefined}><Image src={item.cover.src} alt={item.cover.alt} width={828} quality={80} /></div>
 					<div class="cap2"><span class="t">{item.title}</span><span class="y">{item.year}</span></div>
 				</a>
 			))}
