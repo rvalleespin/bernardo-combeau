@@ -279,7 +279,11 @@ const secciones = [
 				</div>
 				<div class="motion-scrim"></div>
 				<div class="motion-contenido">
-					<h2 id="motion-titulo">{motionTitulo || 'Motion / Commercials'}</h2>
+					{/* El título repetía lo mismo que ya dicen los botones ("Motion",
+					    "Commercials") una línea más abajo — se saca visualmente. Sigue
+					    en el DOM (oculto, mismo truco que .visor-sr) para que un lector
+					    de pantalla anuncie de qué trata la sección. */}
+					<h2 id="motion-titulo" class="sr-only">{motionTitulo || 'Motion / Commercials'}</h2>
 					{/* Dos accesos separados, cada uno solo si tiene contenido real
 					    abajo — nunca a un ancla muerta. "Stills" se sacó: ya no hace
 					    falta, Book y Work tienen su propio link en el menú de arriba. */}
@@ -788,6 +792,9 @@ const secciones = [
 	.motion-contenido h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
 		font-size:clamp(1.5rem,3vw,2.4rem); letter-spacing:-.02em; line-height:1.1;
 		margin:0 0 clamp(1.2rem,2.5vw,1.8rem); color:#fff; text-shadow:0 1px 14px rgba(0,0,0,.45); }
+	/* Visible solo para lectores de pantalla — mismo truco que .visor-sr. */
+	.sr-only{ position:absolute; width:1px; height:1px; margin:-1px; padding:0; border:0;
+		overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
 	.motion-acciones{ display:flex; gap:clamp(.8rem,2vw,1.25rem); justify-content:center; flex-wrap:wrap; }
 	/* Ancho mínimo igual en los dos (140px, medido en jason-mcalister.com): es
 	   lo que hace que el par se lea como un juego apareado y no como dos
