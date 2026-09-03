@@ -52,10 +52,12 @@
       /* Dirección B — jerarquía visual en la sidebar. Decap no soporta agrupar
          colecciones de forma nativa (confirmado) — nada de fingir una feature
          que no existe. Lo que sí es 100% CSS, sin tocar el DOM que Decap genera:
-         una línea separadora entre "páginas" (Home..Contacto) y "galerías"
-         (Retratos, Proyectos). Depende del orden fijo de "collections" más abajo
-         — con "Modelo" ya afuera (Dirección C), el 6º ítem es Retratos. */
-      [class*="CollectionContainer"] a[class*="SidebarNavLink"]:nth-of-type(6) {
+         una línea separadora entre "páginas" (Home..Modelo, todas de un solo
+         archivo o set fijo de archivos) y "galerías" (Retratos, Proyectos,
+         colecciones donde se crean entradas nuevas). Depende del orden fijo de
+         "collections" más abajo — Modelo vuelve a estar adentro (ya no aplica
+         la Dirección C), así que el 7º ítem es Retratos. */
+      [class*="CollectionContainer"] a[class*="SidebarNavLink"]:nth-of-type(7) {
         margin-top: 1rem !important;
         padding-top: 1rem !important;
         border-top: 1px solid var(--bc-line) !important;
@@ -1066,13 +1068,13 @@ img{max-width:100%;}
                 },
               ],
             },
-            /* Dirección C (revision-panel-admin-bernardo.md, 3-sep-2026): "Modelo" se saca
-               de la sidebar mientras siga sin contenido real y sin publicar en el sitio
-               (nav.json trae "modelo": "" a propósito). Mejor 7 colecciones que funcionan
-               que 8 con una en blanco y sin vista previa. Los archivos de datos siguen
-               intactos en el repo — para reactivarla, solo hay que descomentar este bloque
-               (y, si se decide construirle vista previa en ese momento, agregar sus
-               CMS.registerPreviewTemplate — hoy "modelo" es la única colección sin una).
+            // Dirección C (revision-panel-admin-bernardo.md, 3-sep-2026) la sacó de la
+            // sidebar mientras estuvo sin contenido real y sin publicar. Ya no aplica:
+            // nav.json trae "modelo": "Modelo" (publicada) y la sección se ha seguido
+            // desarrollando activamente en main desde entonces (encuadre, zoom, Motion).
+            // Ocultarla la escondería del propio Bernardo. Sigue siendo la única colección
+            // sin CMS.registerPreviewTemplate — ese gap del diagnóstico original sigue
+            // real y sin resolver, es trabajo aparte.
             {
               name: "modelo",
               label: "Modelo",
@@ -1316,7 +1318,6 @@ img{max-width:100%;}
                 },
               ],
             },
-            */
             {
               name: "retratos",
               label: "Retratos",
