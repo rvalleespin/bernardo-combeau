@@ -168,7 +168,11 @@ const secciones = [
 					{galeriaV.slice(0, 12).map((img, n) => (
 						<button class="photo" type="button" aria-haspopup="dialog" data-extra={n >= 4 ? '' : undefined}
 							data-lb={JSON.stringify(img.lb)} data-alt={img.alt || 'Bernardo Combeau'}>
-							<Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={1200} quality={80} />
+							{/* El 4/5 recorta poco arriba y abajo, pero igual puede cortar
+							    cabeza en una foto donde el sujeto queda muy arriba en el
+							    encuadre original. Mismo mecanismo que Polaroids. */}
+							<Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={1200} quality={80}
+								style={img.posicion ? `object-position:50% ${img.posicion}` : undefined} />
 						</button>
 					))}
 				</div>
@@ -202,7 +206,10 @@ const secciones = [
 								{(job.fotos || []).map((img, n) => (
 									<button class="photo" type="button" aria-haspopup="dialog" data-oculta={n > 0 ? '' : undefined}
 										data-lb={JSON.stringify(img.lb)} data-alt={img.alt || job.nombre}>
-										<Image src={img.src} alt={img.alt || job.nombre} width={1920} quality={82} />
+										{/* Solo la portada (n=0) se ve recortada — el resto vive oculta
+										    para el visor, que muestra la foto completa sin recorte. */}
+										<Image src={img.src} alt={img.alt || job.nombre} width={1920} quality={82}
+											style={img.posicion ? `object-position:50% ${img.posicion}` : undefined} />
 									</button>
 								))}
 							</div>
@@ -275,34 +282,38 @@ const secciones = [
 			</section>
 		)}
 
-		{detailGroups.length > 0 && (
-			<section class="stats" id="details">
-				<h2>Details</h2>
-				<div class="stat-cols">
-					{detailGroups.map((group) => (
-						<dl class="stat-col">
-							{group.map(([label, value]) => (
-								<div class="stat">
-									<dt>{label}</dt>
-									<dd>{value}</dd>
-								</div>
-							))}
-						</dl>
-					))}
-				</div>
-			</section>
-		)}
+		{/* Details y Booking comparten fila desde tablet: Details solo no llenaba
+		    el ancho (va left-aligned) y dejaba un vacío a la derecha. */}
+		<div class="details-booking">
+			{detailGroups.length > 0 && (
+				<section class="stats" id="details">
+					<h2>Details</h2>
+					<div class="stat-cols">
+						{detailGroups.map((group) => (
+							<dl class="stat-col">
+								{group.map(([label, value]) => (
+									<div class="stat">
+										<dt>{label}</dt>
+										<dd>{value}</dd>
+									</div>
+								))}
+							</dl>
+						))}
+					</div>
+				</section>
+			)}
 
-		<footer class="mfoot" id="booking">
-			<h2>Booking</h2>
-			{booking?.region && <p class="region">{booking.region}</p>}
-			<div class="contact-links">
-				{contacto.email && <a href={`mailto:${contacto.email}`}>{contacto.email}</a>}
-				{whatsappDigits && <a href={`https://wa.me/${whatsappDigits}`} target="_blank" rel="noopener">{contacto.whatsapp}</a>}
-				{booking?.instagram && <a href={`https://instagram.com/${booking.instagram.replace(/^@/, '')}`} target="_blank" rel="noopener">{booking.instagram}</a>}
-			</div>
-			<a class="back" href="/">← Photography</a>
-		</footer>
+			<footer class="mfoot" id="booking">
+				<h2>Booking</h2>
+				{booking?.region && <p class="region">{booking.region}</p>}
+				<div class="contact-links">
+					{contacto.email && <a href={`mailto:${contacto.email}`}>{contacto.email}</a>}
+					{whatsappDigits && <a href={`https://wa.me/${whatsappDigits}`} target="_blank" rel="noopener">{contacto.whatsapp}</a>}
+					{booking?.instagram && <a href={`https://instagram.com/${booking.instagram.replace(/^@/, '')}`} target="_blank" rel="noopener">{booking.instagram}</a>}
+				</div>
+				<a class="back" href="/">← Photography</a>
+			</footer>
+		</div>
 
 		<dialog class="visor" aria-label="Full size photo">
 			<figure class="visor-fig">
@@ -760,7 +771,27 @@ const secciones = [
 	.mfoot h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
 		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11; margin:0; color:var(--mm); }
 	.mfoot .region{ font-size:.85rem; letter-spacing:.05em; color:var(--mm); margin:0; }
-	.contact-links{ display:flex; gap:1.5rem; flex-wrap:wrap; justify-content:center; }
-	.contact-links a{ color:var(--mi); text-decoration:none; font-size:.9rem; border-bottom:1px solid var(--mm); }
+	.contact-links{ display:flex; gap:.9rem; flex-wrap:wrap; justify-content:center; }
+	/* Antes era solo texto con un subrayado fino: se leía como una caja de
+	   texto, no como algo que se puede tocar. Mismo trato que "Full book"
+	   (borde + fondo invertido al pasar el mouse), para que se lean como
+	   botones sin inventar un lenguaje visual nuevo en la página. */
+	.contact-links a{ display:inline-block; color:var(--mi); text-decoration:none; font-size:.82rem;
+		letter-spacing:.03em; border:1px solid var(--mi); padding:.65rem 1.3rem;
+		transition:background-color .2s ease, color .2s ease; }
+	.contact-links a:hover, .contact-links a:focus-visible{ background:var(--mi); color:var(--mp); }
 	.mfoot .back{ color:var(--mm); text-decoration:none; font-size:.82rem; margin-top:.6rem; }
+
+	/* Details no llena el ancho por sí solo (va left-aligned en 3 columnas
+	   compactas) y dejaba un vacío grande a la derecha. Desde tablet, Booking
+	   pasa a ocupar ese espacio al lado en vez de repetirse abajo. */
+	.details-booking{ display:flex; flex-direction:column; }
+	@media (min-width:760px){
+		.details-booking{ flex-direction:row; align-items:flex-start; justify-content:space-between; gap:clamp(2rem,5vw,4rem); }
+		.details-booking .stats{ flex:1 1 auto; padding-bottom:0; }
+		.details-booking .mfoot{ flex:0 0 auto; align-items:flex-start; text-align:left;
+			border-top:0; border-left:1px solid var(--ml);
+			padding-top:clamp(1.4rem,3vw,2.2rem); padding-bottom:0; padding-left:clamp(2rem,5vw,4rem); }
+		.details-booking .contact-links{ justify-content:flex-start; }
+	}
 </style>

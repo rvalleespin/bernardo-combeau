@@ -6,7 +6,8 @@
     },
     {
       "src": "/uploads/modelo-polaroid-elite-02.jpg",
-      "alt": "Bernardo Combeau — polaroid"
+      "alt": "Bernardo Combeau — polaroid",
+      "posicion": "0%"
     },
     {
       "src": "/uploads/modelo-polaroid-elite-03.jpg",
@@ -14,7 +15,8 @@
     },
     {
       "src": "/uploads/modelo-polaroid-elite-04.jpg",
-      "alt": "Bernardo Combeau — polaroid"
+      "alt": "Bernardo Combeau — polaroid",
+      "posicion": "0%"
     }
   ]
 }
