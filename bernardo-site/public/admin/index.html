@@ -600,12 +600,30 @@ img{max-width:100%;}
           return h("section", { className: "commercials" }, h("h1", {}, titulo), h("div", { className: "commercials-grid" }, real.map(videoTile)));
         }
 
-        var MotionPreview = createClass({
+        // registerPreviewTemplate() en una colección de varios archivos (Modelo) no está
+        // documentado con certeza — no hay ejemplo previo en este archivo de registrar por
+        // el nombre de un archivo individual ("modelo_motion") en vez del nombre de la
+        // colección ("modelo"). Para no depender de adivinar cuál usa Decap, este mismo
+        // componente se registra bajo LOS DOS nombres — y decide qué mostrar mirando qué
+        // campos tiene el entry de verdad (¿tiene "videos"/"comerciales"? es Motion — si no,
+        // no es una ficha para la que haya vista previa construida todavía). Así funciona
+        // sea cual sea la clave real, y de paso cualquier otra ficha de Modelo (Portada,
+        // Identity, etc. — siguen sin vista previa propia) cae en un aviso, no en el dump
+        // genérico de Decap.
+        var ModeloPreview = createClass({
           render: function () {
             try {
               var entry = this.props.entry;
               var videos = listField(entry, ["data", "videos"]);
               var comerciales = listField(entry, ["data", "comerciales"]);
+              var esMotion = entry.hasIn(["data", "videos"]) || entry.hasIn(["data", "comerciales"]);
+              if (!esMotion) {
+                return h(
+                  "div",
+                  { style: { padding: "2rem", color: "#84817a", fontSize: ".85rem" } },
+                  "Esta sección de Modelo todavía no tiene vista previa en vivo — los cambios se guardan igual, solo no hay cómo verlos acá todavía."
+                );
+              }
               var motionGrid = videoGrid("Motion", videos);
               var comercialesGrid = videoGrid("Commercials", comerciales);
               if (!motionGrid && !comercialesGrid) {
@@ -639,7 +657,8 @@ img{max-width:100%;}
         CMS.registerPreviewTemplate("contacto", ContactoPreview);
         CMS.registerPreviewTemplate("retratos", galleryPreview("/retratos", "Retratos"));
         CMS.registerPreviewTemplate("proyectos", galleryPreview("/proyectos", "Proyectos"));
-        CMS.registerPreviewTemplate("modelo_motion", MotionPreview);
+        CMS.registerPreviewTemplate("modelo", ModeloPreview);
+        CMS.registerPreviewTemplate("modelo_motion", ModeloPreview);
       })();
 
       // Traduce al español los textos propios de Decap (botones, confirmaciones, la
@@ -1221,9 +1240,10 @@ img{max-width:100%;}
             // sidebar mientras estuvo sin contenido real y sin publicar. Ya no aplica:
             // nav.json trae "modelo": "Modelo" (publicada) y la sección se ha seguido
             // desarrollando activamente en main desde entonces (encuadre, zoom, Motion).
-            // Ocultarla la escondería del propio Bernardo. Sigue siendo la única colección
-            // sin CMS.registerPreviewTemplate — ese gap del diagnóstico original sigue
-            // real y sin resolver, es trabajo aparte.
+            // Ocultarla la escondería del propio Bernardo. Motion/Commercials (más abajo)
+            // ya tiene su propia vista previa vía ModeloPreview; el resto de las fichas
+            // (Portada, Identity, etc.) sigue sin una construida, ModeloPreview les muestra
+            // un aviso en vez del dump genérico de Decap.
             {
               name: "modelo",
               label: "Modelo",
