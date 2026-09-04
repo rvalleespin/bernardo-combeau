@@ -214,6 +214,30 @@ img{max-width:100%;}
 .ext{ padding:1.6rem clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); text-align:right; }
 .ext a{ font-size:.78rem; color:var(--ink); text-decoration:none; border:1px solid var(--line); padding:.35rem .7rem; border-radius:1px; }
 
+/* Modelo — Motion/Commercials (vista previa de "5. Motion / Commercials").
+   Copiado a mano de VideoGrid.astro/motion.astro: esas reglas viven en un
+   <style> con scope de Astro (clases con hash al construir el sitio), así
+   que no llegan solas hasta acá — quedan afuera de la sincronía automática
+   del resto de este bloque, hay que mantenerlas a mano si el componente real
+   cambia. */
+.modelo-preview{ --mp:#ffffff; --mi:#111110; --mm:#84817a; --ml:#e7e4dd;
+  background:var(--mp); color:var(--mi); font-family:-apple-system,BlinkMacSystemFont,sans-serif; }
+.modelo-preview .commercials{ padding:clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem); }
+.modelo-preview .commercials h1{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
+  font-size:1.45rem; letter-spacing:-.02em; line-height:1.11; margin:0 0 clamp(1.4rem,3vw,2.2rem); color:var(--mm); }
+.modelo-preview .commercials-grid{ display:grid; grid-template-columns:1fr; gap:clamp(1.4rem,3.5vw,2.2rem); }
+@media (min-width:640px){ .modelo-preview .commercials-grid{ grid-template-columns:repeat(3,1fr); } }
+.modelo-preview .commercial-tile{ display:block; text-decoration:none; color:inherit; }
+.modelo-preview .commercial-tile .thumb{ position:relative; aspect-ratio:16/9; overflow:hidden; background:var(--ml); }
+.modelo-preview .commercial-tile .thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+.modelo-preview .commercial-tile .play{ position:absolute; inset:0; display:grid; place-items:center; }
+.modelo-preview .commercial-tile .play::after{ content:""; width:0; height:0; margin-left:.2em;
+  border-style:solid; border-width:.65em 0 .65em 1.05em; border-color:transparent transparent transparent #fff;
+  filter:drop-shadow(0 1px 6px rgba(0,0,0,.5)); }
+.modelo-preview .commercial-tile .nombre{ margin:.7rem 0 0; font-size:.82rem; letter-spacing:.04em; color:var(--mi); }
+.modelo-preview .volver{ padding:0 clamp(1.4rem,5vw,4rem) clamp(2.6rem,6vw,4.5rem); }
+.modelo-preview .volver a{ color:var(--mm); text-decoration:none; font-size:.82rem; letter-spacing:.03em; }
+
         `;
         CMS.registerPreviewStyle(GLOBAL_CSS, { raw: true });
 
@@ -536,6 +560,78 @@ img{max-width:100%;}
           });
         }
 
+        // Vista previa de "5. Motion / Commercials" (colección Modelo) — a pedido de
+        // Ramón, que la vio caer al genérico de Decap (texto plano en negro) y se veía
+        // "extraña". Modelo entero no tiene vista previa registrada todavía (gap ya
+        // señalado en revision-panel-admin-bernardo.md) — este es solo el archivo de
+        // Motion, el resto de Modelo sigue pendiente si se pide.
+        // La miniatura sale del thumbnail público de YouTube — mismo mecanismo que
+        // gridDeVideos()/parseReel() en src/lib/modelo.js, reescrito acá porque el
+        // panel corre en el navegador sin acceso a ese módulo (dos runtimes distintos,
+        // sin bundling compartido — mismo patrón que hasRealPublication en otras
+        // vistas previas de este archivo).
+        function parseReelId(url) {
+          if (!url) return null;
+          var yt = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([\w-]+)/);
+          if (yt) return { tipo: "youtube", id: yt[1] };
+          var vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+          if (vimeo) return { tipo: "vimeo", id: vimeo[1] };
+          return null;
+        }
+
+        function videoTile(v) {
+          var parsed = parseReelId(v.url);
+          var thumb = parsed && parsed.tipo === "youtube" ? "https://img.youtube.com/vi/" + parsed.id + "/hqdefault.jpg" : null;
+          return h(
+            "a",
+            { key: v.url + v.nombre, className: "commercial-tile", href: v.url, target: "_blank", rel: "noopener" },
+            h("div", { className: "thumb" }, thumb ? h("img", { src: thumb, alt: "" }) : null, h("div", { className: "play" })),
+            h("p", { className: "nombre" }, v.nombre)
+          );
+        }
+
+        function videoGrid(titulo, videos) {
+          // Mismo filtro que gridDeVideos(): solo entran los que tienen nombre Y un
+          // link que de verdad se puede leer como YouTube o Vimeo.
+          var real = videos.filter(function (v) {
+            return v.nombre && parseReelId(v.url);
+          });
+          if (!real.length) return null;
+          return h("section", { className: "commercials" }, h("h1", {}, titulo), h("div", { className: "commercials-grid" }, real.map(videoTile)));
+        }
+
+        var MotionPreview = createClass({
+          render: function () {
+            try {
+              var entry = this.props.entry;
+              var videos = listField(entry, ["data", "videos"]);
+              var comerciales = listField(entry, ["data", "comerciales"]);
+              var motionGrid = videoGrid("Motion", videos);
+              var comercialesGrid = videoGrid("Commercials", comerciales);
+              if (!motionGrid && !comercialesGrid) {
+                return h(
+                  "div",
+                  { style: { padding: "2rem", color: "#84817a", fontSize: ".85rem" } },
+                  "Sin videos cargados todavía — agrega uno arriba (nombre + link de YouTube) y acá se arma la vista previa real."
+                );
+              }
+              return h(
+                "div",
+                { className: "modelo-preview" },
+                motionGrid,
+                comercialesGrid,
+                h("p", { className: "volver" }, h("a", { href: "/modelo/" }, "← Model"))
+              );
+            } catch (e) {
+              return h(
+                "p",
+                { style: { padding: "2rem", fontFamily: "monospace", fontSize: ".8rem" } },
+                "Vista previa no disponible en este momento (esto no afecta lo que estás editando ni guardando)."
+              );
+            }
+          },
+        });
+
         CMS.registerPreviewTemplate("home", HomePreview);
         CMS.registerPreviewTemplate("sobremi", SobreMiPreview);
         CMS.registerPreviewTemplate("estudio", EstudioPreview);
@@ -543,6 +639,7 @@ img{max-width:100%;}
         CMS.registerPreviewTemplate("contacto", ContactoPreview);
         CMS.registerPreviewTemplate("retratos", galleryPreview("/retratos", "Retratos"));
         CMS.registerPreviewTemplate("proyectos", galleryPreview("/proyectos", "Proyectos"));
+        CMS.registerPreviewTemplate("modelo_motion", MotionPreview);
       })();
 
       // Traduce al español los textos propios de Decap (botones, confirmaciones, la
