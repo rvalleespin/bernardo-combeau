@@ -1,8 +1,45 @@
+import { getImage } from 'astro:assets';
 import galeriaData from '../data/modelo/galeria.json';
 import selectedWorkData from '../data/modelo/selected-work.json';
 import motion from '../data/modelo/motion.json';
 import polaroidsData from '../data/modelo/polaroids.json';
 import details from '../data/modelo/details.json';
+
+// Anchos VALIDOS del optimizador de Vercel en este proyecto
+// (.vercel/output/config.json -> images.sizes). Verificado en un build real:
+// getImage() ajusta solo cualquier otro valor al mas cercano, y si se omite
+// `quality` el adaptador pone q=100. Nunca armar la URL a mano: en `astro dev`
+// el endpoint es otro (/_image?href=...) y daria 404 en local.
+const LB_ANCHOS = [1200, 1920, 2048];
+
+// Precalcula el set de anchos del visor de tamaño completo para cada foto de
+// una lista — compartido por cualquier grilla de fotos de Modelo (Book,
+// Selected Work, Polaroids, Motion).
+export async function conVisor(fotos) {
+	return Promise.all((fotos || []).map(async (f) => {
+		const lb = {};
+		for (const w of LB_ANCHOS) {
+			lb[w] = (await getImage({ src: f.src, width: w, quality: 82 })).src;
+		}
+		return { ...f, lb };
+	}));
+}
+
+// "Encuadre" (posicion) elige qué franja de la miniatura se ve — no alcanza
+// cuando el sujeto se ve chico porque la foto es de cuerpo completo, tomada
+// de lejos, en un espacio pensado para un plano cerrado (pasó con la
+// polaroid 3). "Zoom" acerca la miniatura sobre ese mismo punto con
+// transform:scale() + transform-origin — la foto que abre el visor no lleva
+// este estilo, así que sigue siendo la original sin recortar.
+export function encuadreStyle(img) {
+	if (!img) return undefined;
+	const posY = img.posicion || '50%';
+	const zoom = img.zoom ? Number(img.zoom) : 1;
+	const props = [];
+	if (img.posicion) props.push(`object-position:50% ${posY}`);
+	if (zoom > 1) props.push(`transform:scale(${zoom})`, `transform-origin:50% ${posY}`);
+	return props.length ? props.join(';') : undefined;
+}
 
 // Ni el reel ni el loop de fondo se suben al repo: Git no es lugar para video
 // pesado. El reel vive en YouTube/Vimeo; el loop de fondo es un mp4 alojado
@@ -38,7 +75,10 @@ export function gridDeVideos(lista) {
 		}));
 }
 
-export const motionVideos = gridDeVideos(motion.videos);
+// Motion es una galería de fotos (no videos, a diferencia de Commercials):
+// mismo criterio de filtro que las otras galerías de Modelo, solo entran las
+// que de verdad tienen imagen cargada.
+export const motionFotos = (motion.fotos || []).filter((f) => f.src);
 export const comerciales = gridDeVideos(motion.comerciales);
 
 // Tres columnas, como pidio Bernardo: la altura sola, las tres medidas de
@@ -60,7 +100,7 @@ export const detailGroups = [
 export const secciones = [
 	galeriaData.fotos?.length && { href: '/modelo/#book', label: 'Book' },
 	selectedWorkData.trabajos?.length && { href: '/modelo/#work', label: 'Work' },
-	motionVideos.length > 0 && { href: '/modelo/motion', label: 'Motion' },
+	motionFotos.length > 0 && { href: '/modelo/motion', label: 'Motion' },
 	comerciales.length > 0 && { href: '/modelo/commercials', label: 'Commercials' },
 	polaroidsData.fotos?.length && { href: '/modelo/#polaroids', label: 'Polaroids' },
 	detailGroups.length && { href: '/modelo/#details', label: 'Details' },

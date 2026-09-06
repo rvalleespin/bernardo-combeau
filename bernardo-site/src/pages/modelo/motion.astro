@@ -1,24 +1,40 @@
 ---
 export const prerender = true;
 
+import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import ModeloHeader from '../../components/modelo/ModeloHeader.astro';
-import VideoGrid from '../../components/modelo/VideoGrid.astro';
+import Visor from '../../components/modelo/Visor.astro';
 import nav from '../../data/nav.json';
-import { motionVideos, secciones } from '../../lib/modelo.js';
+import { motionFotos, secciones, conVisor, encuadreStyle } from '../../lib/modelo.js';
 
 // Mismo criterio que la portada: mientras "Modelo" no tenga título en el
 // menú, la sección está en obra y no se ofrece a buscadores.
 const enObra = !(nav.modelo && nav.modelo.trim());
+
+const fotos = await conVisor(motionFotos);
 ---
 
-<Layout title="Bernardo Combeau — Motion" description="Motion reel and commercial video work featuring Bernardo Combeau, model based in Santiago, Chile." noindex={enObra}>
+<Layout title="Bernardo Combeau — Motion" description="Motion photo gallery featuring Bernardo Combeau, model based in Santiago, Chile." noindex={enObra}>
 	<div class="modelo">
 		<ModeloHeader secciones={secciones} />
 
-		<VideoGrid titulo="Motion" videos={motionVideos} />
+		<section class="mgallery">
+			<h1>Motion</h1>
+			<div class="grid-motion" data-visor-grupo>
+				{fotos.map((img) => (
+					<button class="photo" type="button" aria-haspopup="dialog"
+						data-lb={JSON.stringify(img.lb)} data-alt={img.alt || 'Bernardo Combeau'}>
+						<Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={1200} quality={80}
+							style={encuadreStyle(img)} />
+					</button>
+				))}
+			</div>
+		</section>
 
 		<p class="volver"><a href="/modelo/">← Model</a></p>
+
+		<Visor />
 	</div>
 </Layout>
 
@@ -27,6 +43,21 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 		background:var(--mp); color:var(--mi); font-family:-apple-system,BlinkMacSystemFont,sans-serif;
 		min-height:100vh; }
 	:target{ scroll-margin-top:6.5rem; }
+
+	.mgallery{ padding:clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem); }
+	.mgallery h1{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
+		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11;
+		margin:0 0 clamp(1.4rem,3vw,2.2rem); color:var(--mm); }
+
+	.grid-motion{ display:grid; grid-template-columns:1fr; gap:clamp(1.4rem,3.5vw,2.2rem); }
+	@media (min-width:640px){ .grid-motion{ grid-template-columns:repeat(3,1fr); } }
+	.grid-motion .photo{ aspect-ratio:4/5; overflow:hidden; }
+	.grid-motion .photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+	button.photo{ display:block; width:100%; padding:0; border:0; background:none;
+		cursor:zoom-in; font:inherit; color:inherit; }
+	button.photo:focus-visible{ outline:2px solid var(--mi); outline-offset:3px; }
+
 	.volver{ padding:0 clamp(1.4rem,5vw,4rem) clamp(2.6rem,6vw,4.5rem); }
 	.volver a{ color:var(--mm); text-decoration:none; font-size:.82rem; letter-spacing:.03em; }
 	.volver a:hover, .volver a:focus-visible{ color:var(--mi); }

@@ -1,0 +1,190 @@
+---
+// Visor a tamaño completo, compartido por cualquier página de Modelo que
+// tenga una grilla de fotos (button.photo + data-visor-grupo + data-lb).
+// Extraído de la portada para que Motion (ahora galería de fotos) lo use
+// también, sin duplicar el diálogo ni la lógica.
+---
+
+<dialog class="visor" aria-label="Full size photo">
+	<figure class="visor-fig">
+		<img class="visor-img" alt="" decoding="async" />
+	</figure>
+	{/* autofocus va en Cerrar a proposito: sin el, showModal() manda el foco
+	    al primer focusable del DOM, que aca seria "Foto anterior". */}
+	<button class="visor-btn visor-cerrar" type="button" autofocus aria-label="Close">✕</button>
+	<button class="visor-btn visor-prev" type="button" aria-label="Previous photo">‹</button>
+	<button class="visor-btn visor-next" type="button" aria-label="Next photo">›</button>
+	<p class="visor-pie" aria-hidden="true"></p>
+	{/* Al navegar con las flechas cambia la imagen pero no se mueve el foco:
+	    sin esta region viva un lector de pantalla no anuncia nada. */}
+	<p class="visor-sr" role="status" aria-live="polite"></p>
+</dialog>
+
+<script>
+	// ---- Visor a tamano completo ---------------------------------------------
+	// <dialog> + showModal(): el navegador ya da top layer, ::backdrop, el resto
+	// del documento inerte, el foco atrapado y el cierre con Escape. No hace falta
+	// libreria y NO hay que escribir un focus trap a mano.
+	const dlg = document.querySelector('.visor');
+	if (dlg) {
+		const img = dlg.querySelector('.visor-img');
+		const pie = dlg.querySelector('.visor-pie');
+		const aviso = dlg.querySelector('.visor-sr');
+		const prev = dlg.querySelector('.visor-prev');
+		const next = dlg.querySelector('.visor-next');
+		let grupo = [];
+		let i = 0;
+		let ancho = 1920;
+
+		// El ancho se elige una vez al abrir. En un visor que hace "contain" con
+		// fotos verticales manda el ALTO, no el ancho, por eso no se usa innerWidth
+		// solo. El piso de 1200 cubre la pestaña en segundo plano, donde
+		// innerWidth/innerHeight pueden llegar en 0.
+		const elegirAncho = (set) => {
+			const disp = Object.keys(set).map(Number).sort((a, b) => a - b);
+			const dpr = Math.min(window.devicePixelRatio || 1, 2);
+			const necesita = Math.max(1200, Math.min(window.innerWidth, Math.round(window.innerHeight * 1.25)) * dpr);
+			return disp.find((w) => w >= necesita) || disp[disp.length - 1];
+		};
+
+		const urlDe = (boton) => {
+			const set = JSON.parse(boton.dataset.lb);
+			return set[ancho] || Object.values(set)[0];
+		};
+
+		const pintar = () => {
+			const f = grupo[i];
+			img.classList.remove('lista');
+			img.src = urlDe(f);
+			img.alt = f.dataset.alt || '';
+			if (img.decode) img.decode().catch(() => {}).then(() => img.classList.add('lista'));
+			else img.classList.add('lista');
+			pie.textContent = f.dataset.alt || '';
+			aviso.textContent = 'Photo ' + (i + 1) + ' of ' + grupo.length + '. ' + (f.dataset.alt || '');
+			const varias = grupo.length > 1;
+			prev.hidden = !varias;
+			next.hidden = !varias;
+			// Precarga los vecinos: la flecha se siente instantanea.
+			if (varias) {
+				[1, -1].forEach((d) => {
+					const v = grupo[(i + d + grupo.length) % grupo.length];
+					document.createElement('img').src = urlDe(v);
+				});
+			}
+		};
+
+		const mover = (paso) => { i = (i + paso + grupo.length) % grupo.length; pintar(); };
+
+		document.addEventListener('click', (e) => {
+			const b = e.target.closest('button.photo');
+			if (!b) return;
+			// Un grupo por grilla: sin esto las flechas saltan de la galeria a
+			// Selected Work y de ahi a las polaroids en una sola lista corrida.
+			const cont = b.closest('[data-visor-grupo]') || document;
+			grupo = Array.from(cont.querySelectorAll('button.photo'));
+			i = grupo.indexOf(b);
+			ancho = elegirAncho(JSON.parse(b.dataset.lb));
+			pintar();
+			// showModal() NO bloquea el scroll del fondo.
+			document.documentElement.classList.add('visor-abierto');
+			dlg.showModal();
+		});
+
+		// Idempotente: da igual si ademas llega el evento 'close'.
+		const cerrar = () => {
+			if (dlg.open) dlg.close();
+			img.removeAttribute('src');
+			document.documentElement.classList.remove('visor-abierto');
+			// El foco vuelve a la miniatura ACTUAL, no a la del clic original: si
+			// abriste la 1 y navegaste hasta la 6, quedas parado en la 6.
+			const destino = grupo[i];
+			if (destino) {
+				destino.focus({ preventScroll: true });
+				destino.scrollIntoView({ block: 'center' });
+			}
+		};
+
+		dlg.querySelector('.visor-cerrar').addEventListener('click', cerrar);
+		prev.addEventListener('click', () => mover(-1));
+		next.addEventListener('click', () => mover(1));
+
+		dlg.addEventListener('keydown', (e) => {
+			const acciones = {
+				ArrowLeft: () => mover(-1),
+				ArrowRight: () => mover(1),
+				Home: () => mover(-i),
+				End: () => mover(grupo.length - 1 - i),
+			};
+			const f = acciones[e.key];
+			if (f) { e.preventDefault(); f(); }
+		});
+
+		// Clic en el fondo (fuera de la foto) cierra.
+		dlg.addEventListener('click', (e) => {
+			if (e.target === dlg || e.target === img.parentElement) cerrar();
+		});
+		// Escape lo maneja el navegador: se intercepta para que pase por la limpieza.
+		dlg.addEventListener('cancel', (e) => { e.preventDefault(); cerrar(); });
+		dlg.addEventListener('close', cerrar);
+
+		// Gestos: deslizar al lado cambia de foto, deslizar hacia abajo cierra.
+		// El filtro por dominancia evita que un scroll con el pulgar torcido
+		// cambie de foto sin querer.
+		let x0 = null;
+		let y0 = null;
+		dlg.addEventListener('pointerdown', (e) => {
+			if (e.pointerType !== 'touch') return;
+			x0 = e.clientX; y0 = e.clientY;
+		});
+		dlg.addEventListener('pointerup', (e) => {
+			if (x0 === null) return;
+			const dx = e.clientX - x0;
+			const dy = e.clientY - y0;
+			x0 = null;
+			if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) mover(dx < 0 ? 1 : -1);
+			else if (dy > 90 && Math.abs(dy) > Math.abs(dx) * 1.5) cerrar();
+		});
+	}
+</script>
+
+<style>
+	/* OJO: el bloque <style> de Astro esta SCOPED, asi que una regla sobre <html>
+	   se compilaria a html.visor-abierto[data-astro-cid-...] y no coincidiria
+	   nunca. Va con :global() a proposito. showModal() no bloquea el scroll del
+	   fondo por su cuenta; scrollbar-gutter evita el salto lateral al ocultarlo. */
+	:global(html.visor-abierto){ overflow:hidden; scrollbar-gutter:stable; }
+
+	.visor{ width:100vw; max-width:100vw; height:100dvh; max-height:100dvh;
+		margin:0; padding:0; border:0; background:transparent; overflow:hidden;
+		overscroll-behavior:contain; color:#fff; }
+	.visor::backdrop{ background:#0b0b0a; opacity:.97; }
+	/* Flex, NO `grid + place-items:center` con max-height:100%: la fila del grid
+	   se autodimensiona al contenido y el porcentaje no restringe nada, asi que
+	   una foto alta se desborda por abajo. */
+	.visor-fig{ margin:0; width:100%; height:100%; display:flex;
+		align-items:center; justify-content:center;
+		padding:clamp(.75rem,3vw,3.5rem); box-sizing:border-box; touch-action:pan-y; }
+	.visor-img{ max-width:100%; max-height:100%; width:auto; height:auto; display:block;
+		opacity:0; transition:opacity .18s ease; }
+	.visor-img.lista{ opacity:1; }
+	@media (prefers-reduced-motion:reduce){ .visor-img{ transition:none; } }
+
+	.visor-btn{ position:fixed; z-index:2; background:none; border:0; color:#fff;
+		cursor:pointer; line-height:1; padding:0; opacity:.75;
+		min-width:48px; min-height:48px; display:grid; place-items:center; }
+	.visor-btn:hover, .visor-btn:focus-visible{ opacity:1; }
+	.visor-btn:focus-visible{ outline:2px solid #fff; outline-offset:2px; }
+	.visor-cerrar{ top:max(.7rem,env(safe-area-inset-top));
+		right:max(.9rem,env(safe-area-inset-right)); font-size:1.5rem; }
+	.visor-prev, .visor-next{ top:50%; transform:translateY(-50%); font-size:2.6rem; }
+	.visor-prev{ left:.4rem; }
+	.visor-next{ right:.4rem; }
+	/* En movil manda el gesto: las flechas se comen los bordes de una foto vertical. */
+	@media (max-width:640px){ .visor-prev, .visor-next{ display:none; } }
+
+	.visor-pie{ position:fixed; left:0; right:0; bottom:max(.9rem,env(safe-area-inset-bottom));
+		margin:0; text-align:center; font-size:.8rem; letter-spacing:.04em;
+		color:rgba(255,255,255,.62); padding:0 3.5rem; }
+	.visor-sr{ position:absolute; width:1px; height:1px; overflow:hidden;
+		clip-path:inset(50%); white-space:nowrap; }
+</style>

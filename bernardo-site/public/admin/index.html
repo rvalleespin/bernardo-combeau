@@ -235,6 +235,9 @@ img{max-width:100%;}
   border-style:solid; border-width:.65em 0 .65em 1.05em; border-color:transparent transparent transparent #fff;
   filter:drop-shadow(0 1px 6px rgba(0,0,0,.5)); }
 .modelo-preview .commercial-tile .nombre{ margin:.7rem 0 0; font-size:.82rem; letter-spacing:.04em; color:var(--mi); }
+.modelo-preview .motion-fotos{ display:grid; grid-template-columns:1fr; gap:clamp(1.4rem,3.5vw,2.2rem); }
+@media (min-width:640px){ .modelo-preview .motion-fotos{ grid-template-columns:repeat(3,1fr); } }
+.modelo-preview .motion-fotos .photo{ aspect-ratio:4/5; }
 .modelo-preview .volver{ padding:0 clamp(1.4rem,5vw,4rem) clamp(2.6rem,6vw,4.5rem); }
 .modelo-preview .volver a{ color:var(--mm); text-decoration:none; font-size:.82rem; letter-spacing:.03em; }
 
@@ -600,23 +603,47 @@ img{max-width:100%;}
           return h("section", { className: "commercials" }, h("h1", {}, titulo), h("div", { className: "commercials-grid" }, real.map(videoTile)));
         }
 
+        // Motion es una galería de fotos (Commercials sigue siendo videos, arriba) —
+        // mismo photoBox() que usan Retratos/Proyectos, para no reinventar cómo se
+        // resuelve una imagen todavía sin publicar dentro del panel.
+        function photoGrid(titulo, fotos, getAsset) {
+          var real = (fotos || []).filter(function (f) {
+            return f.src;
+          });
+          if (!real.length) return null;
+          return h(
+            "section",
+            { className: "commercials" },
+            h("h1", {}, titulo),
+            h(
+              "div",
+              { className: "motion-fotos" },
+              real.map(function (f, i) {
+                return h("div", { key: i }, photoBox(getAsset, f.src, f.alt, null, f.posicion, f.zoom));
+              })
+            )
+          );
+        }
+
         // registerPreviewTemplate() en una colección de varios archivos (Modelo) no está
         // documentado con certeza — no hay ejemplo previo en este archivo de registrar por
         // el nombre de un archivo individual ("modelo_motion") en vez del nombre de la
         // colección ("modelo"). Para no depender de adivinar cuál usa Decap, este mismo
         // componente se registra bajo LOS DOS nombres — y decide qué mostrar mirando qué
-        // campos tiene el entry de verdad (¿tiene "videos"/"comerciales"? es Motion — si no,
+        // campos tiene el entry de verdad (¿tiene "fotos"/"comerciales"? es Motion — si no,
         // no es una ficha para la que haya vista previa construida todavía). Así funciona
         // sea cual sea la clave real, y de paso cualquier otra ficha de Modelo (Portada,
         // Identity, etc. — siguen sin vista previa propia) cae en un aviso, no en el dump
-        // genérico de Decap.
+        // genérico de Decap. Motion es galería de fotos, Commercials sigue siendo videos
+        // de YouTube — aclarado por Ramón, no son la misma cosa aunque compartan archivo.
         var ModeloPreview = createClass({
           render: function () {
             try {
               var entry = this.props.entry;
-              var videos = listField(entry, ["data", "videos"]);
+              var getAsset = this.props.getAsset;
+              var fotos = listField(entry, ["data", "fotos"]);
               var comerciales = listField(entry, ["data", "comerciales"]);
-              var esMotion = entry.hasIn(["data", "videos"]) || entry.hasIn(["data", "comerciales"]);
+              var esMotion = entry.hasIn(["data", "fotos"]) || entry.hasIn(["data", "comerciales"]);
               if (!esMotion) {
                 return h(
                   "div",
@@ -624,13 +651,13 @@ img{max-width:100%;}
                   "Esta sección de Modelo todavía no tiene vista previa en vivo — los cambios se guardan igual, solo no hay cómo verlos acá todavía."
                 );
               }
-              var motionGrid = videoGrid("Motion", videos);
+              var motionGrid = photoGrid("Motion", fotos, getAsset);
               var comercialesGrid = videoGrid("Commercials", comerciales);
               if (!motionGrid && !comercialesGrid) {
                 return h(
                   "div",
                   { style: { padding: "2rem", color: "#84817a", fontSize: ".85rem" } },
-                  "Sin videos cargados todavía — agrega uno arriba (nombre + link de YouTube) y acá se arma la vista previa real."
+                  "Sin fotos ni videos cargados todavía — agrega uno arriba y acá se arma la vista previa real."
                 );
               }
               return h(
@@ -1395,15 +1422,31 @@ img{max-width:100%;}
                       hint: "Solo se usa como respaldo del fondo de la franja, si todavía no subiste un video de fondo propio (campo de más abajo). Ya no hace falta para Motion ni Commercials — esas dos secciones usan sus propias listas.",
                     },
                     {
-                      label: "Motion (cuadritos que llevan a YouTube)",
-                      name: "videos",
+                      label: "Motion — galería de fotos",
+                      name: "fotos",
                       widget: "list",
                       required: false,
-                      summary: "{{fields.nombre}}",
-                      hint: "Un cuadro por video. Al tocarlo, se abre ese video en YouTube (no se reproduce adentro del sitio). La miniatura sale sola del video de YouTube — no hace falta subir imagen. Sección y botón propios, separados de Commercials.",
+                      summary: "{{fields.alt}}",
+                      hint: "Una foto por cuadro, en su propia página (Motion). Distinto de Commercials, que sigue siendo una lista de videos de YouTube.",
                       fields: [
-                        { label: "Nombre del video", name: "nombre", widget: "string", hint: "Ej. Detrás de cámaras — sesión Falabella" },
-                        { label: "Link de YouTube", name: "url", widget: "string", hint: "Pega el link normal del video de YouTube, como lo copiás del navegador." },
+                        { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
+                        { label: "Descripción para lectores de pantalla", name: "alt", widget: "string", required: false },
+                        {
+                          label: "Encuadre en la grilla",
+                          name: "posicion",
+                          widget: "select",
+                          required: false,
+                          default: "50%",
+                          options: [
+                            { label: "Centrado (por defecto)", value: "50%" },
+                            { label: "Todo arriba — si te corta la cabeza", value: "0%" },
+                            { label: "Un poco más arriba", value: "25%" },
+                            { label: "Un poco más abajo", value: "75%" },
+                            { label: "Todo abajo", value: "100%" },
+                          ],
+                          hint: "La grilla recorta un poco arriba y abajo de una foto vertical. Si te queda cortada la cabeza, elegí una opción más arriba.",
+                        },
+                        zoomField(),
                       ],
                     },
                     {
