@@ -625,17 +625,16 @@ img{max-width:100%;}
           );
         }
 
-        // registerPreviewTemplate() en una colección de varios archivos (Modelo) no está
-        // documentado con certeza — no hay ejemplo previo en este archivo de registrar por
-        // el nombre de un archivo individual ("modelo_motion") en vez del nombre de la
-        // colección ("modelo"). Para no depender de adivinar cuál usa Decap, este mismo
-        // componente se registra bajo LOS DOS nombres — y decide qué mostrar mirando qué
-        // campos tiene el entry de verdad (¿tiene "fotos"/"comerciales"? es Motion — si no,
-        // no es una ficha para la que haya vista previa construida todavía). Así funciona
-        // sea cual sea la clave real, y de paso cualquier otra ficha de Modelo (Portada,
-        // Identity, etc. — siguen sin vista previa propia) cae en un aviso, no en el dump
-        // genérico de Decap. Motion es galería de fotos, Commercials sigue siendo videos
-        // de YouTube — aclarado por Ramón, no son la misma cosa aunque compartan archivo.
+        // registerPreviewTemplate() en una colección de varios archivos (Modelo): confirmado
+        // leyendo el propio código fuente de Decap (minificado, en decap-cms.js) que la clave
+        // real es el nombre del ARCHIVO individual (p.ej. "modelo_motion"), nunca el de la
+        // colección completa ("modelo") — un registro a nivel de colección simplemente no se
+        // consulta nunca para una entrada de este tipo. Por eso este mismo componente se
+        // registra más abajo bajo los 8 nombres de archivo de Modelo, y decide qué mostrar
+        // mirando el SLUG real de la entrada (no la forma de sus campos: "Galería" también
+        // tiene un campo llamado "fotos", así que detectar Motion por eso confundía a las dos).
+        // Motion es galería de fotos, Commercials sigue siendo videos de YouTube — aclarado por
+        // Ramón, no son la misma cosa aunque compartan archivo.
         var ModeloPreview = createClass({
           render: function () {
             try {
@@ -643,7 +642,7 @@ img{max-width:100%;}
               var getAsset = this.props.getAsset;
               var fotos = listField(entry, ["data", "fotos"]);
               var comerciales = listField(entry, ["data", "comerciales"]);
-              var esMotion = entry.hasIn(["data", "fotos"]) || entry.hasIn(["data", "comerciales"]);
+              var esMotion = entry.get("slug") === "modelo_motion";
               if (!esMotion) {
                 return h(
                   "div",
@@ -684,8 +683,14 @@ img{max-width:100%;}
         CMS.registerPreviewTemplate("contacto", ContactoPreview);
         CMS.registerPreviewTemplate("retratos", galleryPreview("/retratos", "Retratos"));
         CMS.registerPreviewTemplate("proyectos", galleryPreview("/proyectos", "Proyectos"));
-        CMS.registerPreviewTemplate("modelo", ModeloPreview);
+        CMS.registerPreviewTemplate("modelo_portada", ModeloPreview);
+        CMS.registerPreviewTemplate("modelo_galeria", ModeloPreview);
+        CMS.registerPreviewTemplate("modelo_identity", ModeloPreview);
+        CMS.registerPreviewTemplate("modelo_selected_work", ModeloPreview);
         CMS.registerPreviewTemplate("modelo_motion", ModeloPreview);
+        CMS.registerPreviewTemplate("modelo_polaroids", ModeloPreview);
+        CMS.registerPreviewTemplate("modelo_details", ModeloPreview);
+        CMS.registerPreviewTemplate("modelo_booking", ModeloPreview);
       })();
 
       // Traduce al español los textos propios de Decap (botones, confirmaciones, la
