@@ -239,6 +239,54 @@ img{max-width:100%;}
 @media (min-width:640px){ .modelo-preview .motion-fotos{ grid-template-columns:repeat(3,1fr); } }
 .modelo-preview .motion-fotos .photo{ aspect-ratio:4/5; }
 .modelo-preview .volver{ padding:0 clamp(1.4rem,5vw,4rem) clamp(2.6rem,6vw,4.5rem); }
+
+/* Portada */
+.modelo-preview .mhero{ position:relative; width:100%; aspect-ratio:16/9; max-height:100vh; }
+.modelo-preview .mhero img{ width:100%; height:100%; object-fit:cover; object-position:50% 25%; display:block; }
+.modelo-preview .hero-caption{ text-align:center; font-family:Georgia,'Times New Roman',serif; font-weight:400;
+  font-size:clamp(1.0625rem,1.25vw,1.1875rem); letter-spacing:.03em; line-height:1.55; color:var(--mi);
+  margin:0; padding:clamp(1.3rem,3vw,2rem) clamp(1.2rem,4vw,3rem) 0; }
+.modelo-preview .meta-sep{ font-style:normal; color:var(--mm); margin:0 .5em; }
+
+/* Galería (Book) */
+.modelo-preview .mgallery{ padding:clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem); }
+.modelo-preview .mgallery-book{ padding-bottom:clamp(1.3rem,3.5vw,2.5rem); }
+.modelo-preview .grid-12{ display:grid; grid-template-columns:1fr; gap:clamp(1.6rem,5vw,4rem); }
+@media (min-width:600px){ .modelo-preview .grid-12{ grid-template-columns:repeat(2,1fr); } }
+.modelo-preview .grid-12 .photo{ aspect-ratio:4/5; }
+
+/* Identity */
+.modelo-preview .identity{ max-width:62ch; margin:0 auto; padding:clamp(1.2rem,3vw,2rem) clamp(1.2rem,4vw,3rem); }
+.modelo-preview .identity p{ font-size:1.1rem; line-height:1.8; margin:0; }
+
+/* Selected Work */
+.modelo-preview .work{ padding:clamp(2.6rem,6vw,4.5rem) 0; }
+.modelo-preview .work-list{ display:flex; flex-direction:column; gap:clamp(2.6rem,6vw,4.5rem); }
+.modelo-preview .work-head{ text-align:center; padding:0 clamp(1.4rem,5vw,4rem); margin-bottom:clamp(.9rem,2vw,1.4rem); }
+.modelo-preview .work-name{ font-size:.78rem; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--mi); margin:0; }
+.modelo-preview .work-detalle{ font-size:.78rem; font-weight:400; letter-spacing:.14em; text-transform:uppercase; color:var(--mm); margin:.4rem 0 0; }
+.modelo-preview .work-fotos .photo{ width:100%; aspect-ratio:16/10; }
+.modelo-preview .work-cuenta{ text-align:center; font-size:.68rem; letter-spacing:.16em; text-transform:uppercase; color:var(--mm); margin:.7rem 0 0; }
+
+/* Polaroids */
+.modelo-preview .grid-polaroids{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(1.2rem,3.5vw,2.4rem); }
+@media (min-width:640px){ .modelo-preview .grid-polaroids{ grid-template-columns:repeat(4,1fr); } }
+.modelo-preview .grid-polaroids .photo{ aspect-ratio:1/1; }
+
+/* Details */
+.modelo-preview .stat-cols{ display:grid; grid-template-columns:1fr; gap:1.1rem; max-width:26rem; }
+.modelo-preview .stat-col{ display:flex; flex-direction:column; gap:.35rem; margin:0; }
+.modelo-preview .stat{ display:flex; align-items:baseline; gap:.45rem; }
+.modelo-preview .stat dt, .modelo-preview .stat dd{ font-size:.98rem; line-height:1.4; letter-spacing:.01em; margin:0; }
+.modelo-preview .stat dt{ color:var(--mm); }
+.modelo-preview .stat dt::after{ content:" —"; }
+.modelo-preview .stat dd{ color:var(--mi); }
+
+/* Booking */
+.modelo-preview .booking-region{ color:var(--mm); font-size:.85rem; letter-spacing:.05em; margin:0 0 1rem; }
+.modelo-preview .booking-links{ display:flex; gap:.9rem; flex-wrap:wrap; justify-content:center; }
+.modelo-preview .booking-links a{ display:inline-block; color:var(--mi); text-decoration:none; font-size:.82rem;
+  letter-spacing:.03em; border:1px solid var(--mi); padding:.65rem 1.3rem; }
 .modelo-preview .volver a{ color:var(--mm); text-decoration:none; font-size:.82rem; letter-spacing:.03em; }
 
         `;
@@ -625,6 +673,207 @@ img{max-width:100%;}
           );
         }
 
+        // Vista previa real de cada ficha de Modelo (a pedido de Bernardo — quería ver su
+        // trabajo reflejado en el sitio, no solo un aviso de "todavía no hay vista previa").
+        // Cada función reconstruye SOLO esa sección, con el CSS real de index.astro — no la
+        // página /modelo/ completa, porque una vista previa de Decap no tiene acceso en vivo a
+        // los datos de las otras 7 fichas mientras se edita una (cada una es un archivo/entry
+        // separado). Portada no lleva título visible (tampoco lo tiene en el sitio real).
+        function portadaSection(entry, getAsset) {
+          var heroFoto = entry.getIn(["data", "heroFoto"]);
+          var heroCaption = entry.getIn(["data", "heroCaption"]) || "";
+          var metaItems = heroCaption
+            .split("·")
+            .map(function (s) {
+              return s.trim();
+            })
+            .filter(Boolean);
+          if (!heroFoto && !metaItems.length) return null;
+          var asset = heroFoto ? getAsset(heroFoto) : null;
+          return h(
+            "div",
+            {},
+            heroFoto
+              ? h("div", { className: "mhero" }, h("img", { src: asset ? asset.toString() : "", alt: "Bernardo Combeau" }))
+              : null,
+            metaItems.length
+              ? h(
+                  "p",
+                  { className: "hero-caption" },
+                  metaItems.map(function (item, n) {
+                    return h(
+                      "span",
+                      { key: n },
+                      h("span", {}, item),
+                      n < metaItems.length - 1 ? h("i", { className: "meta-sep" }, "·") : null
+                    );
+                  })
+                )
+              : null
+          );
+        }
+
+        function gridBookSection(fotos, getAsset) {
+          var real = (fotos || []).filter(function (f) {
+            return f.src;
+          });
+          if (!real.length) return null;
+          return h(
+            "section",
+            { className: "mgallery mgallery-book" },
+            h(
+              "div",
+              { className: "grid-12" },
+              real.map(function (f, i) {
+                return h("div", { key: i }, photoBox(getAsset, f.src, f.alt, null, f.posicion, f.zoom));
+              })
+            )
+          );
+        }
+
+        function identitySection(entry) {
+          var texto = entry.getIn(["data", "texto"]);
+          if (!texto) return null;
+          return h("div", { className: "identity" }, h("p", {}, texto));
+        }
+
+        function selectedWorkSection(trabajos, getAsset) {
+          var real = (trabajos || []).filter(function (t) {
+            return t.fotos && t.fotos.some(function (f) {
+              return f.src;
+            });
+          });
+          if (!real.length) return null;
+          return h(
+            "section",
+            { className: "work" },
+            h(
+              "div",
+              { className: "work-list" },
+              real.map(function (job, i) {
+                var fotos = (job.fotos || []).filter(function (f) {
+                  return f.src;
+                });
+                var primera = fotos[0];
+                return h(
+                  "article",
+                  { key: i },
+                  h(
+                    "div",
+                    { className: "work-head" },
+                    h("p", { className: "work-name" }, job.nombre),
+                    job.detalle ? h("p", { className: "work-detalle" }, job.detalle) : null
+                  ),
+                  h(
+                    "div",
+                    { className: "work-fotos" },
+                    photoBox(getAsset, primera.src, primera.alt || job.nombre, null, primera.posicion, primera.zoom)
+                  ),
+                  fotos.length > 1 ? h("p", { className: "work-cuenta" }, fotos.length + " photos") : null
+                );
+              })
+            )
+          );
+        }
+
+        function polaroidsSection(fotos, getAsset) {
+          var real = (fotos || [])
+            .filter(function (f) {
+              return f.src;
+            })
+            .slice(0, 4);
+          if (!real.length) return null;
+          return h(
+            "section",
+            { className: "commercials" },
+            h("h1", {}, "Polaroids"),
+            h(
+              "div",
+              { className: "grid-polaroids" },
+              real.map(function (f, i) {
+                return h("div", { key: i }, photoBox(getAsset, f.src, f.alt, null, f.posicion, f.zoom));
+              })
+            )
+          );
+        }
+
+        function detailsSection(entry) {
+          var d = {
+            height: entry.getIn(["data", "height"]),
+            chest: entry.getIn(["data", "chest"]),
+            waist: entry.getIn(["data", "waist"]),
+            hips: entry.getIn(["data", "hips"]),
+            shoes: entry.getIn(["data", "shoes"]),
+            hair: entry.getIn(["data", "hair"]),
+            eyes: entry.getIn(["data", "eyes"]),
+          };
+          var groups = [
+            [["Height", d.height]],
+            [
+              ["Chest", d.chest],
+              ["Waist", d.waist],
+              ["Hips", d.hips],
+            ],
+            [
+              ["Shoes", d.shoes],
+              ["Hair", d.hair],
+              ["Eyes", d.eyes],
+            ],
+          ]
+            .map(function (group) {
+              return group.filter(function (pair) {
+                return pair[1];
+              });
+            })
+            .filter(function (group) {
+              return group.length > 0;
+            });
+          if (!groups.length) return null;
+          return h(
+            "section",
+            { className: "commercials" },
+            h("h1", {}, "Details"),
+            h(
+              "div",
+              { className: "stat-cols" },
+              groups.map(function (group, gi) {
+                return h(
+                  "dl",
+                  { key: gi, className: "stat-col" },
+                  group.map(function (pair, pi) {
+                    return h("div", { key: pi, className: "stat" }, h("dt", {}, pair[0]), h("dd", {}, pair[1]));
+                  })
+                );
+              })
+            )
+          );
+        }
+
+        // No incluye email/WhatsApp: viven en la ficha "Contacto" (otra colección),
+        // sin acceso desde acá — cada vista previa solo ve los datos de SU propio archivo.
+        function bookingSection(entry) {
+          var region = entry.getIn(["data", "region"]);
+          var instagram = entry.getIn(["data", "instagram"]);
+          if (!region && !instagram) return null;
+          return h(
+            "section",
+            { className: "commercials", style: { textAlign: "center" } },
+            h("h1", {}, "Booking"),
+            region ? h("p", { className: "booking-region" }, region) : null,
+            instagram
+              ? h(
+                  "div",
+                  { className: "booking-links" },
+                  h(
+                    "a",
+                    { href: "https://instagram.com/" + instagram.replace(/^@/, ""), target: "_blank", rel: "noopener" },
+                    instagram
+                  )
+                )
+              : null
+          );
+        }
+
         // registerPreviewTemplate() en una colección de varios archivos (Modelo): confirmado
         // leyendo el propio código fuente de Decap (minificado, en decap-cms.js) que la clave
         // real es el nombre del ARCHIVO individual (p.ej. "modelo_motion"), nunca el de la
@@ -633,37 +882,52 @@ img{max-width:100%;}
         // registra más abajo bajo los 8 nombres de archivo de Modelo, y decide qué mostrar
         // mirando el SLUG real de la entrada (no la forma de sus campos: "Galería" también
         // tiene un campo llamado "fotos", así que detectar Motion por eso confundía a las dos).
-        // Motion es galería de fotos, Commercials sigue siendo videos de YouTube — aclarado por
-        // Ramón, no son la misma cosa aunque compartan archivo.
+        // Bernardo pidió ver de verdad su trabajo reflejado en el sitio, no solo un aviso —
+        // así que las 8 fichas tienen ahora su propia vista previa real, cada una reconstruye
+        // SOLO su sección con el CSS de index.astro (ver el porqué en las funciones de arriba).
         var ModeloPreview = createClass({
           render: function () {
             try {
               var entry = this.props.entry;
               var getAsset = this.props.getAsset;
-              var fotos = listField(entry, ["data", "fotos"]);
-              var comerciales = listField(entry, ["data", "comerciales"]);
-              var esMotion = entry.get("slug") === "modelo_motion";
-              if (!esMotion) {
+              var slug = entry.get("slug");
+              var contenido;
+              if (slug === "modelo_portada") {
+                contenido = portadaSection(entry, getAsset);
+              } else if (slug === "modelo_galeria") {
+                contenido = gridBookSection(listField(entry, ["data", "fotos"]), getAsset);
+              } else if (slug === "modelo_identity") {
+                contenido = identitySection(entry);
+              } else if (slug === "modelo_selected_work") {
+                contenido = selectedWorkSection(listField(entry, ["data", "trabajos"]), getAsset);
+              } else if (slug === "modelo_motion") {
+                var motionGrid = photoGrid("Motion", listField(entry, ["data", "fotos"]), getAsset);
+                var comercialesGrid = videoGrid("Commercials", listField(entry, ["data", "comerciales"]));
+                contenido = motionGrid || comercialesGrid ? h("div", {}, motionGrid, comercialesGrid) : null;
+              } else if (slug === "modelo_polaroids") {
+                contenido = polaroidsSection(listField(entry, ["data", "fotos"]), getAsset);
+              } else if (slug === "modelo_details") {
+                contenido = detailsSection(entry);
+              } else if (slug === "modelo_booking") {
+                contenido = bookingSection(entry);
+              } else {
                 return h(
                   "div",
                   { style: { padding: "2rem", color: "#84817a", fontSize: ".85rem" } },
                   "Esta sección de Modelo todavía no tiene vista previa en vivo — los cambios se guardan igual, solo no hay cómo verlos acá todavía."
                 );
               }
-              var motionGrid = photoGrid("Motion", fotos, getAsset);
-              var comercialesGrid = videoGrid("Commercials", comerciales);
-              if (!motionGrid && !comercialesGrid) {
+              if (!contenido) {
                 return h(
                   "div",
                   { style: { padding: "2rem", color: "#84817a", fontSize: ".85rem" } },
-                  "Sin fotos ni videos cargados todavía — agrega uno arriba y acá se arma la vista previa real."
+                  "Sin contenido cargado todavía — agrega uno arriba y acá se arma la vista previa real."
                 );
               }
               return h(
                 "div",
                 { className: "modelo-preview" },
-                motionGrid,
-                comercialesGrid,
+                contenido,
                 h("p", { className: "volver" }, h("a", { href: "/modelo/" }, "← Model"))
               );
             } catch (e) {
@@ -1272,10 +1536,9 @@ img{max-width:100%;}
             // sidebar mientras estuvo sin contenido real y sin publicar. Ya no aplica:
             // nav.json trae "modelo": "Modelo" (publicada) y la sección se ha seguido
             // desarrollando activamente en main desde entonces (encuadre, zoom, Motion).
-            // Ocultarla la escondería del propio Bernardo. Motion/Commercials (más abajo)
-            // ya tiene su propia vista previa vía ModeloPreview; el resto de las fichas
-            // (Portada, Identity, etc.) sigue sin una construida, ModeloPreview les muestra
-            // un aviso en vez del dump genérico de Decap.
+            // Ocultarla la escondería del propio Bernardo. Las 8 fichas de más abajo tienen
+            // su propia vista previa real vía ModeloPreview (ver el comentario junto a esa
+            // función) — ya no cae ninguna en el dump genérico de Decap.
             {
               name: "modelo",
               label: "Modelo",
