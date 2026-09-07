@@ -5,7 +5,7 @@ import Layout from '../../layouts/Layout.astro';
 import ModeloHeader from '../../components/modelo/ModeloHeader.astro';
 import VideoGrid from '../../components/modelo/VideoGrid.astro';
 import nav from '../../data/nav.json';
-import { comerciales, secciones } from '../../lib/modelo.js';
+import { comercialesSpotTV, comercialesRedes, secciones } from '../../lib/modelo.js';
 
 // Mismo criterio que la portada: mientras "Modelo" no tenga título en el
 // menú, la sección está en obra y no se ofrece a buscadores.
@@ -16,7 +16,14 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 	<div class="modelo">
 		<ModeloHeader secciones={secciones} />
 
-		<VideoGrid titulo="Commercials" videos={comerciales} />
+		<section class="commercials-pagina">
+			<h1>Commercials</h1>
+			{/* Spot TV (horizontal, 16:9) y Redes sociales (vertical, 9:16) — un
+			    comercial de TV y un video hecho para redes no miden lo mismo, así
+			    que cada uno tiene su propia proporción de miniatura. */}
+			<VideoGrid titulo="Spot TV" videos={comercialesSpotTV} aspect="16/9" />
+			<VideoGrid titulo="Redes sociales" videos={comercialesRedes} aspect="9/16" />
+		</section>
 
 		<p class="volver"><a href="/modelo/">← Model</a></p>
 	</div>
@@ -27,6 +34,12 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 		background:var(--mp); color:var(--mi); font-family:-apple-system,BlinkMacSystemFont,sans-serif;
 		min-height:100vh; }
 	:target{ scroll-margin-top:6.5rem; }
+
+	.commercials-pagina{ padding:clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem) 0; }
+	.commercials-pagina > h1{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
+		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11;
+		margin:0 0 clamp(1.8rem,4vw,2.6rem); color:var(--mm); }
+
 	.volver{ padding:0 clamp(1.4rem,5vw,4rem) clamp(2.6rem,6vw,4.5rem); }
 	.volver a{ color:var(--mm); text-decoration:none; font-size:.82rem; letter-spacing:.03em; }
 	.volver a:hover, .volver a:focus-visible{ color:var(--mi); }

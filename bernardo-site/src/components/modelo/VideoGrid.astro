@@ -1,35 +1,43 @@
 ---
-// Grilla de video compartida por las páginas Motion y Commercials: un
-// cuadrito por video que redirige a YouTube (no se embebe). La miniatura sale
-// del thumbnail público de YouTube — no hace falta que Bernardo suba una
-// imagen aparte.
-const { titulo, videos = [] } = Astro.props;
+// Grilla de video compartida por Motion y por las dos subcategorías de
+// Commercials (Spot TV / Redes sociales): un cuadrito por video que redirige
+// a YouTube (no se embebe). La miniatura sale del thumbnail público de
+// YouTube — no hace falta que Bernardo suba una imagen aparte.
+// "aspect" es la proporción de la miniatura: un spot de TV y un video hecho
+// para redes sociales no miden lo mismo (horizontal vs. vertical), así que
+// cada grupo la define por su cuenta en vez de forzar siempre 16:9.
+const { titulo, videos = [], aspect = '16/9' } = Astro.props;
 ---
 
-<section class="commercials">
-	<h1>{titulo}</h1>
-	<div class="commercials-grid">
-		{videos.map((c) => (
-			<a class="commercial-tile" href={c.url} target="_blank" rel="noopener">
-				<div class="thumb">
-					{c.thumb && <img src={c.thumb} alt="" loading="lazy" width="480" height="270" />}
-					<div class="play" aria-hidden="true"></div>
-				</div>
-				<p class="nombre">{c.nombre}</p>
-			</a>
-		))}
+{videos.length > 0 && (
+	<div class="commercials-grupo">
+		<h2>{titulo}</h2>
+		<div class="commercials-grid" style={`--thumb-aspect:${aspect}`}>
+			{videos.map((c) => (
+				<a class="commercial-tile" href={c.url} target="_blank" rel="noopener">
+					<div class="thumb">
+						{c.thumb && <img src={c.thumb} alt="" loading="lazy" />}
+						<div class="play" aria-hidden="true"></div>
+					</div>
+					<p class="nombre">{c.nombre}</p>
+				</a>
+			))}
+		</div>
 	</div>
-</section>
+)}
 
 <style>
-	.commercials{ padding:clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem); }
-	.commercials h1{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
-		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11;
-		margin:0 0 clamp(1.4rem,3vw,2.2rem); color:var(--mm); }
+	.commercials-grupo{ padding-bottom:clamp(2.4rem,5.5vw,3.6rem); }
+	.commercials-grupo:last-child{ padding-bottom:0; }
+	.commercials-grupo h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
+		font-size:1.1rem; letter-spacing:-.01em; line-height:1.11;
+		margin:0 0 clamp(1.1rem,2.5vw,1.6rem); color:var(--mi); }
 	.commercials-grid{ display:grid; grid-template-columns:1fr; gap:clamp(1.4rem,3.5vw,2.2rem); }
 	@media (min-width:640px){ .commercials-grid{ grid-template-columns:repeat(3,1fr); } }
 	.commercial-tile{ display:block; text-decoration:none; color:inherit; }
-	.commercial-tile .thumb{ position:relative; aspect-ratio:16/9; overflow:hidden; background:var(--ml); }
+	/* La proporción la pone --thumb-aspect (16:9 para Spot TV, 9:16 para Redes
+	   sociales) — mismo mecanismo en ambas subcategorías, sin duplicar CSS. */
+	.commercial-tile .thumb{ position:relative; aspect-ratio:var(--thumb-aspect, 16/9); overflow:hidden; background:var(--ml); }
 	.commercial-tile .thumb img{ width:100%; height:100%; object-fit:cover; display:block;
 		transition:transform .3s ease; }
 	.commercial-tile:hover .thumb img, .commercial-tile:focus-visible .thumb img{ transform:scale(1.05); }

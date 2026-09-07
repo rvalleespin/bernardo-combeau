@@ -224,11 +224,15 @@ img{max-width:100%;}
   background:var(--mp); color:var(--mi); font-family:-apple-system,BlinkMacSystemFont,sans-serif; }
 .modelo-preview .commercials{ padding:clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem); }
 .modelo-preview .commercials h1{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
-  font-size:1.45rem; letter-spacing:-.02em; line-height:1.11; margin:0 0 clamp(1.4rem,3vw,2.2rem); color:var(--mm); }
+  font-size:1.45rem; letter-spacing:-.02em; line-height:1.11; margin:0 0 clamp(1.8rem,4vw,2.6rem); color:var(--mm); }
+.modelo-preview .commercials-grupo{ padding-bottom:clamp(2.4rem,5.5vw,3.6rem); }
+.modelo-preview .commercials-grupo:last-child{ padding-bottom:0; }
+.modelo-preview .commercials-grupo h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
+  font-size:1.1rem; letter-spacing:-.01em; line-height:1.11; margin:0 0 clamp(1.1rem,2.5vw,1.6rem); color:var(--mi); }
 .modelo-preview .commercials-grid{ display:grid; grid-template-columns:1fr; gap:clamp(1.4rem,3.5vw,2.2rem); }
 @media (min-width:640px){ .modelo-preview .commercials-grid{ grid-template-columns:repeat(3,1fr); } }
 .modelo-preview .commercial-tile{ display:block; text-decoration:none; color:inherit; }
-.modelo-preview .commercial-tile .thumb{ position:relative; aspect-ratio:16/9; overflow:hidden; background:var(--ml); }
+.modelo-preview .commercial-tile .thumb{ position:relative; aspect-ratio:var(--thumb-aspect, 16/9); overflow:hidden; background:var(--ml); }
 .modelo-preview .commercial-tile .thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
 .modelo-preview .commercial-tile .play{ position:absolute; inset:0; display:grid; place-items:center; }
 .modelo-preview .commercial-tile .play::after{ content:""; width:0; height:0; margin-left:.2em;
@@ -654,14 +658,19 @@ img{max-width:100%;}
           );
         }
 
-        function videoGrid(titulo, videos) {
+        function videoGrid(titulo, videos, aspect) {
           // Mismo filtro que gridDeVideos(): solo entran los que tienen nombre Y un
           // link que de verdad se puede leer como YouTube o Vimeo.
           var real = videos.filter(function (v) {
             return v.nombre && parseReelId(v.url);
           });
           if (!real.length) return null;
-          return h("section", { className: "commercials" }, h("h1", {}, titulo), h("div", { className: "commercials-grid" }, real.map(videoTile)));
+          return h(
+            "div",
+            { className: "commercials-grupo" },
+            h("h2", {}, titulo),
+            h("div", { className: "commercials-grid", style: { "--thumb-aspect": aspect || "16/9" } }, real.map(videoTile))
+          );
         }
 
         // Motion es una galería de fotos (Commercials sigue siendo videos, arriba) —
@@ -936,7 +945,27 @@ img{max-width:100%;}
                 contenido = selectedWorkSection(entry, listField(entry, ["data", "trabajos"]), getAsset);
               } else if (slug === "modelo_motion") {
                 var motionGrid = photoGrid("Motion", listField(entry, ["data", "fotos"]), getAsset);
-                var comercialesGrid = videoGrid("Commercials", listField(entry, ["data", "comerciales"]));
+                // Commercials se divide en Spot TV (horizontal) y Redes sociales
+                // (vertical) — mismo criterio que VideoGrid.astro en el sitio real:
+                // lo que no tiene categoría cae en Spot TV, nunca en una tercera
+                // categoría inventada.
+                var comercialesLista = listField(entry, ["data", "comerciales"]);
+                var spotTV = videoGrid(
+                  "Spot TV",
+                  comercialesLista.filter(function (v) {
+                    return v.categoria !== "redes-sociales";
+                  }),
+                  "16/9"
+                );
+                var redesSociales = videoGrid(
+                  "Redes sociales",
+                  comercialesLista.filter(function (v) {
+                    return v.categoria === "redes-sociales";
+                  }),
+                  "9/16"
+                );
+                var comercialesGrid =
+                  spotTV || redesSociales ? h("section", { className: "commercials" }, h("h1", {}, "Commercials"), spotTV, redesSociales) : null;
                 contenido = motionGrid || comercialesGrid ? h("div", {}, motionGrid, comercialesGrid) : null;
               } else if (slug === "modelo_polaroids") {
                 contenido = polaroidsSection(listField(entry, ["data", "fotos"]), getAsset);
@@ -1764,11 +1793,23 @@ img{max-width:100%;}
                       name: "comerciales",
                       widget: "list",
                       required: false,
-                      summary: "{{fields.nombre}}",
-                      hint: "Un cuadro por comercial. Al tocarlo, se abre ese video en YouTube (no se reproduce adentro del sitio). La miniatura sale sola del video de YouTube — no hace falta subir imagen. Sección y botón propios, separados de Motion.",
+                      summary: "{{fields.nombre}} — {{fields.categoria}}",
+                      hint: "Un cuadro por comercial. Al tocarlo, se abre ese video en YouTube (no se reproduce adentro del sitio). La miniatura sale sola del video de YouTube — no hace falta subir imagen. Sección y botón propios, separados de Motion. Se muestran en dos grupos separados (Spot TV y Redes sociales) según lo que elijas abajo.",
                       fields: [
                         { label: "Nombre del comercial", name: "nombre", widget: "string", hint: "Ej. Falabella — Verano 2026" },
                         { label: "Link de YouTube", name: "url", widget: "string", hint: "Pega el link normal del video de YouTube, como lo copiás del navegador." },
+                        {
+                          label: "Categoría",
+                          name: "categoria",
+                          widget: "select",
+                          required: false,
+                          default: "spot-tv",
+                          options: [
+                            { label: "Spot TV", value: "spot-tv" },
+                            { label: "Redes sociales", value: "redes-sociales" },
+                          ],
+                          hint: "Spot TV: comercial de televisión, horizontal — se muestra en cuadros anchos (16:9), como los que ya tenías. Redes sociales: contenido hecho para Reels/TikTok/Stories, vertical — se muestra en cuadros altos (9:16), como se ve ese formato de verdad.",
+                        },
                       ],
                     },
                     {
