@@ -164,40 +164,13 @@ a.price-row:focus-visible{outline:2px solid var(--ink); outline-offset:-2px;}
    que la #10) — Ramón pidió sacarla del todo del detalle. */
 .gallery{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(1rem,2.5vw,1.5rem); padding:0 clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); }
 @media (min-width:820px){ .gallery{ grid-template-columns:repeat(3,1fr); } }
-.gallery .card{ display:block; cursor:zoom-in; }
-
-/* Lightbox sin JavaScript: cada foto de la cuadrícula enlaza a #foto-N; el propio
-   navegador aplica :target al div con ese id. El link "✕" vuelve a "#" (sin target),
-   lo que lo cierra. */
-.lightbox{
-  display:none;
-  position:fixed; inset:0; z-index:50;
-  background:rgba(10,9,7,.94);
-  align-items:center; justify-content:center;
-  padding:clamp(1.2rem,4vw,3rem);
-}
-.lightbox:target{ display:flex; }
-.lightbox-media{ display:flex; flex-direction:column; align-items:center; gap:.85rem; max-width:100%; }
-.lightbox-media img{ display:block; max-width:92vw; max-height:80vh; width:auto; height:auto; object-fit:contain; }
-.lightbox-cap{ display:flex; justify-content:space-between; gap:1.5rem; font-size:.8rem; font-style:italic; color:rgba(255,255,255,.7); width:100%; }
-/* min-width/height 48px + grid centrado: mismo piso de área de toque que .visor-btn
-   en Visor.astro (Modelo) — antes solo el padding de prev/next se acercaba, y Cerrar
-   no tenía ningún margen de toque más allá de su propio texto. */
-.lightbox-close{
-  position:absolute; top:clamp(.9rem,3vw,1.6rem); right:clamp(1rem,3vw,2rem);
-  color:#fff; font-size:1.3rem; line-height:1; text-decoration:none; opacity:.85;
-  min-width:48px; min-height:48px; display:grid; place-items:center;
-}
-.lightbox-close:hover, .lightbox-close:focus-visible{ opacity:1; }
-.lightbox-prev, .lightbox-next{
-  position:absolute; top:50%; transform:translateY(-50%);
-  color:#fff; font-size:1.6rem; text-decoration:none; opacity:.7;
-  min-width:48px; min-height:48px; display:grid; place-items:center;
-}
-.lightbox-prev:hover, .lightbox-next:hover, .lightbox-prev:focus-visible, .lightbox-next:focus-visible{ opacity:1; }
-.lightbox-prev{ left:clamp(.2rem,2vw,1rem); }
-.lightbox-next{ right:clamp(.2rem,2vw,1rem); }
-.lightbox-close:focus-visible, .lightbox-prev:focus-visible, .lightbox-next:focus-visible{ outline:2px solid #fff; outline-offset:2px; }
+/* Es un <button>, no un <a href="#foto-N"> — abre el Visor compartido con Modelo
+   (components/modelo/Visor.astro): mismo Escape, foco atrapado y gestos que ya
+   tenía esa sección, en vez del lightbox viejo basado en :target (sin JS, sin
+   Escape, sin mover el foco — nunca se podía cerrar solo con teclado). */
+.gallery .card{ display:block; width:100%; padding:0; border:0; background:none;
+  font:inherit; text-align:inherit; cursor:zoom-in; }
+.gallery .card:focus-visible{ outline:2px solid var(--ink); outline-offset:3px; }
 
 .ext{ padding:1.6rem clamp(1.2rem,4vw,3rem) clamp(2.6rem,6vw,4rem); text-align:right; }
 .ext a{ font-size:.78rem; color:var(--ink); text-decoration:none; border:1px solid var(--line); padding:.35rem .7rem; border-radius:1px; transition:border-color .18s ease, background-color .18s ease; }

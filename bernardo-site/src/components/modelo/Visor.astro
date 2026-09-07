@@ -1,8 +1,10 @@
 ---
-// Visor a tamaño completo, compartido por cualquier página de Modelo que
-// tenga una grilla de fotos (button.photo + data-visor-grupo + data-lb).
-// Extraído de la portada para que Motion (ahora galería de fotos) lo use
-// también, sin duplicar el diálogo ni la lógica.
+// Visor a tamaño completo, compartido por cualquier grilla de fotos del sitio
+// (Modelo Y Retratos/Proyectos) que tenga: un <button data-lb="..."> por foto,
+// agrupados bajo data-visor-grupo. Extraído de la portada de Modelo para que
+// Motion lo usara también, y extendido después a Retratos/Proyectos para
+// reemplazar el lightbox viejo (sin JS, sin Escape, sin foco atrapado) por
+// este mismo mecanismo ya probado.
 ---
 
 <dialog class="visor" aria-label="Full size photo">
@@ -59,7 +61,11 @@
 			img.alt = f.dataset.alt || '';
 			if (img.decode) img.decode().catch(() => {}).then(() => img.classList.add('lista'));
 			else img.classList.add('lista');
-			pie.textContent = f.dataset.alt || '';
+			// data-caption es opcional: Retratos/Proyectos lo usan para mostrar
+			// lugar/año/crédito (dato distinto del alt, que describe la foto en sí).
+			// Sin caption propio (Modelo, hoy) se sigue mostrando el alt, igual que
+			// siempre.
+			pie.textContent = f.dataset.caption || f.dataset.alt || '';
 			aviso.textContent = 'Photo ' + (i + 1) + ' of ' + grupo.length + '. ' + (f.dataset.alt || '');
 			const varias = grupo.length > 1;
 			prev.hidden = !varias;
@@ -76,12 +82,15 @@
 		const mover = (paso) => { i = (i + paso + grupo.length) % grupo.length; pintar(); };
 
 		document.addEventListener('click', (e) => {
-			const b = e.target.closest('button.photo');
+			// Por atributo (data-lb), no por clase: Modelo usa button.photo, Retratos/
+			// Proyectos usan button.card — el visor no debería depender de cuál CSS
+			// use cada sección, solo de que la foto traiga sus URLs listas.
+			const b = e.target.closest('button[data-lb]');
 			if (!b) return;
 			// Un grupo por grilla: sin esto las flechas saltan de la galeria a
 			// Selected Work y de ahi a las polaroids en una sola lista corrida.
 			const cont = b.closest('[data-visor-grupo]') || document;
-			grupo = Array.from(cont.querySelectorAll('button.photo'));
+			grupo = Array.from(cont.querySelectorAll('button[data-lb]'));
 			i = grupo.indexOf(b);
 			ancho = elegirAncho(JSON.parse(b.dataset.lb));
 			pintar();
