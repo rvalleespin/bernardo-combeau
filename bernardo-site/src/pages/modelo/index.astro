@@ -292,10 +292,6 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 		const btn = banda.querySelector('.motion-pausa');
 		const fuente = medio && medio.dataset.src;
 		const menosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)');
-		// El arranque AUTOMATICO al entrar en pantalla (sin que el visitante
-		// toque nada) queda solo para pantallas grandes: ahi el autoplay es
-		// confiable y no le cuesta datos moviles a quien solo esta de paso.
-		const pantallaGrande = window.matchMedia('(min-width: 768px)');
 		const ahorroDatos = navigator.connection && navigator.connection.saveData;
 		let corriendo = false;
 
@@ -327,17 +323,20 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 		};
 
 		if (fuente) {
-			// El botón Play va SIEMPRE que haya video, en cualquier pantalla y con
-			// cualquier preferencia de movimiento: un tap es un gesto real del
-			// visitante, así que reproduce de forma confiable incluso donde el
-			// autoplay automático no corre (ej. bajo consumo de iOS) — antes en el
-			// teléfono no arrancaba solo NI había manera de arrancarlo a mano:
-			// quedaba fija, que es justo lo que reportó Ramón.
+			// Ramón pidió que arranque solo también en el teléfono, no solo en
+			// desktop — el video va muted+playsinline, que es justo el caso que
+			// los navegadores móviles sí dejan autoplayear sin gesto del usuario.
+			// Se sigue respetando "menos movimiento" y ahorro de datos (son
+			// preferencias explícitas del propio visitante, no un límite de
+			// pantalla). El botón Play/Pause queda igual, siempre visible: si el
+			// autoplay llega a fallar igual (ej. bajo consumo de iOS, que ni
+			// siquiera es detectable de antemano), no vuelve a quedar sin ninguna
+			// forma de arrancarla.
 			btn.hidden = false;
 			rotular();
 			btn.addEventListener('click', () => { corriendo ? apagar() : encender(); });
 
-			if (pantallaGrande.matches && !menosMovimiento.matches && !ahorroDatos) {
+			if (!menosMovimiento.matches && !ahorroDatos) {
 				if ('IntersectionObserver' in window) {
 					// No cargar nada hasta que la franja este por entrar en pantalla.
 					const obs = new IntersectionObserver((entradas) => {
