@@ -267,6 +267,7 @@ img{max-width:100%;}
 .modelo-preview .work-detalle{ font-size:.78rem; font-weight:400; letter-spacing:.14em; text-transform:uppercase; color:var(--mm); margin:.4rem 0 0; }
 .modelo-preview .work-fotos .photo{ width:100%; aspect-ratio:16/10; }
 .modelo-preview .work-cuenta{ text-align:center; font-size:.68rem; letter-spacing:.16em; text-transform:uppercase; color:var(--mm); margin:.7rem 0 0; }
+.modelo-preview .work-teaser-foto .photo{ width:100%; aspect-ratio:16/10; }
 
 /* Polaroids */
 .modelo-preview .grid-polaroids{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(1.2rem,3.5vw,2.4rem); }
@@ -737,43 +738,62 @@ img{max-width:100%;}
           return h("div", { className: "identity" }, h("p", {}, texto));
         }
 
-        function selectedWorkSection(trabajos, getAsset) {
+        // Este archivo alimenta DOS lugares del sitio real: la foto de portada que
+        // se ve en Home (teaser, lleva a /modelo/work) y la lista completa de
+        // campañas en /modelo/work — por eso la vista previa arma las dos partes.
+        function selectedWorkSection(entry, trabajos, getAsset) {
+          var fotoPortada = entry.getIn(["data", "fotoPortada"]);
           var real = (trabajos || []).filter(function (t) {
             return t.fotos && t.fotos.some(function (f) {
               return f.src;
             });
           });
-          if (!real.length) return null;
-          return h(
-            "section",
-            { className: "work" },
-            h(
-              "div",
-              { className: "work-list" },
-              real.map(function (job, i) {
-                var fotos = (job.fotos || []).filter(function (f) {
-                  return f.src;
-                });
-                var primera = fotos[0];
-                return h(
-                  "article",
-                  { key: i },
-                  h(
-                    "div",
-                    { className: "work-head" },
-                    h("p", { className: "work-name" }, job.nombre),
-                    job.detalle ? h("p", { className: "work-detalle" }, job.detalle) : null
-                  ),
-                  h(
-                    "div",
-                    { className: "work-fotos" },
-                    photoBox(getAsset, primera.src, primera.alt || job.nombre, null, primera.posicion, primera.zoom)
-                  ),
-                  fotos.length > 1 ? h("p", { className: "work-cuenta" }, fotos.length + " photos") : null
-                );
-              })
-            )
-          );
+          // Mismo fallback que el sitio real: sin portada elegida a propósito, se
+          // usa la primera foto de la primera campaña.
+          var portadaSrc = fotoPortada || (real[0] && real[0].fotos.filter(function (f) { return f.src; })[0].src);
+          if (!portadaSrc && !real.length) return null;
+          var teaser = portadaSrc
+            ? h(
+                "section",
+                { className: "commercials" },
+                h("h1", {}, "Selected Work — portada en Home"),
+                h("div", { className: "work-teaser-foto" }, photoBox(getAsset, portadaSrc, "Selected Work"))
+              )
+            : null;
+          var lista = real.length
+            ? h(
+                "section",
+                { className: "work" },
+                h("h1", {}, "Selected Work — página completa"),
+                h(
+                  "div",
+                  { className: "work-list" },
+                  real.map(function (job, i) {
+                    var fotos = (job.fotos || []).filter(function (f) {
+                      return f.src;
+                    });
+                    var primera = fotos[0];
+                    return h(
+                      "article",
+                      { key: i },
+                      h(
+                        "div",
+                        { className: "work-head" },
+                        h("p", { className: "work-name" }, job.nombre),
+                        job.detalle ? h("p", { className: "work-detalle" }, job.detalle) : null
+                      ),
+                      h(
+                        "div",
+                        { className: "work-fotos" },
+                        photoBox(getAsset, primera.src, primera.alt || job.nombre, null, primera.posicion, primera.zoom)
+                      ),
+                      fotos.length > 1 ? h("p", { className: "work-cuenta" }, fotos.length + " photos") : null
+                    );
+                  })
+                )
+              )
+            : null;
+          return h("div", {}, teaser, lista);
         }
 
         function polaroidsSection(fotos, getAsset) {
@@ -899,7 +919,7 @@ img{max-width:100%;}
               } else if (slug === "modelo_identity") {
                 contenido = identitySection(entry);
               } else if (slug === "modelo_selected_work") {
-                contenido = selectedWorkSection(listField(entry, ["data", "trabajos"]), getAsset);
+                contenido = selectedWorkSection(entry, listField(entry, ["data", "trabajos"]), getAsset);
               } else if (slug === "modelo_motion") {
                 var motionGrid = photoGrid("Motion", listField(entry, ["data", "fotos"]), getAsset);
                 var comercialesGrid = videoGrid("Commercials", listField(entry, ["data", "comerciales"]));
@@ -1626,12 +1646,20 @@ img{max-width:100%;}
                   preview_path: "modelo",
                   fields: [
                     {
+                      label: "Foto de portada de Selected Work (para Home)",
+                      name: "fotoPortada",
+                      widget: "image",
+                      required: false,
+                      ...UPLOAD_LIMIT,
+                      hint: "La foto que representa esta sección en la portada del sitio (Home) — al tocarla se abre la página con todas las campañas. Si la dejas vacía, se usa la primera foto de la primera campaña de abajo.",
+                    },
+                    {
                       label: "Selected Work (campañas y trabajos)",
                       name: "trabajos",
                       widget: "list",
                       required: false,
                       summary: "{{fields.nombre}}",
-                      hint: "Un bloque por campaña o proyecto. El botón \"Ver book completo\" de la Galería lleva directo aquí.",
+                      hint: "Un bloque por campaña o proyecto. Se ven todas juntas en la página propia de Selected Work (a la que lleva la foto de portada de arriba).",
                       fields: [
                         { label: "Nombre del proyecto", name: "nombre", widget: "string", hint: "Ej. ALTOCONCEPTO" },
                         { label: "Detalle", name: "detalle", widget: "string", required: false, hint: "Ej. Menswear · Santiago · 2026" },

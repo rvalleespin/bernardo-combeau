@@ -92,14 +92,14 @@ export const detailGroups = [
 	.map((group) => group.filter(([, v]) => v))
 	.filter((group) => group.length > 0);
 
-// Menú compartido por las tres páginas de Modelo (portada, Motion,
-// Commercials). Motion y Commercials son páginas propias — no anclas — para
-// que cada una tenga su propia URL; el resto son anclas de vuelta a la
+// Menú compartido por las cuatro páginas de Modelo (portada, Work, Motion,
+// Commercials). Work, Motion y Commercials son páginas propias — no anclas —
+// para que cada una tenga su propia URL; el resto son anclas de vuelta a la
 // portada, así que llevan el prefijo /modelo/ para funcionar igual desde
-// cualquiera de las tres páginas.
+// cualquiera de las cuatro páginas.
 export const secciones = [
 	galeriaData.fotos?.length && { href: '/modelo/#book', label: 'Book' },
-	selectedWorkData.trabajos?.length && { href: '/modelo/#work', label: 'Work' },
+	selectedWorkData.trabajos?.length && { href: '/modelo/work', label: 'Work' },
 	motionFotos.length > 0 && { href: '/modelo/motion', label: 'Motion' },
 	comerciales.length > 0 && { href: '/modelo/commercials', label: 'Commercials' },
 	polaroidsData.fotos?.length && { href: '/modelo/#polaroids', label: 'Polaroids' },

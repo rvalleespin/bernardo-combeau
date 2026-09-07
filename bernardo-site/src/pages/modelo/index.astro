@@ -26,6 +26,10 @@ const { heroFoto, heroCaption } = portada;
 const galeria = galeriaData.fotos;
 const identity = identityData.texto;
 const selectedWork = selectedWorkData.trabajos;
+// Portada de la teaser de Selected Work: si no se eligió una a propósito en
+// el panel, se usa la primera foto de la primera campaña — así la sección
+// nunca queda vacía apenas se carga una campaña nueva.
+const workPortada = selectedWorkData.fotoPortada || selectedWork?.[0]?.fotos?.[0]?.src;
 const polaroids = polaroidsData.fotos;
 const { titulo: motionTitulo, reelUrl, videoFondoUrl, poster: motionPoster } = motion;
 
@@ -56,9 +60,6 @@ const motionPosterSrc = motionPoster
 
 const galeriaV = await conVisor(galeria);
 const polaroidsV = await conVisor(polaroids);
-const selectedV = await Promise.all((selectedWork || []).map(async (job) => ({
-	...job, fotos: await conVisor(job.fotos),
-})));
 
 // La linea meta se parte en sus items para que el quiebre en movil caiga
 // siempre en un separador y nunca dentro de "185 cm" o "Grey Hair".
@@ -129,37 +130,18 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 			<div class="identity"><p>{identity}</p></div>
 		)}
 
-		{selectedWork && selectedWork.length > 0 && (
-			<section class="work" id="work">
-				<h2>Selected Work</h2>
-				<div class="work-list">
-					{selectedV.map((job) => (
-						<article class="work-item">
-							<div class="work-head">
-								<p class="work-name">{job.nombre}</p>
-								{job.detalle && <p class="work-detalle">{job.detalle}</p>}
-							</div>
-							{/* Se ve una sola foto por campaña; el resto vive en el DOM sin
-							    mostrarse, para que el visor las recorra al abrir. Asi el nombre
-							    de la campaña se lee como titulo y no como una foto mas, y el
-							    book de arriba sigue siendo la unica grilla de la pagina. */}
-							<div class="work-fotos" data-visor-grupo>
-								{(job.fotos || []).map((img, n) => (
-									<button class="photo" type="button" aria-haspopup="dialog" data-oculta={n > 0 ? '' : undefined}
-										data-lb={JSON.stringify(img.lb)} data-alt={img.alt || job.nombre}>
-										{/* Solo la portada (n=0) se ve recortada — el resto vive oculta
-										    para el visor, que muestra la foto completa sin recorte. */}
-										<Image src={img.src} alt={img.alt || job.nombre} width={1920} quality={82}
-											style={encuadreStyle(img)} />
-									</button>
-								))}
-							</div>
-							{(job.fotos || []).length > 1 && (
-								<p class="work-cuenta">{job.fotos.length} photos</p>
-							)}
-						</article>
-					))}
-				</div>
+		{/* Antes se veían todas las campañas acá. Ahora Selected Work es su propia
+		    página (/modelo/work, mismo criterio que Motion/Commercials) — el "clic
+		    y no pasa nada" que reportó Ramón era justamente esto: no había a dónde
+		    ir. Acá queda solo la portada, que lleva a la lista completa. */}
+		{workPortada && (
+			<section class="work-teaser">
+				<a href="/modelo/work">
+					<p class="work-teaser-name">Selected Work</p>
+					<div class="work-teaser-foto">
+						<Image src={workPortada} alt="Selected Work" width={1920} quality={82} />
+					</div>
+				</a>
 			</section>
 		)}
 
@@ -445,35 +427,20 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 	.identity{ max-width:62ch; margin:0 auto; padding:clamp(1.2rem,3vw,2rem) clamp(1.2rem,4vw,3rem); }
 	.identity p{ font-size:1.1rem; line-height:1.8; }
 
-	/* Selected Work se separa del book por GEOMETRIA, no por color: las
-	   agencias reales (IMG, Next, Premier, Ford, Viva) mantienen el fondo
-	   blanco y cambian ancho y gutter. El book va contenido y con aire; la
-	   campaña va a sangre completa y sin gutter. */
-	.work{ padding:clamp(2.6rem,6vw,4.5rem) 0; }
-	.work > h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
-		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11; color:var(--mm);
-		margin:0 clamp(1.4rem,5vw,4rem) clamp(1.8rem,4vw,2.6rem); }
-	.work-list{ display:flex; flex-direction:column; gap:clamp(2.6rem,6vw,4.5rem); }
-
-	/* El nombre de campaña va chico, en mayusculas y centrado sobre la foto.
-	   Es lo que hacen todas las fichas revisadas: nunca un titular grande, y
-	   con tracking neutro o positivo, no el negativo de los titulares serif.
-	   La jerarquia con la bajada se hace por peso, no por tamaño. */
-	.work-head{ text-align:center; padding:0 clamp(1.4rem,5vw,4rem);
-		margin-bottom:clamp(.9rem,2vw,1.4rem); }
-	.work-name{ font-size:.78rem; font-weight:600; letter-spacing:.16em; text-transform:uppercase;
-		color:var(--mi); margin:0; }
-	.work-detalle{ font-size:.78rem; font-weight:400; letter-spacing:.14em; text-transform:uppercase;
-		color:var(--mm); margin:.4rem 0 0; }
-
-	/* Una sola foto, a sangre completa. Las demas quedan en el DOM para que el
-	   visor las recorra, pero no se muestran. */
-	.work-fotos .photo[data-oculta]{ display:none; }
-	.work-fotos .photo{ width:100%; aspect-ratio:16/10; overflow:hidden; cursor:zoom-in; }
-	.work-fotos .photo img{ width:100%; height:100%; object-fit:cover; display:block; }
-	.work-cuenta{ text-align:center; font-size:.68rem; letter-spacing:.16em; text-transform:uppercase;
-		color:var(--mm); margin:.7rem 0 0; }
-	@media (max-width:640px){ .work-fotos .photo{ aspect-ratio:4/5; } }
+	/* Teaser de Selected Work: una sola foto que lleva a /modelo/work, donde
+	   está la lista completa de campañas (con su propio visor). Mismo criterio
+	   de geometría que el resto de la portada: sangre completa, sin gutter. */
+	.work-teaser{ padding:clamp(2.6rem,6vw,4.5rem) 0; }
+	.work-teaser a{ display:block; text-decoration:none; color:inherit; }
+	.work-teaser-name{ text-align:center; font-size:.78rem; font-weight:600; letter-spacing:.16em;
+		text-transform:uppercase; color:var(--mi); margin:0 0 clamp(.9rem,2vw,1.4rem);
+		padding:0 clamp(1.4rem,5vw,4rem); }
+	.work-teaser-foto{ width:100%; aspect-ratio:16/10; overflow:hidden; }
+	.work-teaser-foto img{ width:100%; height:100%; object-fit:cover; display:block;
+		transition:transform .3s ease; }
+	.work-teaser a:hover .work-teaser-foto img, .work-teaser a:focus-visible .work-teaser-foto img{
+		transform:scale(1.03); }
+	@media (max-width:640px){ .work-teaser-foto{ aspect-ratio:4/5; } }
 
 	/* Franja de Motion: recuperada del historial (se perdió como daño colateral
 	   en un commit ajeno — "Comentarios de Bernardo" del 31 ago — que nunca
