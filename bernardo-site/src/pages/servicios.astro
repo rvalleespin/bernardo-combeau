@@ -11,15 +11,18 @@ import services from '../data/servicios.json';
 	<Nav active="/servicios" />
 	<div class="page-head"><h2>Servicios</h2></div>
 	<div class="price-list">
-		{services.servicios.map((s) => (
-			<div class="price-row">
-				<div class="info">
-					<div class="t">{s.titulo}</div>
-					<div class="d">{s.descripcion}</div>
-				</div>
-				<div class:list={["amount", { cta: s.esCta }]}>{s.precio}</div>
-			</div>
-		))}
+		{services.servicios.map((s) => {
+			const Fila = s.esCta ? 'a' : 'div';
+			return (
+				<Fila class="price-row" href={s.esCta ? '/contacto' : undefined}>
+					<div class="info">
+						<div class="t">{s.titulo}</div>
+						<div class="d">{s.descripcion}</div>
+					</div>
+					<div class:list={["amount", { cta: s.esCta }]}>{s.precio}</div>
+				</Fila>
+			);
+		})}
 	</div>
 	<Footer />
 </Layout>
