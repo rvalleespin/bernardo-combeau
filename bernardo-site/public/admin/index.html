@@ -259,15 +259,27 @@ img{max-width:100%;}
 .modelo-preview .identity{ max-width:62ch; margin:0 auto; padding:clamp(1.2rem,3vw,2rem) clamp(1.2rem,4vw,3rem); }
 .modelo-preview .identity p{ font-size:1.1rem; line-height:1.8; margin:0; }
 
-/* Selected Work */
+/* Selected Work — misma grilla de 2 columnas y flechas de "hay más fotos" que
+   el sitio real (work.astro), para que la vista previa del panel no quede
+   desactualizada respecto a lo que Bernardo ve publicado. */
 .modelo-preview .work{ padding:clamp(2.6rem,6vw,4.5rem) 0; }
-.modelo-preview .work-list{ display:flex; flex-direction:column; gap:clamp(2.6rem,6vw,4.5rem); }
-.modelo-preview .work-head{ text-align:center; padding:0 clamp(1.4rem,5vw,4rem); margin-bottom:clamp(.9rem,2vw,1.4rem); }
+.modelo-preview .work-list{ display:grid; grid-template-columns:1fr; gap:clamp(2.2rem,5vw,3.2rem) clamp(1.4rem,4vw,2.4rem); }
+@media (min-width:640px){ .modelo-preview .work-list{ grid-template-columns:repeat(2,1fr); } }
+.modelo-preview .work-head{ text-align:center; margin-bottom:clamp(.9rem,2vw,1.4rem); }
 .modelo-preview .work-name{ font-size:.78rem; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--mi); margin:0; }
 .modelo-preview .work-detalle{ font-size:.78rem; font-weight:400; letter-spacing:.14em; text-transform:uppercase; color:var(--mm); margin:.4rem 0 0; }
+.modelo-preview .work-fotos{ position:relative; }
 .modelo-preview .work-fotos .photo{ width:100%; aspect-ratio:16/10; }
 .modelo-preview .work-cuenta{ text-align:center; font-size:.68rem; letter-spacing:.16em; text-transform:uppercase; color:var(--mm); margin:.7rem 0 0; }
 .modelo-preview .work-teaser-foto .photo{ width:100%; aspect-ratio:16/10; }
+.modelo-preview .work-mas{ position:absolute; top:50%; transform:translateY(-50%);
+  width:2.25rem; height:2.25rem; display:grid; place-items:center; pointer-events:none; }
+.modelo-preview .work-mas::after{ content:""; width:.55em; height:.55em; border-style:solid; border-color:#fff;
+  border-width:0 2px 2px 0; filter:drop-shadow(0 1px 3px rgba(0,0,0,.55)); }
+.modelo-preview .work-mas-izq{ left:.3rem; }
+.modelo-preview .work-mas-izq::after{ transform:rotate(135deg); }
+.modelo-preview .work-mas-der{ right:.3rem; }
+.modelo-preview .work-mas-der::after{ transform:rotate(-45deg); }
 
 /* Polaroids */
 .modelo-preview .grid-polaroids{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(1.2rem,3.5vw,2.4rem); }
@@ -785,7 +797,9 @@ img{max-width:100%;}
                       h(
                         "div",
                         { className: "work-fotos" },
-                        photoBox(getAsset, primera.src, primera.alt || job.nombre, null, primera.posicion, primera.zoom)
+                        photoBox(getAsset, primera.src, primera.alt || job.nombre, null, primera.posicion, primera.zoom),
+                        fotos.length > 1 ? h("span", { className: "work-mas work-mas-izq" }) : null,
+                        fotos.length > 1 ? h("span", { className: "work-mas work-mas-der" }) : null
                       ),
                       fotos.length > 1 ? h("p", { className: "work-cuenta" }, fotos.length + " photos") : null
                     );

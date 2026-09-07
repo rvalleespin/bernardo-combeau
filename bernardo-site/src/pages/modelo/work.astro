@@ -26,7 +26,9 @@ const selectedV = await Promise.all((selectedWork || []).map(async (job) => ({
 		<section class="work">
 			<h1>Selected Work</h1>
 			<div class="work-list">
-				{selectedV.map((job) => (
+				{selectedV.map((job) => {
+					const tieneMas = (job.fotos || []).length > 1;
+					return (
 					<article class="work-item">
 						<div class="work-head">
 							<p class="work-name">{job.nombre}</p>
@@ -42,14 +44,26 @@ const selectedV = await Promise.all((selectedWork || []).map(async (job) => ({
 									    para el visor, que muestra la foto completa sin recorte. */}
 									<Image src={img.src} alt={img.alt || job.nombre} width={1920} quality={82}
 										style={encuadreStyle(img)} />
+									{/* Aviso de que hay más fotos adentro — a pedido de Ramón, que al
+									    abrir ALTOCONCEPTO (4 fotos) no tenía ninguna señal previa de que
+									    existían más. Solo un indicio visual: el clic sigue siendo el
+									    mismo (abre el visor, que ya trae sus propias flechas
+									    funcionales para recorrerlas). */}
+									{n === 0 && tieneMas && (
+										<>
+											<span class="work-mas work-mas-izq" aria-hidden="true"></span>
+											<span class="work-mas work-mas-der" aria-hidden="true"></span>
+										</>
+									)}
 								</button>
 							))}
 						</div>
-						{(job.fotos || []).length > 1 && (
+						{tieneMas && (
 							<p class="work-cuenta">{job.fotos.length} photos</p>
 						)}
 					</article>
-				))}
+					);
+				})}
 			</div>
 		</section>
 
@@ -65,27 +79,45 @@ const selectedV = await Promise.all((selectedWork || []).map(async (job) => ({
 		min-height:100vh; }
 	:target{ scroll-margin-top:6.5rem; }
 
-	/* Selected Work va a sangre completa y sin gutter — mismo criterio que en
-	   la portada (index.astro), del que se extrajo esta sección. */
+	/* Selected Work va sin gutter dentro de cada cuadro — mismo criterio que en
+	   la portada (index.astro), del que se extrajo esta sección. En 2 columnas
+	   desde tablet (a pedido de Ramón: con una sola columna el scroll crecía
+	   mucho apenas había más de 2-3 campañas cargadas). */
 	.work{ padding:clamp(2.6rem,6vw,4.5rem) 0; }
 	.work > h1{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
 		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11; color:var(--mm);
 		margin:0 clamp(1.4rem,5vw,4rem) clamp(1.8rem,4vw,2.6rem); }
-	.work-list{ display:flex; flex-direction:column; gap:clamp(2.6rem,6vw,4.5rem); }
+	.work-list{ display:grid; grid-template-columns:1fr; gap:clamp(2.2rem,5vw,3.2rem) clamp(1.4rem,4vw,2.4rem);
+		padding:0 clamp(1.4rem,5vw,4rem); }
+	@media (min-width:640px){ .work-list{ grid-template-columns:repeat(2,1fr); } }
 
-	.work-head{ text-align:center; padding:0 clamp(1.4rem,5vw,4rem);
-		margin-bottom:clamp(.9rem,2vw,1.4rem); }
+	.work-head{ text-align:center; margin-bottom:clamp(.9rem,2vw,1.4rem); }
 	.work-name{ font-size:.78rem; font-weight:600; letter-spacing:.16em; text-transform:uppercase;
 		color:var(--mi); margin:0; }
 	.work-detalle{ font-size:.78rem; font-weight:400; letter-spacing:.14em; text-transform:uppercase;
 		color:var(--mm); margin:.4rem 0 0; }
 
 	.work-fotos .photo[data-oculta]{ display:none; }
-	.work-fotos .photo{ width:100%; aspect-ratio:16/10; overflow:hidden; }
+	.work-fotos .photo{ position:relative; width:100%; aspect-ratio:16/10; overflow:hidden; }
 	.work-fotos .photo img{ width:100%; height:100%; object-fit:cover; display:block; }
 	.work-cuenta{ text-align:center; font-size:.68rem; letter-spacing:.16em; text-transform:uppercase;
 		color:var(--mm); margin:.7rem 0 0; }
 	@media (max-width:640px){ .work-fotos .photo{ aspect-ratio:4/5; } }
+
+	/* Flechita a cada lado de la portada: avisa que hay más fotos en ese álbum
+	   antes de tocarla — antes no había ninguna señal (Ramón lo notó recién al
+	   abrir ALTOCONCEPTO y encontrarse con 4 fotos, no 1). Dibujada con CSS
+	   (borde de un cuadrado rotado), mismo criterio que el triángulo de play
+	   de VideoGrid.astro: sin ícono ni SVG externo. Puramente informativa — el
+	   clic sigue abriendo el visor completo, no hace nada por sí sola. */
+	.work-mas{ position:absolute; top:50%; transform:translateY(-50%);
+		width:2.25rem; height:2.25rem; display:grid; place-items:center; pointer-events:none; }
+	.work-mas::after{ content:""; width:.55em; height:.55em; border-style:solid; border-color:#fff;
+		border-width:0 2px 2px 0; filter:drop-shadow(0 1px 3px rgba(0,0,0,.55)); }
+	.work-mas-izq{ left:.3rem; }
+	.work-mas-izq::after{ transform:rotate(135deg); }
+	.work-mas-der{ right:.3rem; }
+	.work-mas-der::after{ transform:rotate(-45deg); }
 
 	button.photo{ display:block; width:100%; padding:0; border:0; background:none;
 		cursor:zoom-in; font:inherit; color:inherit; }

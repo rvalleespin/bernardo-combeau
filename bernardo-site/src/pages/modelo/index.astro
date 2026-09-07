@@ -137,7 +137,7 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 		{workPortada && (
 			<section class="work-teaser">
 				<a href="/modelo/work">
-					<p class="work-teaser-name">Selected Work</p>
+					<h2 class="work-teaser-name">Selected Work</h2>
 					<div class="work-teaser-foto">
 						<Image src={workPortada} alt="Selected Work" width={1920} quality={82} />
 					</div>
@@ -432,9 +432,12 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 	   de geometría que el resto de la portada: sangre completa, sin gutter. */
 	.work-teaser{ padding:clamp(2.6rem,6vw,4.5rem) 0; }
 	.work-teaser a{ display:block; text-decoration:none; color:inherit; }
-	.work-teaser-name{ text-align:center; font-size:.78rem; font-weight:600; letter-spacing:.16em;
-		text-transform:uppercase; color:var(--mi); margin:0 0 clamp(.9rem,2vw,1.4rem);
-		padding:0 clamp(1.4rem,5vw,4rem); }
+	/* Mismo tipo que el resto de los títulos de sección de la portada (Polaroids,
+	   Details, Booking): serif itálica, no la letra chica de mayúsculas que usan
+	   los nombres de campaña dentro de cada trabajo. */
+	.work-teaser-name{ text-align:center; font-family:Georgia,'Times New Roman',serif; font-weight:400;
+		font-style:italic; font-size:1.45rem; letter-spacing:-.02em; line-height:1.11; color:var(--mm);
+		margin:0 0 clamp(1.4rem,3vw,2.2rem); padding:0 clamp(1.4rem,5vw,4rem); }
 	.work-teaser-foto{ width:100%; aspect-ratio:16/10; overflow:hidden; }
 	.work-teaser-foto img{ width:100%; height:100%; object-fit:cover; display:block;
 		transition:transform .3s ease; }
