@@ -292,9 +292,9 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 		const btn = banda.querySelector('.motion-pausa');
 		const fuente = medio && medio.dataset.src;
 		const menosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)');
-		// Como la referencia: en pantallas chicas manda el poster, no el video.
-		// Ahi el autoplay es menos confiable y el loop es puro adorno pagado con
-		// datos del visitante.
+		// El arranque AUTOMATICO al entrar en pantalla (sin que el visitante
+		// toque nada) queda solo para pantallas grandes: ahi el autoplay es
+		// confiable y no le cuesta datos moviles a quien solo esta de paso.
 		const pantallaGrande = window.matchMedia('(min-width: 768px)');
 		const ahorroDatos = navigator.connection && navigator.connection.saveData;
 		let corriendo = false;
@@ -326,19 +326,28 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 			rotular();
 		};
 
-		if (fuente && pantallaGrande.matches && !menosMovimiento.matches && !ahorroDatos) {
+		if (fuente) {
+			// El botón Play va SIEMPRE que haya video, en cualquier pantalla y con
+			// cualquier preferencia de movimiento: un tap es un gesto real del
+			// visitante, así que reproduce de forma confiable incluso donde el
+			// autoplay automático no corre (ej. bajo consumo de iOS) — antes en el
+			// teléfono no arrancaba solo NI había manera de arrancarlo a mano:
+			// quedaba fija, que es justo lo que reportó Ramón.
 			btn.hidden = false;
 			rotular();
-			if ('IntersectionObserver' in window) {
-				// No cargar nada hasta que la franja este por entrar en pantalla.
-				const obs = new IntersectionObserver((entradas) => {
-					entradas.forEach((e) => { if (e.isIntersecting) { encender(); obs.disconnect(); } });
-				}, { rootMargin: '250px' });
-				obs.observe(banda);
-			} else {
-				encender();
-			}
 			btn.addEventListener('click', () => { corriendo ? apagar() : encender(); });
+
+			if (pantallaGrande.matches && !menosMovimiento.matches && !ahorroDatos) {
+				if ('IntersectionObserver' in window) {
+					// No cargar nada hasta que la franja este por entrar en pantalla.
+					const obs = new IntersectionObserver((entradas) => {
+						entradas.forEach((e) => { if (e.isIntersecting) { encender(); obs.disconnect(); } });
+					}, { rootMargin: '250px' });
+					obs.observe(banda);
+				} else {
+					encender();
+				}
+			}
 		}
 	}
 
