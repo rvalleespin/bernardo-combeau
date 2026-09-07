@@ -1,11 +1,10 @@
+/* Fondo negro fijo para todo "Bernardo fotógrafo" — no condicional al tema del
+   sistema. Es identidad del sitio, no una preferencia del visitante. La sección
+   Modelo NO usa estos tokens (tiene los suyos propios, --mp/--mi/--mm/--ml,
+   siempre claros) así que queda blanca sin tocar nada ahí. */
 :root{
-  --paper:#fbfaf8; --ink:#111110; --mute:#84817a; --line:#e7e4dd; --stage:#f0efe9;
+  --paper:#0b0b0a; --ink:#f4f2ec; --mute:#8d8a82; --line:#242320; --stage:#151513;
 }
-@media (prefers-color-scheme: dark){
-  :root{ --paper:#0b0b0a; --ink:#f4f2ec; --mute:#8d8a82; --line:#242320; --stage:#151513; }
-}
-:root[data-theme="dark"]{ --paper:#0b0b0a; --ink:#f4f2ec; --mute:#8d8a82; --line:#242320; --stage:#151513; }
-:root[data-theme="light"]{ --paper:#fbfaf8; --ink:#111110; --mute:#84817a; --line:#e7e4dd; --stage:#f0efe9; }
 
 *{box-sizing:border-box;}
 html,body{margin:0;}
