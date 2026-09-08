@@ -1,6 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import vercel from '@astrojs/vercel';
+import netlify from '@astrojs/netlify';
 import sitemap from '@astrojs/sitemap';
 import { readFileSync } from 'node:fs';
 
@@ -16,7 +16,10 @@ const enObra = Object.entries({ modelo: '/modelo' })
 export default defineConfig({
   site: 'https://bernardocombeau.cl',
   output: 'server',
-  adapter: vercel({ imageService: true }),
+  // 8-sep-2026: migrado de Vercel a Netlify (cambio de casa, mismo sitio — ver
+  // revision-panel-admin-bernardo.md). Sin opciones = usa el Image CDN de Netlify
+  // por defecto, el equivalente directo al imageService de Vercel que reemplaza.
+  adapter: netlify(),
   integrations: [
     sitemap({
       filter: (page) => !enObra.some((ruta) => new URL(page).pathname.replace(/\/$/, '') === ruta),

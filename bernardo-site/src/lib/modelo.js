@@ -1,15 +1,47 @@
 import { getImage } from 'astro:assets';
+import { imageSizeFromFile } from 'image-size/fromFile';
+import { join } from 'node:path';
 import galeriaData from '../data/modelo/galeria.json';
 import selectedWorkData from '../data/modelo/selected-work.json';
 import motion from '../data/modelo/motion.json';
 import polaroidsData from '../data/modelo/polaroids.json';
 import details from '../data/modelo/details.json';
 
-// Anchos VALIDOS del optimizador de Vercel en este proyecto
-// (.vercel/output/config.json -> images.sizes). Verificado en un build real:
-// getImage() ajusta solo cualquier otro valor al mas cercano, y si se omite
-// `quality` el adaptador pone q=100. Nunca armar la URL a mano: en `astro dev`
-// el endpoint es otro (/_image?href=...) y daria 404 en local.
+// Astro exige un alto explícito para toda foto subida por el panel (no son
+// imports estáticos, así que no puede inferir el tamaño solo). El adaptador
+// de Vercel no lo pedía — resolvía el tamaño de otra forma en su propio
+// servicio de imágenes — así que esto quedó al descubierto recién al migrar
+// de casa a Netlify (8-sep-2026, ver revision-panel-admin-bernardo.md). Se
+// lee el archivo real desde public/ una sola vez por foto (cache en memoria
+// del proceso de build) en vez de adivinar o hardcodear una proporción.
+// process.cwd() y no una ruta relativa a este archivo: al buildear, Astro
+// empaqueta este módulo dentro de .netlify/build/ (o el equivalente de cada
+// adaptador), así que import.meta.url deja de apuntar a src/lib/ — cwd sigue
+// siendo la raíz del proyecto (bernardo-site/) tanto en `astro dev` como en
+// `astro build`, ahí SÍ vive de verdad public/.
+const dimCache = new Map();
+async function dimensionesReales(src) {
+	if (!dimCache.has(src)) {
+		const filePath = join(process.cwd(), 'public', src);
+		dimCache.set(src, imageSizeFromFile(filePath));
+	}
+	return dimCache.get(src);
+}
+
+// Alto proporcional a un ancho de destino, a partir del tamaño real del
+// archivo — para pasarle `height` a cualquier <Image> que hoy solo declara
+// `width` (portadas y fotos sueltas que no pasan por conVisor).
+export async function altoParaAncho(src, anchoDeseado) {
+	if (!src) return undefined;
+	const { width, height } = await dimensionesReales(src);
+	return Math.round(anchoDeseado * (height / width));
+}
+
+// Anchos del visor de tamaño completo: cubren pantalla chica/mediana/grande
+// sin generar una variante por cada ancho posible. Nunca armar la URL a
+// mano — usar siempre getImage(), porque el endpoint cambia según dónde
+// corra (Netlify Image CDN en dev y en producción, /_image en un build
+// estático) y a mano quedaría roto en alguno de los dos.
 const LB_ANCHOS = [1200, 1920, 2048];
 
 // Precalcula el set de anchos del visor de tamaño completo para cada foto de
@@ -17,11 +49,16 @@ const LB_ANCHOS = [1200, 1920, 2048];
 // Selected Work, Polaroids, Motion).
 export async function conVisor(fotos) {
 	return Promise.all((fotos || []).map(async (f) => {
+		if (!f.src) return f;
+		const { width: wReal, height: hReal } = await dimensionesReales(f.src);
 		const lb = {};
 		for (const w of LB_ANCHOS) {
-			lb[w] = (await getImage({ src: f.src, width: w, quality: 82 })).src;
+			lb[w] = (await getImage({ src: f.src, width: w, height: Math.round(w * (hReal / wReal)), quality: 82 })).src;
 		}
-		return { ...f, lb };
+		// wReal/hReal: la proporción real del archivo, para que cada página arme
+		// el `height` de SU propio <Image width={N}> (cada una usa un ancho de
+		// miniatura distinto — Book 1200, Polaroids 640, Work 1920...).
+		return { ...f, lb, wReal, hReal };
 	}));
 }
 

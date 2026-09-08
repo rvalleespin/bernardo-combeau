@@ -42,7 +42,7 @@ const selectedV = await Promise.all((selectedWork || []).map(async (job) => ({
 									data-lb={JSON.stringify(img.lb)} data-alt={img.alt || job.nombre}>
 									{/* Solo la portada (n=0) se ve recortada — el resto vive oculta
 									    para el visor, que muestra la foto completa sin recorte. */}
-									<Image src={img.src} alt={img.alt || job.nombre} width={1920} quality={82}
+									<Image src={img.src} alt={img.alt || job.nombre} width={1920} height={Math.round(1920 * (img.hReal / img.wReal))} quality={82}
 										style={encuadreStyle(img)} />
 									{/* Aviso de que hay más fotos adentro — a pedido de Ramón, que al
 									    abrir ALTOCONCEPTO (4 fotos) no tenía ninguna señal previa de que

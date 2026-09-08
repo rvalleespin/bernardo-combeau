@@ -6,8 +6,11 @@ import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import estudio from '../data/estudio.json';
+import { altoParaAncho } from '../lib/modelo.js';
 
-const estudioFotos = estudio.fotos.filter(Boolean);
+const estudioFotos = await Promise.all(
+	estudio.fotos.filter(Boolean).map(async (src) => ({ src, alto: await altoParaAncho(src, 828) }))
+);
 ---
 
 <Layout title="Estudio — Bernardo Combeau" description="Estudio fotográfico de Bernardo Combeau en Las Condes, Santiago — sesiones de retrato y personal branding.">
@@ -15,8 +18,8 @@ const estudioFotos = estudio.fotos.filter(Boolean);
 	<div class="page-head"><h2>Estudio</h2></div>
 	{estudioFotos.length > 0 && (
 		<div class="studio-grid">
-			{estudioFotos.map((src) => (
-				<div class="photo"><Image src={src} alt="Estudio de Bernardo Combeau" width={828} quality={80} /></div>
+			{estudioFotos.map(({ src, alto }) => (
+				<div class="photo"><Image src={src} alt="Estudio de Bernardo Combeau" width={828} height={alto} quality={80} /></div>
 			))}
 		</div>
 	)}

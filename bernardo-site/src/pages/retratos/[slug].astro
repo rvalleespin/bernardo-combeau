@@ -62,7 +62,7 @@ const imagesV = await conVisor(images);
 			<button class="card" type="button" aria-haspopup="dialog"
 				data-lb={JSON.stringify(img.lb)} data-alt={img.alt}
 				data-caption={[img.place, img.year, img.credit].filter(Boolean).join(' · ')}>
-				<div class="photo" style={[img.focus && `--focus:${img.focus}`, img.zoom && `--zoom:${img.zoom}`, img.flip && '--flip:-1'].filter(Boolean).join(';') || undefined}><Image src={img.src} alt={img.alt} width={828} quality={80} /></div>
+				<div class="photo" style={[img.focus && `--focus:${img.focus}`, img.zoom && `--zoom:${img.zoom}`, img.flip && '--flip:-1'].filter(Boolean).join(';') || undefined}><Image src={img.src} alt={img.alt} width={828} height={Math.round(828 * (img.hReal / img.wReal))} quality={80} /></div>
 				{(img.place || img.year || img.credit) && (
 					<div class="cap">
 						<span>{img.place}</span>

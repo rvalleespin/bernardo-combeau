@@ -25,7 +25,7 @@ const fotos = await conVisor(motionFotos);
 				{fotos.map((img) => (
 					<button class="photo" type="button" aria-haspopup="dialog"
 						data-lb={JSON.stringify(img.lb)} data-alt={img.alt || 'Bernardo Combeau'}>
-						<Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={1200} quality={80}
+						<Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={1200} height={Math.round(1200 * (img.hReal / img.wReal))} quality={80}
 							style={encuadreStyle(img)} />
 					</button>
 				))}

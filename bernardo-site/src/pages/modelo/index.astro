@@ -20,7 +20,7 @@ import nav from '../../data/nav.json';
 // Motion y Commercials son páginas propias (/modelo/motion, /modelo/commercials),
 // no secciones de esta portada — la lógica y el menú compartido viven en
 // src/lib/modelo.js para no duplicarlos entre las tres páginas.
-import { parseReel, motionFotos, comerciales, detailGroups, secciones, conVisor, encuadreStyle } from '../../lib/modelo.js';
+import { parseReel, motionFotos, comerciales, detailGroups, secciones, conVisor, encuadreStyle, altoParaAncho } from '../../lib/modelo.js';
 
 const { heroFoto, heroCaption } = portada;
 const galeria = galeriaData.fotos;
@@ -30,6 +30,8 @@ const selectedWork = selectedWorkData.trabajos;
 // el panel, se usa la primera foto de la primera campaña — así la sección
 // nunca queda vacía apenas se carga una campaña nueva.
 const workPortada = selectedWorkData.fotoPortada || selectedWork?.[0]?.fotos?.[0]?.src;
+const heroFotoAlto = heroFoto ? await altoParaAncho(heroFoto, 1920) : undefined;
+const workPortadaAlto = workPortada ? await altoParaAncho(workPortada, 1920) : undefined;
 const polaroids = polaroidsData.fotos;
 const { titulo: motionTitulo, reelUrl, videoFondoUrl, poster: motionPoster } = motion;
 
@@ -55,7 +57,7 @@ const reelFondo = !reel
 const hayFranja = Boolean(videoFondoUrl || reelFondo);
 
 const motionPosterSrc = motionPoster
-	? (await getImage({ src: motionPoster, width: 1920, quality: 70 })).src
+	? (await getImage({ src: motionPoster, width: 1920, height: await altoParaAncho(motionPoster, 1920), quality: 70 })).src
 	: null;
 
 const galeriaV = await conVisor(galeria);
@@ -82,7 +84,7 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 		    tapaba sin agregar nada. */}
 		{heroFoto && (
 			<div class="mhero">
-				<Image src={heroFoto} alt="Bernardo Combeau" width={1920} quality={82} loading="eager" fetchpriority="high" />
+				<Image src={heroFoto} alt="Bernardo Combeau" width={1920} height={heroFotoAlto} quality={82} loading="eager" fetchpriority="high" />
 			</div>
 		)}
 
@@ -113,7 +115,7 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 							{/* El 4/5 recorta poco arriba y abajo, pero igual puede cortar
 							    cabeza en una foto donde el sujeto queda muy arriba en el
 							    encuadre original. Mismo mecanismo que Polaroids. */}
-							<Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={1200} quality={80}
+							<Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={1200} height={Math.round(1200 * (img.hReal / img.wReal))} quality={80}
 								style={encuadreStyle(img)} />
 						</button>
 					))}
@@ -139,7 +141,7 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 				<a href="/modelo/work">
 					<h2 class="work-teaser-name">Selected Work</h2>
 					<div class="work-teaser-foto">
-						<Image src={workPortada} alt="Selected Work" width={1920} quality={82} />
+						<Image src={workPortada} alt="Selected Work" width={1920} height={workPortadaAlto} quality={82} />
 					</div>
 				</a>
 			</section>
@@ -205,7 +207,7 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 							data-lb={JSON.stringify(img.lb)} data-alt={img.alt || 'Bernardo Combeau'}>
 							{/* El cuadrado recorta arriba y abajo. Con "posicion" se elige qué
 							    parte se conserva, para que no quede cortada la cabeza. */}
-							<Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={640} quality={80}
+							<Image src={img.src} alt={img.alt || 'Bernardo Combeau'} width={640} height={Math.round(640 * (img.hReal / img.wReal))} quality={80}
 								style={encuadreStyle(img)} />
 						</button>
 					))}
