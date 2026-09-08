@@ -24,14 +24,30 @@
       ]
     },
     {
-      "nombre": "Nuevas marcas",
+      "nombre": "Nolk",
       "fotos": [
         {
           "posicion": "25%",
           "zoom": "1.3",
-          "src": "/uploads/bc_mercurio_mg_0056.jpg"
+          "src": "/uploads/17010200.jpg"
+        },
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/10002006.jpg"
+        },
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/11011400.jpg"
+        },
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/13004500-1-.jpg"
         }
-      ]
+      ],
+      "detalle": "Outdoor apparel"
     }
   ]
 }
