@@ -157,6 +157,17 @@
           "src": "/uploads/captura-de-pantalla-2026-09-08-a-la-s-1.23.51 a.m..png"
         }
       ]
+    },
+    {
+      "nombre": "KRAFT",
+      "detalle": "Ketchup",
+      "fotos": [
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/captura-de-pantalla-2026-09-08-a-la-s-1.27.58 a.m..png"
+        }
+      ]
     }
   ]
 }
