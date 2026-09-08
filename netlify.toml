@@ -1,3 +1,2 @@
 [build]
-  command = "cd bernardo-site && npm install && npm run build"
-  publish = "bernardo-site/dist"
+  base = "bernardo-site"
