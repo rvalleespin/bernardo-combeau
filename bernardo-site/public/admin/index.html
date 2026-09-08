@@ -1661,7 +1661,7 @@ img{max-width:100%;}
                             { label: "Un poco más abajo", value: "75%" },
                             { label: "Todo abajo", value: "100%" },
                           ],
-                          hint: "La grilla recorta un poco arriba y abajo de una foto vertical. Si te queda cortada la cabeza, elegí una opción más arriba.",
+                          hint: "La grilla recorta un poco arriba y abajo de una foto vertical. Prioriza que se vea el ROSTRO completo por sobre el resto del look — si te queda cortada la cabeza, elegí una opción más arriba.",
                         },
                         zoomField(),
                       ],
@@ -1730,7 +1730,7 @@ img{max-width:100%;}
                                 { label: "Un poco más abajo", value: "75%" },
                                 { label: "Todo abajo", value: "100%" },
                               ],
-                              hint: "La portada se recorta bastante (queda una franja horizontal angosta). Si te queda cortada la cabeza, elegí una opción más arriba.",
+                              hint: "La portada se recorta bastante (queda una franja horizontal angosta). Prioriza que se vea el ROSTRO completo por sobre el resto del look — si te queda cortada la cabeza, elegí una opción más arriba.",
                             },
                             (function () { var f = zoomField(); f.label = "Zoom de la portada (solo aplica a la primera foto)"; return f; })(),
                           ],
@@ -1783,7 +1783,7 @@ img{max-width:100%;}
                             { label: "Un poco más abajo", value: "75%" },
                             { label: "Todo abajo", value: "100%" },
                           ],
-                          hint: "La grilla recorta un poco arriba y abajo de una foto vertical. Si te queda cortada la cabeza, elegí una opción más arriba.",
+                          hint: "La grilla recorta un poco arriba y abajo de una foto vertical. Prioriza que se vea el ROSTRO completo por sobre el resto del look — si te queda cortada la cabeza, elegí una opción más arriba.",
                         },
                         zoomField(),
                       ],
@@ -1859,7 +1859,7 @@ img{max-width:100%;}
                             { label: "Un poco más abajo", value: "75%" },
                             { label: "Todo abajo", value: "100%" },
                           ],
-                          hint: "Las polaroids se muestran en un cuadrado, así que a una foto vertical se le recorta arriba y abajo. Si te queda cortada la cabeza, elegí una opción más arriba.",
+                          hint: "Las polaroids se muestran en un cuadrado, así que a una foto vertical se le recorta arriba y abajo. Prioriza que se vea el ROSTRO completo por sobre el resto del look — si te queda cortada la cabeza, elegí una opción más arriba.",
                         },
                         zoomField(),
                       ],
@@ -1949,6 +1949,13 @@ img{max-width:100%;}
                   fields: [
                     { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
                     {
+                      // Antes: 4 direcciones (arriba/abajo/izquierda/derecha) + volteo. Se
+                      // simplificó a solo-vertical (mismas 5 opciones que ya usa Modelo)
+                      // porque en meses de uso real nadie tocó nunca el valor por defecto
+                      // acá — ni una foto real de Retratos/Proyectos usa izquierda/derecha
+                      // ni volteo. El valor sigue siendo "X% Y%" (X fijo en 50%), así que
+                      // no hace falta tocar el esquema de contenido ni el sitio — 8-sep-
+                      // 2026, a pedido de Ramón, unificando con Modelo.
                       label: "Encuadre en la grilla (recorte cuadrado)",
                       name: "focus",
                       widget: "select",
@@ -1956,15 +1963,14 @@ img{max-width:100%;}
                       default: "50% 50%",
                       options: [
                         { label: "Centrado (por defecto)", value: "50% 50%" },
-                        { label: "Arriba — si se corta la cabeza", value: "50% 0%" },
-                        { label: "Abajo", value: "50% 100%" },
-                        { label: "Izquierda", value: "0% 50%" },
-                        { label: "Derecha", value: "100% 50%" },
+                        { label: "Todo arriba — si te corta la cabeza", value: "50% 0%" },
+                        { label: "Un poco más arriba", value: "50% 25%" },
+                        { label: "Un poco más abajo", value: "50% 75%" },
+                        { label: "Todo abajo", value: "50% 100%" },
                       ],
-                      hint: "La grilla y la home recortan esta foto a un cuadrado. Si el recorte centrado corta algo importante, elegí hacia qué lado mover el recorte — se ve reflejado al instante en la vista previa.",
+                      hint: "La grilla recorta esta foto a un cuadrado. Prioriza que se vea el ROSTRO completo por sobre el resto del look — si el recorte centrado corta la cabeza o parte de la cara, elegí una opción más arriba.",
                     },
                     zoomField(),
-                    flipField(),
                     {
                       label: "Descripción para lectores de pantalla",
                       name: "alt",
@@ -2049,6 +2055,13 @@ img{max-width:100%;}
                   fields: [
                     { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
                     {
+                      // Antes: 4 direcciones (arriba/abajo/izquierda/derecha) + volteo. Se
+                      // simplificó a solo-vertical (mismas 5 opciones que ya usa Modelo)
+                      // porque en meses de uso real nadie tocó nunca el valor por defecto
+                      // acá — ni una foto real de Retratos/Proyectos usa izquierda/derecha
+                      // ni volteo. El valor sigue siendo "X% Y%" (X fijo en 50%), así que
+                      // no hace falta tocar el esquema de contenido ni el sitio — 8-sep-
+                      // 2026, a pedido de Ramón, unificando con Modelo.
                       label: "Encuadre en la grilla (recorte cuadrado)",
                       name: "focus",
                       widget: "select",
@@ -2056,15 +2069,14 @@ img{max-width:100%;}
                       default: "50% 50%",
                       options: [
                         { label: "Centrado (por defecto)", value: "50% 50%" },
-                        { label: "Arriba — si se corta la cabeza", value: "50% 0%" },
-                        { label: "Abajo", value: "50% 100%" },
-                        { label: "Izquierda", value: "0% 50%" },
-                        { label: "Derecha", value: "100% 50%" },
+                        { label: "Todo arriba — si te corta la cabeza", value: "50% 0%" },
+                        { label: "Un poco más arriba", value: "50% 25%" },
+                        { label: "Un poco más abajo", value: "50% 75%" },
+                        { label: "Todo abajo", value: "50% 100%" },
                       ],
-                      hint: "La grilla y la home recortan esta foto a un cuadrado. Si el recorte centrado corta algo importante, elegí hacia qué lado mover el recorte — se ve reflejado al instante en la vista previa.",
+                      hint: "La grilla recorta esta foto a un cuadrado. Prioriza que se vea el ROSTRO completo por sobre el resto del look — si el recorte centrado corta la cabeza o parte de la cara, elegí una opción más arriba.",
                     },
                     zoomField(),
-                    flipField(),
                     {
                       label: "Descripción para lectores de pantalla",
                       name: "alt",
