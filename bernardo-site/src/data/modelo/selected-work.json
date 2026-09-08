@@ -89,6 +89,37 @@
           "src": "/uploads/kano4.webp"
         }
       ]
+    },
+    {
+      "nombre": "CIELO MILANO ",
+      "detalle": "SASTRERÍA",
+      "fotos": [
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/cielo-milano1.jpg"
+        },
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/cielo-milano-4.jpg"
+        },
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/cielo-milano3.jpg"
+        },
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/cileo-milano2.jpg"
+        },
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/cileo-milano-5.jpg"
+        }
+      ]
     }
   ]
 }
