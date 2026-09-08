@@ -141,6 +141,22 @@
           "src": "/uploads/captura-de-pantalla-2026-09-08-a-la-s-1.16.37 a.m..png"
         }
       ]
+    },
+    {
+      "nombre": "JUAN VALDEZ",
+      "detalle": "COFFEE",
+      "fotos": [
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/captura-de-pantalla-2026-09-08-a-la-s-1.23.51 a.m..png"
+        },
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/captura-de-pantalla-2026-09-08-a-la-s-1.23.51 a.m..png"
+        }
+      ]
     }
   ]
 }
