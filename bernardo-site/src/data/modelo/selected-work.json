@@ -64,6 +64,31 @@
           "src": "/uploads/gmo2.jpg"
         }
       ]
+    },
+    {
+      "nombre": "KANO OUTDOOR",
+      "fotos": [
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/kano1.webp"
+        },
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/kano3.webp"
+        },
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/kano2.webp"
+        },
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/kano4.webp"
+        }
+      ]
     }
   ]
 }
