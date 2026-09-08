@@ -48,6 +48,22 @@
         }
       ],
       "detalle": "Outdoor apparel"
+    },
+    {
+      "nombre": "GMO",
+      "detalle": "Eye wear",
+      "fotos": [
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/gmo1.jpg"
+        },
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/gmo2.jpg"
+        }
+      ]
     }
   ]
 }
