@@ -149,6 +149,11 @@
           "posicion": "50%",
           "zoom": "1",
           "src": "/uploads/captura-de-pantalla-2026-09-08-a-la-s-1.16.37 a.m..png"
+        },
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/652748040_17963174111904355_5887395414615668313_n.jpg"
         }
       ]
     },
@@ -176,6 +181,17 @@
           "posicion": "50%",
           "zoom": "1",
           "src": "/uploads/captura-de-pantalla-2026-09-08-a-la-s-1.27.58 a.m..png"
+        }
+      ]
+    },
+    {
+      "nombre": "Habitat",
+      "detalle": "Pension fund",
+      "fotos": [
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/640335412_18579086296038675_415112675851283946_n.jpg"
         }
       ]
     }
