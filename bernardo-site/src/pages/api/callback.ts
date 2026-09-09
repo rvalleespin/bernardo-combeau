@@ -29,7 +29,7 @@ export const GET: APIRoute = async ({ url, request }) => {
   const clientId = import.meta.env.GITHUB_OAUTH_CLIENT_ID;
   const clientSecret = import.meta.env.GITHUB_OAUTH_CLIENT_SECRET;
   if (!clientId || !clientSecret) {
-    return new Response('Falta configurar GITHUB_OAUTH_CLIENT_ID / GITHUB_OAUTH_CLIENT_SECRET en Vercel.', { status: 500 });
+    return new Response('Falta configurar GITHUB_OAUTH_CLIENT_ID / GITHUB_OAUTH_CLIENT_SECRET en Netlify.', { status: 500 });
   }
 
   const code = url.searchParams.get('code');

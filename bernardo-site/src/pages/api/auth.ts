@@ -7,7 +7,7 @@ import type { APIRoute } from 'astro';
 export const GET: APIRoute = async ({ url, redirect }) => {
   const clientId = import.meta.env.GITHUB_OAUTH_CLIENT_ID;
   if (!clientId) {
-    return new Response('Falta configurar GITHUB_OAUTH_CLIENT_ID en Vercel.', { status: 500 });
+    return new Response('Falta configurar GITHUB_OAUTH_CLIENT_ID en Netlify.', { status: 500 });
   }
 
   const state = crypto.randomUUID();
