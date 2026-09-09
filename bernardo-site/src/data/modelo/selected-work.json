@@ -97,6 +97,16 @@
           "posicion": "50%",
           "zoom": "1",
           "src": "/uploads/kano4.webp"
+        },
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/kano5.jpg"
+        },
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/kano6.jpg"
         }
       ]
     },
