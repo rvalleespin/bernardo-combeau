@@ -113,6 +113,22 @@ export function gridDeVideos(lista) {
 		}));
 }
 
+// El reel completo (con controles y sonido, en su proporción nativa) — a
+// diferencia de la grilla de arriba, esto no redirige a YouTube, se ve
+// incrustado en la propia página. Antes vivía en la portada; a pedido de
+// Ramón (10-sep-2026) se muestra en Commercials, entre el header y el
+// título, porque es contenido de comerciales. Se exporta desde acá (no
+// solo se calcula en commercials.astro) porque index.astro también lo
+// necesita como respaldo silencioso de la franja cuando no hay mp4 propio
+// (ver reelFondo ahí) — un solo `reelUrl` sirve a los dos usos.
+export const { reelUrl } = motion;
+const reel = parseReel(reelUrl);
+export const reelEmbed = !reel
+	? null
+	: reel.tipo === 'youtube'
+		? `https://www.youtube-nocookie.com/embed/${reel.id}?rel=0&playsinline=1&iv_load_policy=3`
+		: `https://player.vimeo.com/video/${reel.id}?${reel.hash ? `h=${reel.hash}&` : ''}dnt=1&playsinline=1`;
+
 // Motion es una galería de fotos (no videos, a diferencia de Commercials):
 // mismo criterio de filtro que las otras galerías de Modelo, solo entran las
 // que de verdad tienen imagen cargada.

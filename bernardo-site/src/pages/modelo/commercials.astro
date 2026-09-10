@@ -5,7 +5,7 @@ import Layout from '../../layouts/Layout.astro';
 import ModeloHeader from '../../components/modelo/ModeloHeader.astro';
 import VideoGrid from '../../components/modelo/VideoGrid.astro';
 import nav from '../../data/nav.json';
-import { comercialesSpotTV, comercialesRedes, secciones } from '../../lib/modelo.js';
+import { comercialesSpotTV, comercialesRedes, secciones, reelUrl, reelEmbed } from '../../lib/modelo.js';
 
 // Mismo criterio que la portada: mientras "Modelo" no tenga título en el
 // menú, la sección está en obra y no se ofrece a buscadores.
@@ -15,6 +15,22 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 <Layout title="Bernardo Combeau — Commercials" description="Commercial campaigns featuring Bernardo Combeau, model based in Santiago, Chile." noindex={enObra}>
 	<div class="modelo">
 		<ModeloHeader secciones={secciones} />
+
+		{/* El reel completo — a diferencia de la grilla de abajo, esto no
+		    redirige a YouTube: se ve incrustado acá mismo, con controles y
+		    sonido, en su proporción nativa. A pedido de Ramón (10-sep-2026),
+		    entre el header y el título de la página. */}
+		{reelEmbed && (
+			<div class="reel">
+				<div class="reel-marco">
+					<iframe data-src={reelEmbed} title="Reel — Bernardo Combeau" frameborder="0"
+						allow="fullscreen; picture-in-picture" allowfullscreen></iframe>
+				</div>
+				<noscript>
+					<p class="reel-alt"><a href={reelUrl} target="_blank" rel="noopener">Watch the full reel →</a></p>
+				</noscript>
+			</div>
+		)}
 
 		<section class="commercials-pagina">
 			<h1>Commercials</h1>
@@ -29,11 +45,34 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 	</div>
 </Layout>
 
+<script>
+	// El reproductor pesado no se monta hasta que hace falta.
+	const reelMarco = document.querySelector('.reel-marco iframe');
+	if (reelMarco && reelMarco.dataset.src) {
+		const montar = () => { if (!reelMarco.src) reelMarco.src = reelMarco.dataset.src; };
+		if ('IntersectionObserver' in window) {
+			const obs = new IntersectionObserver((entradas) => {
+				entradas.forEach((e) => { if (e.isIntersecting) { montar(); obs.disconnect(); } });
+			}, { rootMargin: '300px' });
+			obs.observe(reelMarco);
+		} else { montar(); }
+	}
+</script>
+
 <style>
 	.modelo{ --mp: #ffffff; --mi: #111110; --mm: #84817a; --ml: #e7e4dd;
 		background:var(--mp); color:var(--mi); font-family:-apple-system,BlinkMacSystemFont,sans-serif;
 		min-height:100vh; }
 	:target{ scroll-margin-top:6.5rem; }
+
+	/* Contenido, no a sangre completa — un reproductor de video de este tamaño
+	   ocupando todo el ancho se siente pesado; contenido lee como una pieza
+	   destacada, no como una franja decorativa (esa ya existe en la portada). */
+	.reel{ padding:clamp(2rem,5vw,3rem) clamp(1.4rem,5vw,4rem) 0; }
+	.reel-marco{ aspect-ratio:16/9; max-width:960px; margin:0 auto; background:#0b0b0a; overflow:hidden; }
+	.reel-marco iframe{ width:100%; height:100%; border:0; display:block; }
+	.reel-alt{ text-align:center; padding:1rem 0; }
+	.reel-alt a{ color:var(--mi); text-decoration:underline; }
 
 	.commercials-pagina{ padding:clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem) 0; }
 	.commercials-pagina > h1{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;

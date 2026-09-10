@@ -37,13 +37,6 @@ const { titulo: motionTitulo, reelUrl, videoFondoUrl, poster: motionPoster } = m
 
 const reel = parseReel(reelUrl);
 
-// El reel de verdad: con controles y con sonido, en su proporcion nativa.
-const reelEmbed = !reel
-	? null
-	: reel.tipo === 'youtube'
-		? `https://www.youtube-nocookie.com/embed/${reel.id}?rel=0&playsinline=1&iv_load_policy=3`
-		: `https://player.vimeo.com/video/${reel.id}?${reel.hash ? `h=${reel.hash}&` : ''}dnt=1&playsinline=1`;
-
 // Respaldo para la franja cuando todavia no hay mp4 propio: el mismo reel, en
 // silencio y en bucle. Recortado a 21/9 corta cabeza y pies, asi que es el
 // plan B, no el plan A.
@@ -180,21 +173,6 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 					</div>
 				</div>
 				<button class="motion-pausa" type="button" hidden>Pause</button>
-			</section>
-		)}
-
-		{reelEmbed && (
-			<section class="reel" id="reel" aria-labelledby="reel-titulo">
-				<h2 id="reel-titulo">Reel</h2>
-				{/* En su proporcion nativa y con controles: la franja de arriba es
-				    decorativa y va recortada, esta es la pieza que se mira de verdad. */}
-				<div class="reel-marco">
-					<iframe data-src={reelEmbed} title="Reel — Bernardo Combeau" frameborder="0"
-						allow="fullscreen; picture-in-picture" allowfullscreen></iframe>
-				</div>
-				<noscript>
-					<p class="reel-alt"><a href={reelUrl} target="_blank" rel="noopener">Watch the full reel →</a></p>
-				</noscript>
 			</section>
 		)}
 
@@ -352,18 +330,6 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 		}
 	}
 
-	// ---- Reel completo -------------------------------------------------------
-	// Mismo criterio: el reproductor pesado no se monta hasta que hace falta.
-	const reelMarco = document.querySelector('.reel-marco iframe');
-	if (reelMarco && reelMarco.dataset.src) {
-		const montar = () => { if (!reelMarco.src) reelMarco.src = reelMarco.dataset.src; };
-		if ('IntersectionObserver' in window) {
-			const obs = new IntersectionObserver((entradas) => {
-				entradas.forEach((e) => { if (e.isIntersecting) { montar(); obs.disconnect(); } });
-			}, { rootMargin: '300px' });
-			obs.observe(reelMarco);
-		} else { montar(); }
-	}
 
 </script>
 
