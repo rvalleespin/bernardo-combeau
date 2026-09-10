@@ -461,9 +461,13 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 	   estuvo vacío desde entonces). El video corre de fondo, en silencio y en
 	   bucle, y encima van el título y los dos accesos. El poster va también
 	   como fondo de la sección: si el video no arranca (bajo consumo, móvil,
-	   autoplay denegado) igual se ve una imagen y no un rectángulo negro. */
-	.motion{ position:relative; width:100%; aspect-ratio:21/9;
-		min-height:clamp(320px,52vh,420px); max-height:76vh;
+	   autoplay denegado) igual se ve una imagen y no un rectángulo negro.
+	   16:9 puro (a pedido de Ramón: "que quede como un recuadro de YouTube"),
+	   sin min-height/max-height — esos dos peleaban con aspect-ratio en
+	   pantallas angostas: min-height ganaba y la franja terminaba casi
+	   cuadrada y sobre-recortada en el teléfono, en vez de la proporción de
+	   video real que se ve en desktop. */
+	.motion{ position:relative; width:100%; aspect-ratio:16/9;
 		overflow:hidden; background:#0b0b0a center 35%/cover no-repeat;
 		display:grid; place-items:center; }
 	.motion-media{ position:absolute; inset:0; overflow:hidden; }
