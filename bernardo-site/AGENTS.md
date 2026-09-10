@@ -1,5 +1,28 @@
 ## Proyecto: sitio de Bernardo Combeau (fotógrafo)
 
+> **PENDIENTE (10-sep-2026) — 3 cambios de AEO, priorizados, esperando ejecución.** Simón
+> (rol SEO/AEO de SpindleLab) hizo una auditoría completa sobre este sitio y dejó el encargo
+> de código en el repo de SpindleLab:
+> `marketing/encargos-otras-sesiones/encargo-aeo-identidad-modelo-bernardo.md` (auditoría
+> completa en `marketing/oficina/clientes/bernardo-combeau-auditoria-seo-aeo-2026-09-10.md`,
+> mismo repo). **Ejecutar en este orden** (los tres son cambios chicos y aislados, sin
+> depender de aprobación de Bernardo/Ramón para empezar):
+> 1. `Layout.astro` — ampliar el nodo `Person` del JSON-LD: `jobTitle` a array
+>    (`['Fotógrafo de retrato', 'Modelo']`) + sumar términos de modelaje a `knowsAbout`. No
+>    agregar medidas físicas (`details.json`) al JSON-LD sin confirmación explícita de Ramón.
+> 2. `motion.astro` + `astro.config.mjs` — `/modelo/motion` está en `[]` fotos
+>    (`motion.json`) pero se sirve indexable y entra al sitemap. Sumar
+>    `motionFotos.length === 0` a la condición de `enObra`/al filtro del `sitemap()` para que
+>    salga del índice mientras esté vacía.
+> 3. `public/llms.txt` — sumar `/modelo`, `/modelo/work`, `/modelo/commercials` (ya tienen
+>    contenido real). La línea de `/modelo/motion` espera a que el punto 2 esté resuelto y
+>    haya fotos reales cargadas — no antes.
+>
+> Detalle completo, el porqué de cada uno y el resto de hallazgos (P1-P3, no urgentes) están
+> en los dos documentos de arriba — esta nota es solo el resumen ejecutable. Si esta nota
+> sigue acá y ya se hizo, dejarla como RESUELTO (mismo patrón que la nota de abajo) en vez de
+> borrarla.
+
 > **RESUELTO (9/10-sep-2026) — re-verificado contra Netlify, portado solo lo que seguía
 > aplicando.** La rama `claude/fix-redirects-tilde-y-actores` (commit `571b5d3`, sigue pusheada
 > pero ya no hace falta fusionarla ni portar el resto) corregía 2 bugs distintos:
