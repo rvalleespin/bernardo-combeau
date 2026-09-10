@@ -33,11 +33,18 @@ export default defineConfig({
   // "actores" y "la-caida" (SPL-COT-2026-014, Parte 1). Se agregan redirects desde
   // ambas rutas viejas, y se actualiza el destino final de los redirects heredados de
   // /series que ya apuntaban a esas dos.
+  // 9-sep-2026: "actores" se borró en producción (decisión de Ramón desde el panel) —
+  // los redirects que apuntaban ahí quedaban en un 404 encadenado. Se actualizan a
+  // /retratos (la colección), mismo criterio que ya usa /series de arriba. (Nota
+  // aparte, ya resuelta: hubo una rama `claude/fix-redirects-tilde-y-actores` que
+  // trabajaba alrededor de un bug de Vercel donde estas mismas entradas con tilde no
+  // matcheaban en el edge — probado contra Netlify tras la migración y el bug no se
+  // reproduce ahí, así que el workaround de esa rama no se portó, solo este fix real.)
   redirects: {
     '/series': '/retratos',
     '/encargos': '/proyectos',
     '/series/serie-luz-lateral': '/retratos/serie-luz-lateral',
-    '/series/nombre-de-la-serie': '/retratos/actores',
+    '/series/nombre-de-la-serie': '/retratos',
     '/series/la-septima': '/retratos/la-septima',
     '/series/serie-campo-de-flores': '/retratos/serie-campo-de-flores',
     '/series/serie-grafiti-urbano': '/proyectos/serie-grafiti-urbano',
@@ -51,7 +58,7 @@ export default defineConfig({
     // calzaba (revisión del sitio, corrección #2). Al renombrar el archivo
     // (y por tanto la URL) para que el slug refleje el título real, cualquier
     // link ya compartido a la URL vieja se redirige en vez de quedar muerto.
-    '/retratos/nombre-de-la-serie': '/retratos/actores',
+    '/retratos/nombre-de-la-serie': '/retratos',
     '/proyectos/aquí-estoy-creando-algo-nuevo': '/proyectos/la-caida',
 
     // El sitemap real vive en /sitemap-index.xml (así lo genera @astrojs/sitemap, y así

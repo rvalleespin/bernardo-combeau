@@ -1,31 +1,22 @@
 ## Proyecto: sitio de Bernardo Combeau (fotógrafo)
 
-> **PENDIENTE (3-sep-2026) — leer antes de tocar redirects o `astro.config.mjs`.**
-> Repo: `rvalleespin/bernardo-combeau` (GitHub) — ruta local en esta Mac:
-> `PORTAFOLIO/bernardo-site/`. Rama `claude/fix-redirects-tilde-y-actores` (commit `571b5d3`),
-> **pusheada, no fusionada, no descartada**. Corrige 2 bugs de redirect encontrados al revisar
-> el estado de la Parte 1 (SEO) antes de mandar el sitio a Bernardo:
-> 1. `/proyectos/aquí-estoy-creando-algo-nuevo` y `/series/aquí-estoy-creando-algo-nuevo`
->    devolvían 404 en vez de redirigir a `/proyectos/la-caida` — el objeto `redirects` de
->    `astro.config.mjs` compila una entrada con tilde a un regex que **en Vercel** nunca
->    matcheaba contra la request real (confirmado con `/proyectos/el-músico`, una página de
->    contenido real con tilde, que sí respondía 200 — el bug era específico del compilador de
->    `redirects` de Vercel, no de Unicode en general). Fix: dos páginas propias
->    (`src/pages/proyectos/aquí-estoy-creando-algo-nuevo.astro`,
->    `src/pages/series/aquí-estoy-creando-algo-nuevo.astro`) que llaman `Astro.redirect()`,
->    **con `prerender = true` a propósito** — sin eso da el mismo bug (probado y confirmado
->    roto en el preview real antes de revertirlo).
-> 2. `/retratos/nombre-de-la-serie` y `/series/nombre-de-la-serie` apuntaban a
->    `/retratos/actores`, que Ramón borró el 3-sep desde el panel — quedaban en un 404 en
->    cadena. Se actualizan a `/retratos` (la colección).
->
-> Verificado de punta a punta contra el **preview real de Vercel** (no solo local — el bug
-> nunca se reproducía en `astro dev`). **Pero el sitio migró de Vercel a Netlify el 8-sep**,
-> después de armada esta rama — esa verificación ya no aplica tal cual. **Antes de fusionar o
-> portar este fix: re-verificar los 4 redirects contra el sitio en vivo actual (Netlify)** y
-> recién ahí decidir si el fix sigue haciendo falta, si hay que adaptarlo al mecanismo de
-> redirects de Netlify (`_redirects`/`netlify.toml` en vez de páginas propias), o si se puede
-> descartar porque Netlify no tiene este bug.
+> **RESUELTO (9/10-sep-2026) — re-verificado contra Netlify, portado solo lo que seguía
+> aplicando.** La rama `claude/fix-redirects-tilde-y-actores` (commit `571b5d3`, sigue pusheada
+> pero ya no hace falta fusionarla ni portar el resto) corregía 2 bugs distintos:
+> 1. **Bug de Vercel con tildes — NO se reproduce en Netlify, descartado.** Probado en vivo:
+>    `/proyectos/aquí-estoy-creando-algo-nuevo` y `/series/aquí-estoy-creando-algo-nuevo`
+>    responden `301` correcto hacia `/proyectos/la-caida` usando el objeto `redirects` normal
+>    de `astro.config.mjs` (el mismo que fallaba en Vercel) — Netlify lo compila distinto y no
+>    tiene el problema. Las 2 páginas propias que esa rama agregaba como workaround
+>    (`src/pages/proyectos/aquí-estoy-creando-algo-nuevo.astro` y su par en `series/`) no se
+>    portaron: habrían sido complejidad de más para un bug que ya no existe.
+> 2. **Redirect a `/retratos/actores` (página borrada) — real, sin relación con el hosting,
+>    corregido.** Confirmado en vivo que `/retratos/actores` da 404 (Ramón la borró desde el
+>    panel el 3-sep) y que `/retratos/nombre-de-la-serie` + `/series/nombre-de-la-serie` seguían
+>    apuntando ahí — un 404 encadenado. Actualizados los 2 a `/retratos` (la colección) en
+>    `astro.config.mjs`, mismo criterio que ya usan las demás entradas de arriba. Build limpio,
+>    `dist/_redirects` generado por el adaptador de Netlify confirmado con el destino correcto
+>    antes de pushear.
 
 Cotización SPL-COT-2026-014, enviada 8 jul 2026. Estado (9 jul 2026): anticipo/OK confirmado,
 material real (fotos, bio, dirección de arte definitiva) **aún no recibido** — se está
