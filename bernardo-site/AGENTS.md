@@ -1,5 +1,32 @@
 ## Proyecto: sitio de Bernardo Combeau (fotógrafo)
 
+> **PENDIENTE (3-sep-2026) — leer antes de tocar redirects o `astro.config.mjs`.**
+> Repo: `rvalleespin/bernardo-combeau` (GitHub) — ruta local en esta Mac:
+> `PORTAFOLIO/bernardo-site/`. Rama `claude/fix-redirects-tilde-y-actores` (commit `571b5d3`),
+> **pusheada, no fusionada, no descartada**. Corrige 2 bugs de redirect encontrados al revisar
+> el estado de la Parte 1 (SEO) antes de mandar el sitio a Bernardo:
+> 1. `/proyectos/aquí-estoy-creando-algo-nuevo` y `/series/aquí-estoy-creando-algo-nuevo`
+>    devolvían 404 en vez de redirigir a `/proyectos/la-caida` — el objeto `redirects` de
+>    `astro.config.mjs` compila una entrada con tilde a un regex que **en Vercel** nunca
+>    matcheaba contra la request real (confirmado con `/proyectos/el-músico`, una página de
+>    contenido real con tilde, que sí respondía 200 — el bug era específico del compilador de
+>    `redirects` de Vercel, no de Unicode en general). Fix: dos páginas propias
+>    (`src/pages/proyectos/aquí-estoy-creando-algo-nuevo.astro`,
+>    `src/pages/series/aquí-estoy-creando-algo-nuevo.astro`) que llaman `Astro.redirect()`,
+>    **con `prerender = true` a propósito** — sin eso da el mismo bug (probado y confirmado
+>    roto en el preview real antes de revertirlo).
+> 2. `/retratos/nombre-de-la-serie` y `/series/nombre-de-la-serie` apuntaban a
+>    `/retratos/actores`, que Ramón borró el 3-sep desde el panel — quedaban en un 404 en
+>    cadena. Se actualizan a `/retratos` (la colección).
+>
+> Verificado de punta a punta contra el **preview real de Vercel** (no solo local — el bug
+> nunca se reproducía en `astro dev`). **Pero el sitio migró de Vercel a Netlify el 8-sep**,
+> después de armada esta rama — esa verificación ya no aplica tal cual. **Antes de fusionar o
+> portar este fix: re-verificar los 4 redirects contra el sitio en vivo actual (Netlify)** y
+> recién ahí decidir si el fix sigue haciendo falta, si hay que adaptarlo al mecanismo de
+> redirects de Netlify (`_redirects`/`netlify.toml` en vez de páginas propias), o si se puede
+> descartar porque Netlify no tiene este bug.
+
 Cotización SPL-COT-2026-014, enviada 8 jul 2026. Estado (9 jul 2026): anticipo/OK confirmado,
 material real (fotos, bio, dirección de arte definitiva) **aún no recibido** — se está
 trabajando Fase 1-2 (Descubrimiento + Diseño) en paralelo mientras llega.
