@@ -6,73 +6,17 @@
   "fotos": [],
   "comerciales": [
     {
-      "nombre": "Comercial Claro — El mundo avanza, y tu conexión también",
-      "url": "https://www.youtube.com/watch?v=SQPFhT6F3bg",
-      "categoria": "spot-tv"
-    },
-    {
-      "nombre": "Mennt Airless Bag",
-      "url": "https://www.youtube.com/watch?v=Vf8eDVnjs18",
-      "categoria": "spot-tv"
-    },
-    {
-      "nombre": "Skyrizi Commercial #3 2024",
-      "url": "https://www.youtube.com/watch?v=_yuo4Z52okA",
-      "categoria": "spot-tv"
-    },
-    {
-      "nombre": "Ketchup Kraft 2023",
-      "url": "https://www.youtube.com/watch?v=PL8Adb_E7fM",
-      "categoria": "spot-tv"
-    },
-    {
-      "nombre": "Comercial Watts 2023",
-      "url": "https://www.youtube.com/watch?v=tftNTxgJC4A",
-      "categoria": "spot-tv"
-    },
-    {
-      "nombre": "Comercial Canada Dry 2021",
-      "url": "https://www.youtube.com/watch?v=_HeIe15phYA",
-      "categoria": "spot-tv"
-    },
-    {
-      "nombre": "Comercial Ramazzotti 2022",
-      "url": "https://www.youtube.com/watch?v=IA3oJ2doYW4",
-      "categoria": "spot-tv"
-    },
-    {
-      "nombre": "Banco Internacional 2023",
-      "url": "https://www.youtube.com/watch?v=FqECd40ASf4",
-      "categoria": "spot-tv"
-    },
-    {
-      "nombre": "Kit Kat 2006",
-      "url": "https://www.youtube.com/watch?v=O8kirJLhBpk",
-      "categoria": "spot-tv"
-    },
-    {
-      "nombre": "Jumbo Circo",
-      "url": "https://www.youtube.com/watch?v=50U9_1dU2No",
-      "categoria": "spot-tv"
-    },
-    {
-      "nombre": "Kano Outdoor Parkas 2026",
-      "url": "https://www.youtube.com/shorts/aB0-ypxXBC0",
-      "categoria": "redes-sociales"
-    },
-    {
-      "nombre": "Cielo Milano 2025",
-      "url": "https://www.youtube.com/shorts/ZO8hrAOWRQ0",
-      "categoria": "redes-sociales"
-    },
-    {
-      "nombre": "Comercial Santander 2025",
-      "url": "https://www.youtube.com/shorts/CybZ6IAsw2A",
-      "categoria": "redes-sociales"
+      "nombre": "Alto Concepto 2026 (Tailor shop)",
+      "url": "https://www.youtube.com/shorts/rogMIyjZFyc"
     },
     {
       "nombre": "Sastrería Cielo Milano 2026",
       "url": "https://www.youtube.com/shorts/tmjoBG_mTi4",
+      "categoria": "redes-sociales"
+    },
+    {
+      "nombre": "Kano Outdoor Parkas 2026",
+      "url": "https://www.youtube.com/shorts/aB0-ypxXBC0",
       "categoria": "redes-sociales"
     },
     {
@@ -86,18 +30,8 @@
       "categoria": "redes-sociales"
     },
     {
-      "nombre": "Nolk Chile mountain wear (2024)",
-      "url": "https://www.youtube.com/shorts/ShjLcT1yfQ8",
-      "categoria": "redes-sociales"
-    },
-    {
-      "nombre": "Jumbo Navidad 2024",
-      "url": "https://www.youtube.com/shorts/JjKbCeqJ_oI",
-      "categoria": "redes-sociales"
-    },
-    {
-      "nombre": "Comercial Mall Plaza 2024",
-      "url": "https://www.youtube.com/shorts/_kmwWGtsrgo",
+      "nombre": "Cielo Milano 2025",
+      "url": "https://www.youtube.com/shorts/ZO8hrAOWRQ0",
       "categoria": "redes-sociales"
     },
     {
@@ -106,8 +40,74 @@
       "categoria": "redes-sociales"
     },
     {
-      "nombre": "Alto Concepto 2026 (Tailor shop)",
-      "url": "https://www.youtube.com/shorts/rogMIyjZFyc"
+      "nombre": "Comercial Claro — El mundo avanza, y tu conexión también",
+      "url": "https://www.youtube.com/watch?v=SQPFhT6F3bg",
+      "categoria": "spot-tv"
+    },
+    {
+      "nombre": "Jumbo Navidad 2024",
+      "url": "https://www.youtube.com/shorts/JjKbCeqJ_oI",
+      "categoria": "redes-sociales"
+    },
+    {
+      "nombre": "Nolk Chile mountain wear (2024)",
+      "url": "https://www.youtube.com/shorts/ShjLcT1yfQ8",
+      "categoria": "redes-sociales"
+    },
+    {
+      "nombre": "Skyrizi Commercial #3 2024",
+      "url": "https://www.youtube.com/watch?v=_yuo4Z52okA",
+      "categoria": "spot-tv"
+    },
+    {
+      "nombre": "Ketchup Kraft 2023",
+      "url": "https://www.youtube.com/watch?v=PL8Adb_E7fM",
+      "categoria": "spot-tv"
+    },
+    {
+      "nombre": "Banco Internacional 2023",
+      "url": "https://www.youtube.com/watch?v=FqECd40ASf4",
+      "categoria": "spot-tv"
+    },
+    {
+      "nombre": "Comercial Watts 2023",
+      "url": "https://www.youtube.com/watch?v=tftNTxgJC4A",
+      "categoria": "spot-tv"
+    },
+    {
+      "nombre": "Comercial Ramazzotti 2022",
+      "url": "https://www.youtube.com/watch?v=IA3oJ2doYW4",
+      "categoria": "spot-tv"
+    },
+    {
+      "nombre": "Mennt Airless Bag",
+      "url": "https://www.youtube.com/watch?v=Vf8eDVnjs18",
+      "categoria": "spot-tv"
+    },
+    {
+      "nombre": "Comercial Santander 2025",
+      "url": "https://www.youtube.com/shorts/CybZ6IAsw2A",
+      "categoria": "redes-sociales"
+    },
+    {
+      "nombre": "Comercial Canada Dry 2021",
+      "url": "https://www.youtube.com/watch?v=_HeIe15phYA",
+      "categoria": "spot-tv"
+    },
+    {
+      "nombre": "Comercial Mall Plaza 2024",
+      "url": "https://www.youtube.com/shorts/_kmwWGtsrgo",
+      "categoria": "redes-sociales"
+    },
+    {
+      "nombre": "Jumbo Circo",
+      "url": "https://www.youtube.com/watch?v=50U9_1dU2No",
+      "categoria": "spot-tv"
+    },
+    {
+      "nombre": "Kit Kat 2006",
+      "url": "https://www.youtube.com/watch?v=O8kirJLhBpk",
+      "categoria": "spot-tv"
     }
   ]
 }
