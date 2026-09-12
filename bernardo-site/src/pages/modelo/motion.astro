@@ -8,11 +8,15 @@ import Visor from '../../components/modelo/Visor.astro';
 import nav from '../../data/nav.json';
 import { motionFotos, secciones, conVisor, encuadreStyle } from '../../lib/modelo.js';
 
-// Mismo criterio que la portada: mientras "Modelo" no tenga título en el
-// menú, la sección está en obra y no se ofrece a buscadores.
-const enObra = !(nav.modelo && nav.modelo.trim());
-
 const fotos = await conVisor(motionFotos);
+
+// Mismo criterio que la portada (Modelo sin título en el menú = en obra), más
+// un segundo motivo propio de esta página: sin fotos cargadas, Motion es
+// contenido delgado (un <h1> y una grilla vacía) — sacarla del índice
+// mientras esté así, no solo mientras el menú esté sin rótulo (auditoría
+// SEO/AEO, Simón, 10-sep-2026). Se revierte solo apenas Bernardo cargue una
+// foto real desde el panel.
+const enObra = !(nav.modelo && nav.modelo.trim()) || fotos.length === 0;
 ---
 
 <Layout title="Bernardo Combeau — Motion" description="Motion photo gallery featuring Bernardo Combeau, model based in Santiago, Chile." noindex={enObra}>
