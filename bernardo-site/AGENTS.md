@@ -1,5 +1,18 @@
 ## Proyecto: sitio de Bernardo Combeau (fotógrafo)
 
+> **RESUELTO (12-sep-2026) — los 3 cambios de AEO se ejecutaron y se fusionaron a `main`**
+> (commit `8bf1145`, confirmado por Ramón). El detalle sigue abajo tal cual se dejó, como
+> registro de qué se pidió y por qué — no es un pendiente activo.
+>
+> **Nota aparte, sin relación con esto:** al fusionar se confirmó que el sitio llevaba más de
+> una hora sin reflejar los últimos commits de Bernardo (subida de `portada-work.jpg` y de una
+> foto nueva a la galería, ambos del 12-sep) — 404 en vivo pese a estar en `main`. No es un bug
+> de código ni de caché de assets; hay indicios de que el deploy automático de Netlify no se
+> está disparando (o está fallando) y, por separado, que queda una integración vieja de Vercel
+> conectada al repo de GitHub que sigue fallando en cada push ("Account is blocked") desde la
+> migración del 8-sep. Ninguna sesión de código puede diagnosticar esto más allá de lo de
+> arriba — requiere que Ramón revise el dashboard de Netlify directamente.
+
 > **PENDIENTE (10-sep-2026) — 3 cambios de AEO, priorizados, esperando ejecución.** Simón
 > (rol SEO/AEO de SpindleLab) hizo una auditoría completa sobre este sitio y dejó el encargo
 > de código en el repo de SpindleLab:
