@@ -57,7 +57,11 @@ const siteGraph = {
       '@type': 'Person',
       '@id': personId,
       name: 'Bernardo Combeau',
-      jobTitle: 'Fotógrafo de retrato',
+      // Array, no un solo string: además de fotógrafo, tiene su propio
+      // portafolio de modelo (/modelo) — un motor de IA que solo lea este
+      // nodo debe poder confirmar ambos roles sin cruzar a otra página
+      // (auditoría SEO/AEO, Simón, 10-sep-2026).
+      jobTitle: ['Fotógrafo de retrato', 'Modelo'],
       url: Astro.site?.toString(),
       image: new URL(sobremi.foto, Astro.site).toString(),
       email: contacto.email,
@@ -69,7 +73,10 @@ const siteGraph = {
       address: direccion,
       sameAs: instagramURL ? [instagramURL] : undefined,
       worksFor: { '@id': businessId },
-      knowsAbout: ['Retrato', 'Fotografía editorial', 'Personal branding', 'Fotografía corporativa'],
+      knowsAbout: [
+        'Retrato', 'Fotografía editorial', 'Personal branding', 'Fotografía corporativa',
+        'Modelaje comercial', 'Modelaje editorial',
+      ],
       alumniOf: { '@type': 'CollegeOrUniversity', name: 'Pontificia Universidad Católica de Chile' },
     },
     {

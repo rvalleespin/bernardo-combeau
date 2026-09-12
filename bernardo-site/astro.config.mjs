@@ -12,6 +12,13 @@ const enObra = Object.entries({ modelo: '/modelo' })
   .filter(([clave]) => !(nav[clave] && nav[clave].trim()))
   .map(([, ruta]) => ruta);
 
+// /modelo/motion es un segundo caso de "en obra", propio de esta página: sin
+// fotos cargadas es contenido delgado (mismo criterio que motion.astro) — se
+// saca del sitemap mientras `fotos` esté vacío, no solo mientras el menú
+// Modelo no tenga rótulo (auditoría SEO/AEO, Simón, 10-sep-2026).
+const motionData = JSON.parse(readFileSync(new URL('./src/data/modelo/motion.json', import.meta.url), 'utf-8'));
+if (!(motionData.fotos || []).some((f) => f.src)) enObra.push('/modelo/motion');
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://bernardocombeau.cl',
