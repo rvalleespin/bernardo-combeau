@@ -1,17 +1,15 @@
 ---
-// Grilla de video compartida por Motion y por las dos subcategorías de
-// Commercials (Spot TV / Redes sociales): un cuadrito por video que redirige
-// a YouTube (no se embebe). La miniatura sale del thumbnail público de
-// YouTube — no hace falta que Bernardo suba una imagen aparte.
-// "aspect" es la proporción de la miniatura: un spot de TV y un video hecho
-// para redes sociales no miden lo mismo (horizontal vs. vertical), así que
-// cada grupo la define por su cuenta en vez de forzar siempre 16:9.
+// Grilla de Commercials: un cuadrito por video que redirige a YouTube (no se
+// embebe). La miniatura sale del thumbnail público de YouTube — no hace
+// falta que Bernardo suba una imagen aparte. "titulo" es opcional — antes se
+// usaba para separar Spot TV de Redes sociales (a pedido de Bernardo, ya no
+// existe esa distinción); si no se pasa, el grid va sin encabezado propio.
 const { titulo, videos = [], aspect = '16/9' } = Astro.props;
 ---
 
 {videos.length > 0 && (
 	<div class="commercials-grupo">
-		<h2>{titulo}</h2>
+		{titulo && <h2>{titulo}</h2>}
 		<div class="commercials-grid" style={`--thumb-aspect:${aspect}`}>
 			{videos.map((c) => (
 				<a class="commercial-tile" href={c.url} target="_blank" rel="noopener">
@@ -35,8 +33,7 @@ const { titulo, videos = [], aspect = '16/9' } = Astro.props;
 	.commercials-grid{ display:grid; grid-template-columns:1fr; gap:clamp(1.4rem,3.5vw,2.2rem); }
 	@media (min-width:640px){ .commercials-grid{ grid-template-columns:repeat(3,1fr); } }
 	.commercial-tile{ display:block; text-decoration:none; color:inherit; }
-	/* La proporción la pone --thumb-aspect (16:9 para Spot TV, 9:16 para Redes
-	   sociales) — mismo mecanismo en ambas subcategorías, sin duplicar CSS. */
+	/* La proporción la pone --thumb-aspect, definida por quien use el componente. */
 	.commercial-tile .thumb{ position:relative; aspect-ratio:var(--thumb-aspect, 16/9); overflow:hidden; background:var(--ml); }
 	.commercial-tile .thumb img{ width:100%; height:100%; object-fit:cover; display:block;
 		transition:transform .3s ease; }

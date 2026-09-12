@@ -108,7 +108,6 @@ export function gridDeVideos(lista) {
 		.map((c) => ({
 			nombre: c.nombre,
 			url: c.url,
-			categoria: c.categoria,
 			thumb: c.parsed.tipo === 'youtube' ? `https://img.youtube.com/vi/${c.parsed.id}/hqdefault.jpg` : null,
 		}));
 }
@@ -117,14 +116,12 @@ export function gridDeVideos(lista) {
 // mismo criterio de filtro que las otras galerías de Modelo, solo entran las
 // que de verdad tienen imagen cargada.
 export const motionFotos = (motion.fotos || []).filter((f) => f.src);
+// 12-sep-2026: se sacó la distinción Spot TV / Redes sociales (dos grupos con
+// proporción de miniatura distinta) — Bernardo no la quería, prefiere un solo
+// grid que él ordena a mano. El orden lo da directamente el arreglo
+// `comerciales` de motion.json: el widget "list" de Decap ya trae
+// reordenar-arrastrando de fábrica, no hizo falta construir nada nuevo.
 export const comerciales = gridDeVideos(motion.comerciales);
-// Commercials se divide en dos, a pedido de Ramón: un spot de TV y un video
-// hecho para redes sociales no miden lo mismo (horizontal vs. vertical), así
-// que cada uno usa su propia proporción de miniatura en la grilla (ver
-// VideoGrid.astro). Lo que no tiene "categoria" (contenido de antes de este
-// cambio) cae en Spot TV — nunca en una tercera categoría inventada.
-export const comercialesSpotTV = comerciales.filter((c) => c.categoria !== 'redes-sociales');
-export const comercialesRedes = comerciales.filter((c) => c.categoria === 'redes-sociales');
 
 // Tres columnas, como pidio Bernardo: la altura sola, las tres medidas de
 // cuerpo siempre juntas, y el resto de los rasgos aparte. Cada columna se

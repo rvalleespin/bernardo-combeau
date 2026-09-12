@@ -5,7 +5,7 @@ import Layout from '../../layouts/Layout.astro';
 import ModeloHeader from '../../components/modelo/ModeloHeader.astro';
 import VideoGrid from '../../components/modelo/VideoGrid.astro';
 import nav from '../../data/nav.json';
-import { comercialesSpotTV, comercialesRedes, secciones } from '../../lib/modelo.js';
+import { comerciales, secciones } from '../../lib/modelo.js';
 
 // Mismo criterio que la portada: mientras "Modelo" no tenga título en el
 // menú, la sección está en obra y no se ofrece a buscadores.
@@ -18,11 +18,12 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 
 		<section class="commercials-pagina">
 			<h1>Commercials</h1>
-			{/* Spot TV (horizontal, 16:9) y Redes sociales (vertical, 9:16) — un
-			    comercial de TV y un video hecho para redes no miden lo mismo, así
-			    que cada uno tiene su propia proporción de miniatura. */}
-			<VideoGrid titulo="Spot TV" videos={comercialesSpotTV} aspect="16/9" />
-			<VideoGrid titulo="Redes sociales" videos={comercialesRedes} aspect="9/16" />
+			{/* Un solo grid, sin distinguir spot de TV de contenido para redes — a
+			    pedido de Bernardo, que prefiere manejar el orden él mismo (arrastrando
+			    las tarjetas en el panel) en vez de que quede partido en dos grupos.
+			    Cuadrado (1:1) porque mezcla horizontal y vertical: ninguna proporción
+			    fija le hace justicia a ambos por igual. */}
+			<VideoGrid videos={comerciales} aspect="1/1" />
 		</section>
 
 		<p class="volver"><a href="/modelo/">← Model</a></p>
