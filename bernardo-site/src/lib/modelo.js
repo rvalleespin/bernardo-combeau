@@ -6,6 +6,7 @@ import selectedWorkData from '../data/modelo/selected-work.json';
 import motion from '../data/modelo/motion.json';
 import polaroidsData from '../data/modelo/polaroids.json';
 import details from '../data/modelo/details.json';
+import compcard from '../data/modelo/compcard.json';
 
 // Astro exige un alto explícito para toda foto subida por el panel (no son
 // imports estáticos, así que no puede inferir el tamaño solo). El adaptador
@@ -146,5 +147,6 @@ export const secciones = [
 	comerciales.length > 0 && { href: '/modelo/commercials', label: 'Commercials' },
 	polaroidsData.fotos?.length && { href: '/modelo/#polaroids', label: 'Polaroids' },
 	detailGroups.length && { href: '/modelo/#details', label: 'Details' },
+	compcard?.archivo && { href: '/modelo/#compcard', label: 'Comp Card' },
 	{ href: '/modelo/#booking', label: 'Booking' },
 ].filter(Boolean);

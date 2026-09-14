@@ -919,16 +919,35 @@ img{max-width:100%;}
           );
         }
 
+        // Sin foto que mostrar (a diferencia de las demás secciones) — solo un
+        // botón de descarga, así que getAsset se usa únicamente para resolver el
+        // link real al PDF subido, no para pintar nada. Sin archivo cargado, no
+        // hay nada que ofrecer: mejor no mostrar la sección que un botón roto.
+        function compcardSection(entry, getAsset) {
+          var texto = entry.getIn(["data", "texto"]) || "Comp Card — Download PDF";
+          var archivo = entry.getIn(["data", "archivo"]);
+          if (!archivo) return null;
+          var asset = getAsset(archivo);
+          var href = asset ? asset.toString() : null;
+          if (!href) return null;
+          return h(
+            "section",
+            { className: "commercials", style: { textAlign: "center" } },
+            h("h1", {}, "Comp Card"),
+            h("div", { className: "booking-links" }, h("a", { href: href, target: "_blank", rel: "noopener" }, texto))
+          );
+        }
+
         // registerPreviewTemplate() en una colección de varios archivos (Modelo): confirmado
         // leyendo el propio código fuente de Decap (minificado, en decap-cms.js) que la clave
         // real es el nombre del ARCHIVO individual (p.ej. "modelo_motion"), nunca el de la
         // colección completa ("modelo") — un registro a nivel de colección simplemente no se
         // consulta nunca para una entrada de este tipo. Por eso este mismo componente se
-        // registra más abajo bajo los 8 nombres de archivo de Modelo, y decide qué mostrar
+        // registra más abajo bajo los 9 nombres de archivo de Modelo, y decide qué mostrar
         // mirando el SLUG real de la entrada (no la forma de sus campos: "Galería" también
         // tiene un campo llamado "fotos", así que detectar Motion por eso confundía a las dos).
         // Bernardo pidió ver de verdad su trabajo reflejado en el sitio, no solo un aviso —
-        // así que las 8 fichas tienen ahora su propia vista previa real, cada una reconstruye
+        // así que las 9 fichas tienen ahora su propia vista previa real, cada una reconstruye
         // SOLO su sección con el CSS de index.astro (ver el porqué en las funciones de arriba).
         var ModeloPreview = createClass({
           render: function () {
@@ -960,6 +979,8 @@ img{max-width:100%;}
                 contenido = detailsSection(entry);
               } else if (slug === "modelo_booking") {
                 contenido = bookingSection(entry);
+              } else if (slug === "modelo_compcard") {
+                contenido = compcardSection(entry, getAsset);
               } else {
                 return h(
                   "div",
@@ -1005,6 +1026,7 @@ img{max-width:100%;}
         CMS.registerPreviewTemplate("modelo_polaroids", ModeloPreview);
         CMS.registerPreviewTemplate("modelo_details", ModeloPreview);
         CMS.registerPreviewTemplate("modelo_booking", ModeloPreview);
+        CMS.registerPreviewTemplate("modelo_compcard", ModeloPreview);
       })();
 
       // Traduce al español los textos propios de Decap (botones, confirmaciones, la
@@ -1864,6 +1886,30 @@ img{max-width:100%;}
                   fields: [
                     { label: "Región", name: "region", widget: "string", required: false, hint: "Ej. Chile & International" },
                     { label: "Instagram de modelo (con @, puede ser distinto al de fotógrafo)", name: "instagram", widget: "string", required: false },
+                  ],
+                },
+                {
+                  file: "bernardo-site/src/data/modelo/compcard.json",
+                  label: "9. Comp Card",
+                  name: "modelo_compcard",
+                  preview_path: "modelo",
+                  fields: [
+                    {
+                      label: "Texto del botón",
+                      name: "texto",
+                      widget: "string",
+                      required: false,
+                      default: "Comp Card — Download PDF",
+                      hint: "Lo que ve el visitante en el botón de descarga.",
+                    },
+                    {
+                      label: "Archivo (PDF)",
+                      name: "archivo",
+                      widget: "file",
+                      required: false,
+                      ...UPLOAD_LIMIT,
+                      hint: "El PDF que se descarga al tocar el botón. Para sacar la sección del sitio, borrá este archivo (con la 'x' del campo) y guardá — sin archivo, la sección no se muestra.",
+                    },
                   ],
                 },
               ],

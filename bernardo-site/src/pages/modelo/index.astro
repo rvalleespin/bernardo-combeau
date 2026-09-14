@@ -15,6 +15,7 @@ import selectedWorkData from '../../data/modelo/selected-work.json';
 import motion from '../../data/modelo/motion.json';
 import polaroidsData from '../../data/modelo/polaroids.json';
 import booking from '../../data/modelo/booking.json';
+import compcard from '../../data/modelo/compcard.json';
 import contacto from '../../data/contacto.json';
 import nav from '../../data/nav.json';
 // Motion y Commercials son páginas propias (/modelo/motion, /modelo/commercials),
@@ -233,6 +234,19 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 							</dl>
 						))}
 					</div>
+				</section>
+			)}
+
+			{/* Tercera sección junto a Details y Booking, a pedido de Ramón —
+			    el comp card es el PDF de una página que las agencias piden para
+			    ver medidas y look de un vistazo. Solo se ofrece el link cuando de
+			    verdad hay un archivo cargado: nada de un botón muerto. */}
+			{compcard?.archivo && (
+				<section class="compcard" id="compcard">
+					<h2>Comp Card</h2>
+					<a class="compcard-link" href={compcard.archivo} target="_blank" rel="noopener" download>
+						{compcard.texto || 'Comp Card — Download PDF'}
+					</a>
 				</section>
 			)}
 
@@ -572,6 +586,18 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 	.contact-links a:hover, .contact-links a:focus-visible{ background:var(--mi); color:var(--mp); }
 	.mfoot .back{ color:var(--mm); text-decoration:none; font-size:.82rem; margin-top:.6rem; }
 
+	/* Comp Card: tercera pieza entre Details y Booking, mismo trato visual que
+	   ambas (título serif, botón con borde) para que no se lea como algo pegado
+	   aparte. */
+	.compcard{ display:flex; flex-direction:column; align-items:center; gap:1rem; text-align:center;
+		padding:clamp(2rem,5vw,3rem) clamp(1.2rem,4vw,3rem) 0; border-top:1px solid var(--ml); }
+	.compcard h2{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
+		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11; margin:0; color:var(--mm); }
+	.compcard-link{ display:inline-block; color:var(--mi); text-decoration:none; font-size:.82rem;
+		letter-spacing:.03em; border:1px solid var(--mi); padding:.65rem 1.3rem;
+		transition:background-color .2s ease, color .2s ease; }
+	.compcard-link:hover, .compcard-link:focus-visible{ background:var(--mi); color:var(--mp); }
+
 	/* Details no llena el ancho por sí solo y Booking se repetía como bloque
 	   centrado abajo. Desde tablet van en la misma fila — y CENTRADOS como
 	   par (no "space-between": eso estiraba a Details y dejaba un vacío
@@ -580,6 +606,8 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 	@media (min-width:760px){
 		.details-booking{ flex-direction:row; align-items:flex-start; justify-content:center; gap:clamp(2.5rem,6vw,5rem); }
 		.details-booking .stats{ flex:0 1 auto; padding-bottom:0; }
+		.details-booking .compcard{ flex:0 1 auto; border-top:0; border-left:1px solid var(--ml);
+			padding-top:clamp(1.4rem,3vw,2.2rem); padding-bottom:0; padding-left:clamp(2.5rem,6vw,5rem); }
 		.details-booking .mfoot{ flex:0 1 auto; align-items:flex-start; text-align:left;
 			border-top:0; border-left:1px solid var(--ml);
 			padding-top:clamp(1.4rem,3vw,2.2rem); padding-bottom:0; padding-left:clamp(2.5rem,6vw,5rem); }
