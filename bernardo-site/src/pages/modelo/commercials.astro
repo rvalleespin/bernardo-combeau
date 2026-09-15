@@ -34,7 +34,14 @@ const { recapVideoUrl } = motion;
 				<aside class="recap">
 					<div class="recap-marco">
 						{recapVideoUrl ? (
-							<video data-src={recapVideoUrl} muted loop playsinline preload="none" tabindex="-1"></video>
+							<>
+								<video data-src={recapVideoUrl} muted loop playsinline preload="none" tabindex="-1"></video>
+								{/* Empieza mudo porque ningún navegador deja que un video con audio
+								    se reproduzca solo sin que el visitante haya interactuado antes
+								    (no es un límite del sitio, es política del navegador) — este
+								    botón es la salida real para el que sí quiere escucharlo. */}
+								<button class="recap-sound" type="button" aria-pressed="false">Sound</button>
+							</>
 						) : (
 							<iframe data-src={reelEmbed} title="Recap — Bernardo Combeau" frameborder="0"
 								allow="fullscreen; picture-in-picture" allowfullscreen></iframe>
@@ -77,6 +84,15 @@ const { recapVideoUrl } = motion;
 			}, { rootMargin: '300px' });
 			obs.observe(recapMarco);
 		} else { montar(); }
+
+		const botonSonido = document.querySelector('.recap-sound');
+		if (esVideo && botonSonido) {
+			botonSonido.addEventListener('click', () => {
+				recapMarco.muted = !recapMarco.muted;
+				botonSonido.textContent = recapMarco.muted ? 'Sound' : 'Mute';
+				botonSonido.setAttribute('aria-pressed', String(!recapMarco.muted));
+			});
+		}
 	}
 </script>
 
@@ -102,10 +118,15 @@ const { recapVideoUrl } = motion;
 		.recap{ flex:0 0 clamp(220px,26vw,320px); position:sticky; top:6.5rem;
 			padding:clamp(2.6rem,7vw,5rem) 0 clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem); }
 	}
-	.recap-marco{ aspect-ratio:9/16; max-width:360px; margin:0 auto; background:#0b0b0a; overflow:hidden; }
+	.recap-marco{ position:relative; aspect-ratio:9/16; max-width:360px; margin:0 auto; background:#0b0b0a; overflow:hidden; }
 	@media (min-width:760px){ .recap-marco{ max-width:none; } }
 	.recap-marco iframe{ width:100%; height:100%; border:0; display:block; }
 	.recap-marco video{ width:100%; height:100%; object-fit:cover; display:block; }
+	.recap-sound{ position:absolute; right:.6rem; bottom:.6rem; background:rgba(11,11,10,.6);
+		color:#fff; border:1px solid rgba(255,255,255,.5); padding:.35rem .75rem;
+		font-size:.65rem; letter-spacing:.12em; text-transform:uppercase; cursor:pointer;
+		transition:background-color .2s ease; }
+	.recap-sound:hover, .recap-sound:focus-visible{ background:rgba(11,11,10,.85); }
 	.recap-alt{ text-align:center; padding:1rem 0; }
 	.recap-alt a{ color:var(--mi); text-decoration:underline; }
 
