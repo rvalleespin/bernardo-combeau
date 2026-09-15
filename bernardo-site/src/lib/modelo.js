@@ -113,6 +113,19 @@ export function gridDeVideos(lista) {
 		}));
 }
 
+// El recap de Commercials: a diferencia de la grilla de arriba, este SÍ se ve
+// incrustado (con controles y sonido), no redirige a YouTube — es la pieza
+// destacada de la página, fijada al costado mientras el resto hace scroll
+// (a pedido de Ramón, 15-sep-2026). youtube-nocookie por privacidad, mismo
+// criterio que cualquier otro embed de este sitio.
+export const { reelUrl } = motion;
+const reel = parseReel(reelUrl);
+export const reelEmbed = !reel
+	? null
+	: reel.tipo === 'youtube'
+		? `https://www.youtube-nocookie.com/embed/${reel.id}?rel=0&playsinline=1&iv_load_policy=3`
+		: `https://player.vimeo.com/video/${reel.id}?${reel.hash ? `h=${reel.hash}&` : ''}dnt=1&playsinline=1`;
+
 // Motion es una galería de fotos (no videos, a diferencia de Commercials):
 // mismo criterio de filtro que las otras galerías de Modelo, solo entran las
 // que de verdad tienen imagen cargada.

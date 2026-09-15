@@ -5,7 +5,7 @@ import Layout from '../../layouts/Layout.astro';
 import ModeloHeader from '../../components/modelo/ModeloHeader.astro';
 import VideoGrid from '../../components/modelo/VideoGrid.astro';
 import nav from '../../data/nav.json';
-import { comerciales, secciones } from '../../lib/modelo.js';
+import { comerciales, secciones, reelUrl, reelEmbed } from '../../lib/modelo.js';
 
 // Mismo criterio que la portada: mientras "Modelo" no tenga título en el
 // menú, la sección está en obra y no se ofrece a buscadores.
@@ -16,19 +16,52 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 	<div class="modelo">
 		<ModeloHeader secciones={secciones} />
 
-		<section class="commercials-pagina">
-			<h1>Commercials</h1>
-			{/* Un solo grid, sin distinguir spot de TV de contenido para redes — a
-			    pedido de Bernardo, que prefiere manejar el orden él mismo (arrastrando
-			    las tarjetas en el panel) en vez de que quede partido en dos grupos.
-			    Cuadrado (1:1) porque mezcla horizontal y vertical: ninguna proporción
-			    fija le hace justicia a ambos por igual. */}
-			<VideoGrid videos={comerciales} aspect="1/1" />
-		</section>
+		<div class="commercials-layout">
+			{/* Recap: el video vertical de Bernardo con su trabajo comercial. Fijo al
+			    costado en vez de arriba de la grilla — a pedido de Ramón, para que
+			    destaque sin alargar el scroll de la página con un video 9:16 puesto
+			    horizontalmente. Se ve incrustado (con controles y sonido), no
+			    redirige a YouTube como las tarjetas de la grilla. */}
+			{reelEmbed && (
+				<aside class="recap">
+					<div class="recap-marco">
+						<iframe data-src={reelEmbed} title="Recap — Bernardo Combeau" frameborder="0"
+							allow="fullscreen; picture-in-picture" allowfullscreen></iframe>
+					</div>
+					<noscript>
+						<p class="recap-alt"><a href={reelUrl} target="_blank" rel="noopener">Watch the recap →</a></p>
+					</noscript>
+				</aside>
+			)}
+
+			<section class="commercials-pagina">
+				<h1>Commercials</h1>
+				{/* Un solo grid, sin distinguir spot de TV de contenido para redes — a
+				    pedido de Bernardo, que prefiere manejar el orden él mismo (arrastrando
+				    las tarjetas en el panel) en vez de que quede partido en dos grupos.
+				    Cuadrado (1:1) porque mezcla horizontal y vertical: ninguna proporción
+				    fija le hace justicia a ambos por igual. */}
+				<VideoGrid videos={comerciales} aspect="1/1" />
+			</section>
+		</div>
 
 		<p class="volver"><a href="/modelo/">← Model</a></p>
 	</div>
 </Layout>
+
+<script>
+	// El reproductor pesado no se monta hasta que hace falta.
+	const recapMarco = document.querySelector('.recap-marco iframe');
+	if (recapMarco && recapMarco.dataset.src) {
+		const montar = () => { if (!recapMarco.src) recapMarco.src = recapMarco.dataset.src; };
+		if ('IntersectionObserver' in window) {
+			const obs = new IntersectionObserver((entradas) => {
+				entradas.forEach((e) => { if (e.isIntersecting) { montar(); obs.disconnect(); } });
+			}, { rootMargin: '300px' });
+			obs.observe(recapMarco);
+		} else { montar(); }
+	}
+</script>
 
 <style>
 	.modelo{ --mp: #ffffff; --mi: #111110; --mm: #84817a; --ml: #e7e4dd;
@@ -36,7 +69,30 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 		min-height:100vh; }
 	:target{ scroll-margin-top:6.5rem; }
 
-	.commercials-pagina{ padding:clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem) 0; }
+	/* Una sola columna en móvil (el recap va arriba, la grilla abajo — fijarlo
+	   no tiene sentido sin una columna al lado con la que compartir el
+	   scroll). Desde tablet, dos columnas: el recap queda "pegado" (sticky)
+	   dentro de su columna mientras la grilla larga hace scroll al lado —
+	   soluciona el problema real de un video 9:16 puesto horizontalmente
+	   arriba de la página (alargaría el scroll para todo lo demás). */
+	.commercials-layout{ display:flex; flex-direction:column; }
+	@media (min-width:760px){
+		.commercials-layout{ flex-direction:row; align-items:flex-start; gap:clamp(2rem,4vw,3.5rem); }
+	}
+
+	.recap{ padding:clamp(1.8rem,5vw,3rem) clamp(1.4rem,5vw,4rem) 0; }
+	@media (min-width:760px){
+		.recap{ flex:0 0 clamp(220px,26vw,320px); position:sticky; top:6.5rem;
+			padding:clamp(2.6rem,7vw,5rem) 0 clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem); }
+	}
+	.recap-marco{ aspect-ratio:9/16; max-width:360px; margin:0 auto; background:#0b0b0a; overflow:hidden; }
+	@media (min-width:760px){ .recap-marco{ max-width:none; } }
+	.recap-marco iframe{ width:100%; height:100%; border:0; display:block; }
+	.recap-alt{ text-align:center; padding:1rem 0; }
+	.recap-alt a{ color:var(--mi); text-decoration:underline; }
+
+	.commercials-pagina{ flex:1 1 auto; min-width:0; padding:clamp(2.6rem,7vw,5rem) clamp(1.4rem,5vw,4rem) 0; }
+	@media (min-width:760px){ .commercials-pagina{ padding-left:0; } }
 	.commercials-pagina > h1{ font-family:Georgia,'Times New Roman',serif; font-weight:400; font-style:italic;
 		font-size:1.45rem; letter-spacing:-.02em; line-height:1.11;
 		margin:0 0 clamp(1.8rem,4vw,2.6rem); color:var(--mm); }
