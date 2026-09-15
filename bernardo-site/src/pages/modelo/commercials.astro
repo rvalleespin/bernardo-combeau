@@ -5,11 +5,20 @@ import Layout from '../../layouts/Layout.astro';
 import ModeloHeader from '../../components/modelo/ModeloHeader.astro';
 import VideoGrid from '../../components/modelo/VideoGrid.astro';
 import nav from '../../data/nav.json';
+import motion from '../../data/modelo/motion.json';
 import { comerciales, secciones, reelUrl, reelEmbed } from '../../lib/modelo.js';
 
 // Mismo criterio que la portada: mientras "Modelo" no tenga título en el
 // menú, la sección está en obra y no se ofrece a buscadores.
 const enObra = !(nav.modelo && nav.modelo.trim());
+
+// El embed de YouTube quedó bloqueado para este video específico (Content ID
+// de la canción con la que Bernardo lo armó — se ve bien en YouTube mismo,
+// pero YouTube no lo deja incrustar en otro sitio). Autohospedado en vez de
+// vía iframe: sin controles, en loop y mudo — mismo patrón que la franja de
+// Motion (index.astro) para el mismo tipo de video vertical de fondo. Si
+// algún día falta el archivo propio, reelEmbed queda como respaldo.
+const { recapVideoUrl } = motion;
 ---
 
 <Layout title="Bernardo Combeau — Commercials" description="Commercial campaigns featuring Bernardo Combeau, model based in Santiago, Chile." noindex={enObra}>
@@ -20,16 +29,19 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 			{/* Recap: el video vertical de Bernardo con su trabajo comercial. Fijo al
 			    costado en vez de arriba de la grilla — a pedido de Ramón, para que
 			    destaque sin alargar el scroll de la página con un video 9:16 puesto
-			    horizontalmente. Se ve incrustado (con controles y sonido), no
-			    redirige a YouTube como las tarjetas de la grilla. */}
-			{reelEmbed && (
+			    horizontalmente. No redirige a YouTube como las tarjetas de la grilla. */}
+			{(recapVideoUrl || reelEmbed) && (
 				<aside class="recap">
 					<div class="recap-marco">
-						<iframe data-src={reelEmbed} title="Recap — Bernardo Combeau" frameborder="0"
-							allow="fullscreen; picture-in-picture" allowfullscreen></iframe>
+						{recapVideoUrl ? (
+							<video data-src={recapVideoUrl} muted loop playsinline preload="none" tabindex="-1"></video>
+						) : (
+							<iframe data-src={reelEmbed} title="Recap — Bernardo Combeau" frameborder="0"
+								allow="fullscreen; picture-in-picture" allowfullscreen></iframe>
+						)}
 					</div>
 					<noscript>
-						<p class="recap-alt"><a href={reelUrl} target="_blank" rel="noopener">Watch the recap →</a></p>
+						<p class="recap-alt"><a href={recapVideoUrl || reelUrl} target="_blank" rel="noopener">Watch the recap →</a></p>
 					</noscript>
 				</aside>
 			)}
@@ -51,9 +63,14 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 
 <script>
 	// El reproductor pesado no se monta hasta que hace falta.
-	const recapMarco = document.querySelector('.recap-marco iframe');
+	const recapMarco = document.querySelector('.recap-marco video, .recap-marco iframe');
 	if (recapMarco && recapMarco.dataset.src) {
-		const montar = () => { if (!recapMarco.src) recapMarco.src = recapMarco.dataset.src; };
+		const esVideo = recapMarco.tagName === 'VIDEO';
+		const montar = () => {
+			if (recapMarco.src) return;
+			recapMarco.src = recapMarco.dataset.src;
+			if (esVideo) recapMarco.play().catch(() => {});
+		};
 		if ('IntersectionObserver' in window) {
 			const obs = new IntersectionObserver((entradas) => {
 				entradas.forEach((e) => { if (e.isIntersecting) { montar(); obs.disconnect(); } });
@@ -88,6 +105,7 @@ const enObra = !(nav.modelo && nav.modelo.trim());
 	.recap-marco{ aspect-ratio:9/16; max-width:360px; margin:0 auto; background:#0b0b0a; overflow:hidden; }
 	@media (min-width:760px){ .recap-marco{ max-width:none; } }
 	.recap-marco iframe{ width:100%; height:100%; border:0; display:block; }
+	.recap-marco video{ width:100%; height:100%; object-fit:cover; display:block; }
 	.recap-alt{ text-align:center; padding:1rem 0; }
 	.recap-alt a{ color:var(--mi); text-decoration:underline; }
 
