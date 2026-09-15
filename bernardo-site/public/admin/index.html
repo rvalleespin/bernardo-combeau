@@ -1721,13 +1721,13 @@ img{max-width:100%;}
                           widget: "list",
                           min: 1,
                           max: 12,
-                          hint: "La primera foto es la portada de la campaña y se muestra a ancho completo, recortada en franja horizontal (bastante arriba y abajo). El resto solo se ve al abrir el visor, sin recorte.",
+                          hint: "La PRIMERA foto de esta lista es la que se usa como portada de la campaña — se muestra a ancho completo, recortada en franja horizontal (bastante arriba y abajo). El resto de las fotos no lleva ese recorte, se ven completas al abrir el visor. ¿Quieres que sea otra la portada? Arrástrala al primer lugar de esta lista.",
                           summary: "{{fields.alt}}",
                           fields: [
                             { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
                             { label: "Descripción para lectores de pantalla", name: "alt", widget: "string", required: false },
                             {
-                              label: "Encuadre de la portada (solo aplica a la primera foto)",
+                              label: "Encuadre de la portada — solo tiene efecto si ESTA es la primera foto",
                               name: "posicion",
                               widget: "select",
                               required: false,
@@ -1739,9 +1739,14 @@ img{max-width:100%;}
                                 { label: "Un poco más abajo", value: "75%" },
                                 { label: "Todo abajo", value: "100%" },
                               ],
-                              hint: "La portada se recorta bastante (queda una franja horizontal angosta). Prioriza que se vea el ROSTRO completo por sobre el resto del look — si te queda cortada la cabeza, elegí una opción más arriba.",
+                              hint: "Este campo solo hace algo cuando esta foto es la primera de la lista (la portada de la campaña) — en cualquier otra posición, no tiene ningún efecto. La portada se recorta bastante (queda una franja horizontal angosta): prioriza que se vea el ROSTRO completo por sobre el resto del look — si te queda cortada la cabeza, elegí una opción más arriba.",
                             },
-                            (function () { var f = zoomField(); f.label = "Zoom de la portada (solo aplica a la primera foto)"; return f; })(),
+                            (function () {
+                              var f = zoomField();
+                              f.label = "Zoom de la portada — solo tiene efecto si ESTA es la primera foto";
+                              f.hint = "Este campo solo hace algo cuando esta foto es la primera de la lista (la portada de la campaña) — en cualquier otra posición, no tiene ningún efecto. " + f.hint;
+                              return f;
+                            })(),
                           ],
                         },
                       ],
