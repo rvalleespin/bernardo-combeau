@@ -1698,12 +1698,12 @@ img{max-width:100%;}
                   preview_path: "modelo",
                   fields: [
                     {
-                      label: "Foto de portada de Selected Work (para Home)",
+                      label: "Foto de portada de TODO Selected Work (la que se ve en Home)",
                       name: "fotoPortada",
                       widget: "image",
                       required: false,
                       ...UPLOAD_LIMIT,
-                      hint: "La foto que representa esta sección en la portada del sitio (Home) — al tocarla se abre la página con todas las campañas. Si la dejas vacía, se usa la primera foto de la primera campaña de abajo.",
+                      hint: "Ojo: esta portada es distinta de la portada de cada campaña (más abajo). Esta es UNA sola foto que representa TODO Selected Work en Home — al tocarla se abre la lista completa de campañas. Si la dejas vacía, se usa la primera foto de la primera campaña de abajo.",
                     },
                     {
                       label: "Selected Work (campañas y trabajos)",
@@ -1711,23 +1711,23 @@ img{max-width:100%;}
                       widget: "list",
                       required: false,
                       summary: "{{fields.nombre}}",
-                      hint: "Un bloque por campaña o proyecto. Se ven todas juntas en la página propia de Selected Work (a la que lleva la foto de portada de arriba).",
+                      hint: "Un bloque por campaña o proyecto (ej. ALTOCONCEPTO). Todas se ven juntas, como una lista, en la página propia de Selected Work (a la que lleva la foto de portada de arriba). Cada campaña tiene, adentro, su PROPIA portada — la primera foto de su lista.",
                       fields: [
                         { label: "Nombre del proyecto", name: "nombre", widget: "string", hint: "Ej. ALTOCONCEPTO" },
                         { label: "Detalle", name: "detalle", widget: "string", required: false, hint: "Ej. Menswear · Santiago · 2026" },
                         {
-                          label: "Fotos de la campaña (hasta 12)",
+                          label: "Fotos de esta campaña (hasta 12)",
                           name: "fotos",
                           widget: "list",
                           min: 1,
                           max: 12,
-                          hint: "La PRIMERA foto de esta lista es la que se usa como portada de la campaña — se muestra a ancho completo, recortada en franja horizontal (bastante arriba y abajo). El resto de las fotos no lleva ese recorte, se ven completas al abrir el visor. ¿Quieres que sea otra la portada? Arrástrala al primer lugar de esta lista.",
+                          hint: "La PRIMERA foto de esta lista es la portada de ESTA campaña — la que se ve en la lista de Selected Work, a ancho completo, recortada en franja horizontal (bastante arriba y abajo). Es distinta de la foto de portada de arriba, que es de TODO Selected Work junto. El resto de las fotos de acá abajo no lleva ese recorte, se ven completas al abrir el visor. ¿Quieres que sea otra la portada de esta campaña? Arrástrala al primer lugar de esta lista.",
                           summary: "{{fields.alt}}",
                           fields: [
                             { label: "Imagen", name: "src", widget: "image", ...UPLOAD_LIMIT },
                             { label: "Descripción para lectores de pantalla", name: "alt", widget: "string", required: false },
                             {
-                              label: "Encuadre de la portada — solo tiene efecto si ESTA es la primera foto",
+                              label: "Encuadre de esta foto (solo si es la portada, o sea la 1ª de la lista)",
                               name: "posicion",
                               widget: "select",
                               required: false,
@@ -1739,12 +1739,12 @@ img{max-width:100%;}
                                 { label: "Un poco más abajo", value: "75%" },
                                 { label: "Todo abajo", value: "100%" },
                               ],
-                              hint: "Este campo solo hace algo cuando esta foto es la primera de la lista (la portada de la campaña) — en cualquier otra posición, no tiene ningún efecto. La portada se recorta bastante (queda una franja horizontal angosta): prioriza que se vea el ROSTRO completo por sobre el resto del look — si te queda cortada la cabeza, elegí una opción más arriba.",
+                              hint: "Solo se nota cuando esta foto es la primera de la lista (la portada de la campaña) — en cualquier otra posición no hace nada. Elige QUÉ PARTE de la foto queda adentro de esa franja angosta, como mover la cámara hacia arriba o abajo sin acercarte. Prioriza que se vea el ROSTRO completo — si te queda cortada la cabeza, elegí una opción más arriba.",
                             },
                             (function () {
                               var f = zoomField();
-                              f.label = "Zoom de la portada — solo tiene efecto si ESTA es la primera foto";
-                              f.hint = "Este campo solo hace algo cuando esta foto es la primera de la lista (la portada de la campaña) — en cualquier otra posición, no tiene ningún efecto. " + f.hint;
+                              f.label = "Zoom de esta foto (solo si es la portada, o sea la 1ª de la lista)";
+                              f.hint = "También solo se nota en la primera foto (la portada). A diferencia de Encuadre (que elige QUÉ PARTE se ve), Zoom elige QUÉ TAN CERCA se ve esa parte, como acercar la cámara — úsalo cuando, incluso con el mejor Encuadre, la persona se sigue viendo chica porque la foto fue tomada de lejos (cuerpo completo). La foto completa (al abrirla en grande en el visor) nunca cambia, solo esta miniatura de portada.";
                               return f;
                             })(),
                           ],
