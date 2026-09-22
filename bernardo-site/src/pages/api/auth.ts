@@ -5,7 +5,13 @@ import type { APIRoute } from 'astro';
 // Primer paso del login del panel /admin: manda a Bernardo a la pantalla de
 // autorización de GitHub. El segundo paso lo maneja api/callback.ts.
 export const GET: APIRoute = async ({ url, redirect }) => {
-  const clientId = import.meta.env.GITHUB_OAUTH_CLIENT_ID;
+  // Se lee en runtime con process.env y no con import.meta.env: Vite reemplaza
+  // import.meta.env al compilar, así que el valor quedaría escrito dentro del
+  // bundle desplegado. Para el client id eso sería inofensivo (es público, viaja
+  // en la URL de autorización), pero callback.ts necesita lo mismo para el client
+  // secret, donde sí importa — mismo mecanismo en los dos para no dejar dos
+  // formas distintas de leer lo mismo. (22-sep-2026)
+  const clientId = process.env.GITHUB_OAUTH_CLIENT_ID;
   if (!clientId) {
     return new Response('Falta configurar GITHUB_OAUTH_CLIENT_ID en Netlify.', { status: 500 });
   }
