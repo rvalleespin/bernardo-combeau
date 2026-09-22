@@ -26,8 +26,14 @@ function htmlPage(message: string) {
 // necesita el client secret, que nunca debe llegar al navegador) y se lo
 // devolvemos al panel /admin vía postMessage.
 export const GET: APIRoute = async ({ url, request }) => {
-  const clientId = import.meta.env.GITHUB_OAUTH_CLIENT_ID;
-  const clientSecret = import.meta.env.GITHUB_OAUTH_CLIENT_SECRET;
+  // Ambas se leen en runtime con process.env, nunca con import.meta.env: Vite
+  // reemplaza import.meta.env al compilar y el client secret terminaría escrito
+  // en texto plano dentro del bundle. Leyéndolo acá el valor solo vive en las
+  // variables de entorno de Netlify, que es lo que permite marcarlo como
+  // "Contains secret values" sin que el secrets scanning del build lo encuentre
+  // dentro del output y tumbe el deploy. (22-sep-2026)
+  const clientId = process.env.GITHUB_OAUTH_CLIENT_ID;
+  const clientSecret = process.env.GITHUB_OAUTH_CLIENT_SECRET;
   if (!clientId || !clientSecret) {
     return new Response('Falta configurar GITHUB_OAUTH_CLIENT_ID / GITHUB_OAUTH_CLIENT_SECRET en Netlify.', { status: 500 });
   }
