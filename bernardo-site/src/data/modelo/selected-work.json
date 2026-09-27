@@ -5,21 +5,31 @@
       "detalle": "Menswear · Santiago · 2026",
       "fotos": [
         {
-          "src": "/uploads/modelo-selectedwork-elite-01.jpg",
+          "src": "/uploads/torelli-blue_104669.webp",
           "alt": "ALTOCONCEPTO — Bernardo Combeau 1",
           "posicion": "0%"
         },
         {
-          "src": "/uploads/modelo-selectedwork-elite-02.jpg",
+          "src": "/uploads/sigaro-tabaco_104826.webp",
           "alt": "ALTOCONCEPTO — Bernardo Combeau 2"
         },
         {
-          "src": "/uploads/modelo-selectedwork-elite-03.jpg",
+          "src": "/uploads/fellini-royal_104908.webp",
           "alt": "ALTOCONCEPTO — Bernardo Combeau 3"
         },
         {
-          "src": "/uploads/modelo-selectedwork-elite-04.jpg",
+          "src": "/uploads/duevoltigris-charcoal102869.webp",
           "alt": "ALTOCONCEPTO — Bernardo Combeau 4"
+        },
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/puccini-blue_104561.webp"
+        },
+        {
+          "posicion": "50%",
+          "zoom": "1",
+          "src": "/uploads/torelli-blue_104712.webp"
         }
       ]
     },
