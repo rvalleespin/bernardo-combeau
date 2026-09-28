@@ -1,5 +1,21 @@
 ## Proyecto: sitio de Bernardo Combeau (fotógrafo)
 
+> **PENDIENTE (15-sep-2026) — rama `claude/recap-audio-headroom` sin fusionar.** El recap
+> de Commercials (video autohospedado, ver más abajo) quedó con el audio pegado al techo
+> digital (+0.68 dB de sobrepico tras comprimir a AAC — puede sonar distorsionado). Esta
+> rama recomprime con -2dB de margen, verificado contra el archivo real servido (pico queda
+> en -0.85 dB). **El sitio en producción sigue sirviendo la versión con el problema** —
+> confirmado en vivo el 28-sep, `recapVideoUrl` en `main` todavía apunta a
+> `8686c836-3aec-47c4-bf88-2a25e4f104f3.mp4` (la con sobrepico), no a
+> `be1ea5ba-6c47-4f4f-85d3-0351846f0211.mp4` (la corregida). Falta solo el merge —
+> confirmado por Ramón, esperando que una sesión con acceso a este repo lo ejecute.
+>
+> **También pendiente, sin código de por medio:** la rama `claude/reel-completo-en-
+> commercials` (de antes del 10-sep) quedó completamente superada por este mismo recap —
+> diverge en ~30 archivos de `main` y fusionarla borraría trabajo posterior. Debería
+> borrarse, pero esta sesión no tiene permiso para borrar ramas remotas — que la borre
+> Ramón (o cualquier sesión con esa autorización) desde GitHub directamente.
+
 > **RESUELTO (12-sep-2026) — los 3 cambios de AEO se ejecutaron y se fusionaron a `main`**
 > (commit `8bf1145`, confirmado por Ramón). El detalle sigue abajo tal cual se dejó, como
 > registro de qué se pidió y por qué — no es un pendiente activo.
