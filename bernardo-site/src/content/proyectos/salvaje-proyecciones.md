@@ -16,7 +16,7 @@ images:
     alt: "1"
   - focus: 50% 50%
     zoom: "1"
-    src: /uploads/proyecto_20260926_0037.jpg
+    src: /uploads/proyecto_20260926_0039.jpg
     alt: "2"
   - focus: 50% 50%
     zoom: "1"
