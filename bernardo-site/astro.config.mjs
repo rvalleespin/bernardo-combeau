@@ -47,6 +47,12 @@ export default defineConfig({
   // trabajaba alrededor de un bug de Vercel donde estas mismas entradas con tilde no
   // matcheaban en el edge — probado contra Netlify tras la migración y el bug no se
   // reproduce ahí, así que el workaround de esa rama no se portó, solo este fix real.)
+  // 28-sep-2026: mismo patrón otra vez, encontrado en el QA final antes de pedir el
+  // permiso de caso público — "encargo-auto-binoculares" y "encargo-taburete-estudio"
+  // también se borraron del panel en algún momento (no queda ningún rastro de ese
+  // contenido bajo otro slug, se confirmó contra el repo actual) y sus redirects
+  // seguían apuntando a las rutas borradas, un 404 encadenado en vivo. Mismo arreglo:
+  // apuntar a la colección en vez de a la entrada específica que ya no existe.
   redirects: {
     '/series': '/retratos',
     '/encargos': '/proyectos',
@@ -57,8 +63,8 @@ export default defineConfig({
     '/series/serie-grafiti-urbano': '/proyectos/serie-grafiti-urbano',
     '/series/aquí-estoy-creando-algo-nuevo': '/proyectos/la-caida',
     '/series/serie-orejas-de-conejo': '/proyectos/serie-orejas-de-conejo',
-    '/encargos/encargo-auto-binoculares': '/retratos/encargo-auto-binoculares',
-    '/encargos/encargo-taburete-estudio': '/retratos/encargo-taburete-estudio',
+    '/encargos/encargo-auto-binoculares': '/retratos',
+    '/encargos/encargo-taburete-estudio': '/retratos',
     '/encargos/encargo-piscina-corbata': '/proyectos/encargo-piscina-corbata',
     // 3 sep 2026: el slug de estas dos entradas quedó pegado al nombre por
     // defecto que traían al crearlas en el panel — el título real ya no
